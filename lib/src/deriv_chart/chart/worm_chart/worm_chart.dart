@@ -92,8 +92,8 @@ class WormChart extends StatefulWidget {
   /// wrap the [WormChart] with GestureDetector the gesture functionality of it
   /// will conflict with the worm chart itself and the cross hair's position
   /// won't be correct when long press started.
-  /// For now having this callback here in worm chart until a more solid solution
-  /// is found.
+  /// For now having this callback here in worm chart until
+  /// a more solid solution is found.
   final VoidCallback? onTap;
 
   @override

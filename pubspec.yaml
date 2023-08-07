@@ -9,6 +9,9 @@ environment:
   flutter: ">=3.10.1"
 
 dependencies:
+  flutter_localizations:
+    sdk: flutter
+
   collection: ^1.15.0-nullsafety.4
   deriv_technical_analysis:
     git:
