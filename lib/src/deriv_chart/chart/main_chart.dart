@@ -32,6 +32,7 @@ class MainChart extends BasicChart {
     this.overlaySeries,
     this.annotations,
     double opacity = 1,
+    ChartAxisConfig? chartAxisConfig,
   })  : _mainSeries = mainSeries,
         chartDataList = <ChartData>[
           mainSeries,
@@ -43,6 +44,7 @@ class MainChart extends BasicChart {
           mainSeries: mainSeries,
           pipSize: pipSize,
           opacity: opacity,
+          chartAxisConfig: chartAxisConfig,
         );
 
   /// The indicator series that are displayed on the main chart.
