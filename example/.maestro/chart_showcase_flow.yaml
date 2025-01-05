@@ -1,0 +1,26 @@
+appId: com.example.chart_attempt 
+---
+- launchApp
+
+- waitForAnimationToEnd:
+    timeout: 2000
+
+- swipe:
+    from:
+      id: "deriv-chart"
+    direction: RIGHT 
+
+- swipe:
+    from:
+      id: "deriv-chart"
+    direction: RIGHT 
+
+- swipe:
+    from:
+      id: "deriv-chart"
+    direction: LEFT 
+
+- swipe:
+    from:
+      id: "deriv-chart"
+    direction: LEFT 

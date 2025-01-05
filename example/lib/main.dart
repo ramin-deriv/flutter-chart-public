@@ -78,7 +78,7 @@ class FullscreenChart extends StatefulWidget {
 
 class _FullscreenChartState extends State<FullscreenChart> {
   static const String defaultAppID = '36544';
-  static const String defaultEndpoint = 'blue.derivws.com';
+  static const String defaultEndpoint = 'green.derivws.com';
 
   List<Tick> ticks = <Tick>[];
   ChartStyle style = ChartStyle.line;
@@ -139,13 +139,15 @@ class _FullscreenChartState extends State<FullscreenChart> {
   }
 
   Future<void> _connectToAPI() async {
-    _connectionBloc = connection_bloc.ConnectionCubit(ConnectionInformation(
-      endpoint: defaultEndpoint,
-      appId: defaultAppID,
-      brand: 'deriv',
-      authEndpoint: '',
-    ))
-      ..stream.listen((connection_bloc.ConnectionState connectionState) async {
+    _connectionBloc = connection_bloc.ConnectionCubit(
+      ConnectionInformation(
+        endpoint: defaultEndpoint,
+        appId: defaultAppID,
+        brand: 'deriv',
+        authEndpoint: '',
+      ),
+      proxyAwareConnection: true,
+    )..stream.listen((connection_bloc.ConnectionState connectionState) async {
         if (connectionState is! connection_bloc.ConnectionConnectedState) {
           // Calling this since we show some status labels when NOT connected.
           setState(() {});
@@ -377,52 +379,56 @@ class _FullscreenChartState extends State<FullscreenChart> {
               child: Stack(
                 children: <Widget>[
                   ClipRect(
-                    child: DerivChart(
-                      mainSeries: _getDataSeries(style),
-                      markerSeries: MarkerSeries(
-                        _markers,
-                        activeMarker: _activeMarker,
-                        markerIconPainter: MultipliersMarkerIconPainter(),
-                      ),
-                      activeSymbol: _symbol.name,
-                      annotations: ticks.length > 4
-                          ? <ChartAnnotation<ChartObject>>[
-                              ..._sampleBarriers,
-                              if (_sl && _slBarrier != null)
-                                _slBarrier as ChartAnnotation<ChartObject>,
-                              if (_tp && _tpBarrier != null)
-                                _tpBarrier as ChartAnnotation<ChartObject>,
-                              TickIndicator(
-                                ticks.last,
-                                style: const HorizontalBarrierStyle(
-                                  color: Colors.redAccent,
-                                  labelShape: LabelShape.pentagon,
-                                  hasBlinkingDot: true,
-                                  hasArrow: false,
+                    child: Semantics(
+                      identifier: 'deriv-chart',
+                      child: DerivChart(
+                        mainSeries: _getDataSeries(style),
+                        markerSeries: MarkerSeries(
+                          _markers,
+                          activeMarker: _activeMarker,
+                          markerIconPainter: MultipliersMarkerIconPainter(),
+                        ),
+                        activeSymbol: _symbol.name,
+                        annotations: ticks.length > 4
+                            ? <ChartAnnotation<ChartObject>>[
+                                ..._sampleBarriers,
+                                if (_sl && _slBarrier != null)
+                                  _slBarrier as ChartAnnotation<ChartObject>,
+                                if (_tp && _tpBarrier != null)
+                                  _tpBarrier as ChartAnnotation<ChartObject>,
+                                TickIndicator(
+                                  ticks.last,
+                                  style: const HorizontalBarrierStyle(
+                                    color: Colors.redAccent,
+                                    labelShape: LabelShape.pentagon,
+                                    hasBlinkingDot: true,
+                                    hasArrow: false,
+                                  ),
+                                  visibility: HorizontalBarrierVisibility
+                                      .keepBarrierLabelVisible,
                                 ),
-                                visibility: HorizontalBarrierVisibility
-                                    .keepBarrierLabelVisible,
-                              ),
-                            ]
-                          : null,
-                      pipSize:
-                          (_tickHistorySubscription?.tickHistory?.pipSize ?? 4)
-                              .toInt(),
-                      granularity: granularity == 0
-                          ? 1000 // average ms difference between ticks
-                          : granularity * 1000,
-                      controller: _controller,
-                      isLive: (_symbol.isOpen) &&
-                          (_connectionBloc.state
-                              is connection_bloc.ConnectionConnectedState),
-                      opacity: _symbol.isOpen ? 1.0 : 0.5,
-                      onVisibleAreaChanged: (int leftEpoch, int rightEpoch) {
-                        if (!_waitingForHistory &&
-                            ticks.isNotEmpty &&
-                            leftEpoch < ticks.first.epoch) {
-                          _loadHistory(500);
-                        }
-                      },
+                              ]
+                            : null,
+                        pipSize:
+                            (_tickHistorySubscription?.tickHistory?.pipSize ??
+                                    4)
+                                .toInt(),
+                        granularity: granularity == 0
+                            ? 1000 // average ms difference between ticks
+                            : granularity * 1000,
+                        controller: _controller,
+                        isLive: (_symbol.isOpen) &&
+                            (_connectionBloc.state
+                                is connection_bloc.ConnectionConnectedState),
+                        opacity: _symbol.isOpen ? 1.0 : 0.5,
+                        onVisibleAreaChanged: (int leftEpoch, int rightEpoch) {
+                          if (!_waitingForHistory &&
+                              ticks.isNotEmpty &&
+                              leftEpoch < ticks.first.epoch) {
+                            _loadHistory(500);
+                          }
+                        },
+                      ),
                     ),
                   ),
                   // ignore: unnecessary_null_comparison
