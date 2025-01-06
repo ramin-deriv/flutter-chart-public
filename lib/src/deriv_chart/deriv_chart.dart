@@ -260,7 +260,10 @@ class _DerivChartState extends State<DerivChart> {
       ) =>
           ChangeNotifierProvider<Repository<IndicatorConfig>>.value(
         value: _indicatorsRepo,
-        child: IndicatorsDialog(),
+        child: LocalizationProvider(
+          localization: widget.localizations ?? ChartLocalization(),
+          child: IndicatorsDialog(),
+        ),
       ),
     );
   }
@@ -303,8 +306,9 @@ class _DerivChartState extends State<DerivChart> {
 
   @override
   Widget build(BuildContext context) {
+    final chartLocalization = widget.localizations ?? ChartLocalization();
     return LocalizationProvider(
-      localization: widget.localizations ?? ChartLocalization(),
+      localization: chartLocalization,
       child: MultiProvider(
         providers: <ChangeNotifierProvider<Repository<AddOnConfig>>>[
           ChangeNotifierProvider<Repository<IndicatorConfig>>.value(
@@ -315,7 +319,9 @@ class _DerivChartState extends State<DerivChart> {
         child: Builder(
           builder: (BuildContext context) => Stack(
             children: <Widget>[
-              Chart(
+              LocalizationProvider(
+                localization: chartLocalization,
+                child: Chart(
                 mainSeries: widget.mainSeries,
                 pipSize: widget.pipSize,
                 granularity: widget.granularity,
@@ -362,6 +368,7 @@ class _DerivChartState extends State<DerivChart> {
                 showScrollToLastTickButton: widget.showScrollToLastTickButton,
                 loadingAnimationColor: widget.loadingAnimationColor,
                 chartAxisConfig: widget.chartAxisConfig,
+                ),
               ),
               if (widget.indicatorsRepo == null) _buildIndicatorsIcon(),
               if (widget.drawingToolsRepo == null) _buildDrawingToolsIcon(),

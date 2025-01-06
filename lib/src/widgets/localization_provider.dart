@@ -13,7 +13,18 @@ class LocalizationProvider extends InheritedWidget {
 
   static ChartLocalization of(BuildContext context) {
     final provider = context.dependOnInheritedWidgetOfExactType<LocalizationProvider>();
-    return provider?.localization ?? ChartLocalization();
+    if (provider != null) {
+      return provider.localization;
+    }
+    
+    // Fallback to Localizations if provider not found
+    final localization = Localizations.of<ChartLocalization>(context, ChartLocalization);
+    if (localization != null) {
+      return localization;
+    }
+    
+    // If neither is available, create a new instance
+    return ChartLocalization();
   }
 
   @override
