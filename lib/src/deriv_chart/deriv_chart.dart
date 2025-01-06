@@ -66,7 +66,8 @@ class DerivChart extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
-  /// Chart's localizations. If not provided, will use default English localizations.
+  /// Chart's localizations. If not provided, will use default English
+  /// localizations.
   final ChartLocalization? localizations;
 
   /// Chart's main data series
