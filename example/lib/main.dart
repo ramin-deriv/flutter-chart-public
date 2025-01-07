@@ -377,69 +377,53 @@ class _FullscreenChartState extends State<FullscreenChart> {
               child: Stack(
                 children: <Widget>[
                   ClipRect(
-                    child: FutureBuilder(
-                        future: ChartLocalization.load(const Locale('es')),
-                        builder: (_, localizationFuture) {
-                          if (!localizationFuture.hasData) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          return DerivChart(
-                            mainSeries: _getDataSeries(style),
-                            localizations:
-                                localizationFuture.data as ChartLocalization,
-                            markerSeries: MarkerSeries(
-                              _markers,
-                              activeMarker: _activeMarker,
-                              markerIconPainter: MultipliersMarkerIconPainter(),
-                            ),
-                            activeSymbol: _symbol.name,
-                            annotations: ticks.length > 4
-                                ? <ChartAnnotation<ChartObject>>[
-                                    ..._sampleBarriers,
-                                    if (_sl && _slBarrier != null)
-                                      _slBarrier
-                                          as ChartAnnotation<ChartObject>,
-                                    if (_tp && _tpBarrier != null)
-                                      _tpBarrier
-                                          as ChartAnnotation<ChartObject>,
-                                    TickIndicator(
-                                      ticks.last,
-                                      style: const HorizontalBarrierStyle(
-                                        color: Colors.redAccent,
-                                        labelShape: LabelShape.pentagon,
-                                        hasBlinkingDot: true,
-                                        hasArrow: false,
-                                      ),
-                                      visibility: HorizontalBarrierVisibility
-                                          .keepBarrierLabelVisible,
-                                    ),
-                                  ]
-                                : null,
-                            pipSize: (_tickHistorySubscription
-                                        ?.tickHistory?.pipSize ??
-                                    4)
-                                .toInt(),
-                            granularity: granularity == 0
-                                ? 1000 // average ms difference between ticks
-                                : granularity * 1000,
-                            controller: _controller,
-                            isLive: (_symbol.isOpen) &&
-                                (_connectionBloc.state is connection_bloc
-                                    .ConnectionConnectedState),
-                            opacity: _symbol.isOpen ? 1.0 : 0.5,
-                            onVisibleAreaChanged:
-                                (int leftEpoch, int rightEpoch) {
-                              if (!_waitingForHistory &&
-                                  ticks.isNotEmpty &&
-                                  leftEpoch < ticks.first.epoch) {
-                                _loadHistory(500);
-                              }
-                            },
-                          );
-                        }),
+                    child: DerivChart(
+                      mainSeries: _getDataSeries(style),
+                      markerSeries: MarkerSeries(
+                        _markers,
+                        activeMarker: _activeMarker,
+                        markerIconPainter: MultipliersMarkerIconPainter(),
+                      ),
+                      activeSymbol: _symbol.name,
+                      annotations: ticks.length > 4
+                          ? <ChartAnnotation<ChartObject>>[
+                              ..._sampleBarriers,
+                              if (_sl && _slBarrier != null)
+                                _slBarrier as ChartAnnotation<ChartObject>,
+                              if (_tp && _tpBarrier != null)
+                                _tpBarrier as ChartAnnotation<ChartObject>,
+                              TickIndicator(
+                                ticks.last,
+                                style: const HorizontalBarrierStyle(
+                                  color: Colors.redAccent,
+                                  labelShape: LabelShape.pentagon,
+                                  hasBlinkingDot: true,
+                                  hasArrow: false,
+                                ),
+                                visibility: HorizontalBarrierVisibility
+                                    .keepBarrierLabelVisible,
+                              ),
+                            ]
+                          : null,
+                      pipSize:
+                          (_tickHistorySubscription?.tickHistory?.pipSize ?? 4)
+                              .toInt(),
+                      granularity: granularity == 0
+                          ? 1000 // average ms difference between ticks
+                          : granularity * 1000,
+                      controller: _controller,
+                      isLive: (_symbol.isOpen) &&
+                          (_connectionBloc.state
+                              is connection_bloc.ConnectionConnectedState),
+                      opacity: _symbol.isOpen ? 1.0 : 0.5,
+                      onVisibleAreaChanged: (int leftEpoch, int rightEpoch) {
+                        if (!_waitingForHistory &&
+                            ticks.isNotEmpty &&
+                            leftEpoch < ticks.first.epoch) {
+                          _loadHistory(500);
+                        }
+                      },
+                    ),
                   ),
                   // ignore: unnecessary_null_comparison
                   if (_connectionBloc != null &&
