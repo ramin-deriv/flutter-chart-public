@@ -389,13 +389,9 @@ To learn more about how to customize the indicators feature using `DerivChart`, 
 
 #### Usage:
 
-All properties from the `Chart` widget are available here as well, except `overlaySeries` and `bottomSeries` which are managed internally. The widget requires a `ChartLocalization` instance for handling translations and localized content.
+All properties from the `Chart` widget are available here as well, except `overlaySeries` and `bottomSeries` which are managed internally.
 
 ```dart
-final localization = await ChartLocalization.load(const Locale('es'));
-
-...
-
 DerivChart(
    localization: localization, // Required for translations
    mainSeries: CandleSeries(candles),
