@@ -393,7 +393,6 @@ All properties from the `Chart` widget are available here as well, except `overl
 
 ```dart
 DerivChart(
-   localization: localization, // Required for translations
    mainSeries: CandleSeries(candles),
    granularity: 60, // 60 seconds
    activeSymbol: 'default',
