@@ -1,0 +1,107 @@
+name: Test Workflow with Flashlight
+
+on:
+  pull_request:
+    branches:
+      - "*" # Trigger on commits to any branch involved in a PR
+
+jobs:
+  test-workflow:
+    name: Build, Test, and Flashlight for Example App
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout master branch
+      - name: Checkout master branch
+        uses: actions/checkout@v3
+        with:
+          ref: master
+          path: master
+
+      # Step 2: Build example app for master branch
+      - name: Build example app for master branch
+        working-directory: master/example
+        run: |
+          flutter pub get
+          flutter build apk --target-platform android-arm,android-arm64,android-x64
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+
+      # Step 3: Upload master APK
+      - name: Upload Master APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: master-example-apk
+          path: master/example/build/app/outputs/flutter-apk/app-release.apk
+
+      # Step 4: Checkout PR branch
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          path: pr
+
+      # Step 5: Build example app for PR branch
+      - name: Build example app for PR branch
+        working-directory: pr/example
+        run: |
+          flutter pub get
+          flutter build apk --target-platform android-arm,android-arm64,android-x64
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+
+      # Step 6: Upload PR APK
+      - name: Upload PR APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: pr-example-apk
+          path: pr/example/build/app/outputs/flutter-apk/app-release.apk
+
+      # Step 7: Set up Android Emulator
+      - name: Set up Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: default
+          arch: x86_64
+          profile: Nexus_5X
+          emulator-options: -no-window
+
+      # Step 8: Download APKs
+      - name: Download Master APK
+        uses: actions/download-artifact@v3
+        with:
+          name: master-example-apk
+          path: master/
+
+      - name: Download PR APK
+        uses: actions/download-artifact@v3
+        with:
+          name: pr-example-apk
+          path: pr/
+
+      # Step 9: Install Flashlight
+      - name: Install Flashlight
+        run: |
+          curl -sSL https://get.flashlight.dev | bash
+
+      # Step 10: Install and Test Master APK
+      - name: Install and Test Master APK
+        run: |
+          adb install master/app-release.apk
+          flashlight test --bundleId com.example.master --testCommand "adb shell monkey -p com.example.master -c android.intent.category.LAUNCHER 1" --duration 10000 --resultsFilePath master_results.json
+
+      # Step 11: Install and Test PR APK
+      - name: Install and Test PR APK
+        run: |
+          adb install pr/app-release.apk
+          flashlight test --bundleId com.example.pr --testCommand "adb shell monkey -p com.example.pr -c android.intent.category.LAUNCHER 1" --duration 10000 --resultsFilePath pr_results.json
+
+      # Step 12: Upload Flashlight Results
+      - name: Upload Flashlight Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: Flashlight Reports
+          path: |
+            master_results.json
+            pr_results.json
