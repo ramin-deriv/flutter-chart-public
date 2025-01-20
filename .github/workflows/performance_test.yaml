@@ -58,7 +58,7 @@ jobs:
 
       # Step 5: Build example app for PR branch
       - name: Build example app for PR branch
-        working-directory: pr/example
+        working-directory: ./pr/example
         run: |
           flutter pub get
           flutter build apk --target-platform android-arm,android-arm64,android-x64
