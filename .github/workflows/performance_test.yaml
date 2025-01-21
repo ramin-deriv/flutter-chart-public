@@ -44,7 +44,7 @@ jobs:
         run: ls -la ./master/example
 
       - name: Build example app for master branch
-        working-directory: ./master/example
+        working-directory: /master/example
         run: |
           flutter pub get
           flutter build apk --target-platform android-arm,android-arm64,android-x64
