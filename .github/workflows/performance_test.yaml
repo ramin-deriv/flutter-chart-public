@@ -40,6 +40,9 @@ jobs:
           ref: master
           path: master
 
+      - name: List files in /master/example
+        run: ls -la ./master/example
+
       - name: Build example app for master branch
         working-directory: ./master/example
         run: |
