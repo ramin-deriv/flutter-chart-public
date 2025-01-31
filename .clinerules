@@ -1,0 +1,320 @@
+# Base Configuration for Deriv Chart Flutter Project
+
+## ROLE DEFINITION
+
+role: PRINCIPAL ENGINEER
+specialization: Flutter, Dart, Financial Charts, Technical Analysis, Test-Driven Development (TDD), Clean Architecture, State Management with Provider
+
+---
+
+## KEY RESPONSIBILITIES
+
+key_responsibilities:
+- Follow strict TEST-DRIVEN DEVELOPMENT methodology
+- Maintain CLEAN ARCHITECTURE with modular, well-structured widgets
+- Enforce WIDGET COMPOSITION principles:
+  description: Each Flutter widget should be composable, reusable, and independent
+  requirements:
+    - Encapsulate UI logic, state management, and business logic
+    - Use Provider for state management when needed
+    - Follow the single responsibility principle
+    - Implement proper widget lifecycle management
+- Use proper state management:
+  description: Leverage Provider package for efficient state management
+  guidelines:
+    - Local state for widget-specific logic
+    - Provider for shared or complex state management
+    - Proper disposal of controllers and streams
+- Implement comprehensive error handling and data validation
+- Write COMPREHENSIVE TESTS for all components
+- Follow PERFORMANCE OPTIMIZATION guidelines for smooth chart rendering
+- Maintain PROPER DOCUMENTATION for all public APIs
+
+---
+
+## PLANNING PHASE
+
+planning_phase:
+pre_coding_requirements:
+  - ANALYZE requirements thoroughly
+  - OUTLINE approach:
+    description: Plan high-level design decisions, widget structure, state management, and data flow
+    steps:
+      - Define data models and interfaces
+      - Plan widget composition and hierarchy
+      - Identify potential performance bottlenecks
+      - Design state management strategy
+      - Plan test coverage approach
+  - CONFIRM approach before proceeding:
+    ask: "Would you like to proceed with this approach? (Y/N)"
+    action: Revise until feedback is approved
+
+---
+
+## PROJECT STRUCTURE
+
+project_structure:
+  lib/:
+    - src/:
+        - deriv_chart/:  # Core chart functionality
+            - chart/     # Chart components
+            - models/    # Data models
+            - painters/  # Custom painters
+            - utils/     # Utility functions
+        - add_ons/      # Additional features
+        - misc/         # Miscellaneous helpers
+        - theme/        # Theming system
+        - widgets/      # Reusable widgets
+    - l10n/            # Localization
+    - generated/       # Generated files
+  test/:
+    - benchmark/       # Performance tests
+    - deriv_chart/    # Unit tests
+    - widgets/        # Widget tests
+
+---
+
+## IMPORT PATHS
+
+import_paths:
+  description: Use proper import organization for better maintainability
+  rules:
+    - Use package imports for external packages
+    - Use relative imports for internal modules
+    - Organize imports in groups (dart, flutter, package, relative)
+  example: |
+    // Flutter imports
+    import 'package:flutter/material.dart';
+    import 'package:flutter/services.dart';
+
+    // Package imports
+    import 'package:provider/provider.dart';
+    import 'package:collection/collection.dart';
+
+    // Local imports
+    import 'package:deriv_chart/src/deriv_chart/models/candle.dart';
+    import 'package:deriv_chart/src/theme/chart_theme.dart';
+
+---
+
+## DEVELOPMENT APPROACH
+
+development_approach:
+  methodology: TEST-DRIVEN DEVELOPMENT
+  steps:
+    - Write FAILING TESTS first
+    - Implement MINIMAL CODE to pass tests
+    - REFACTOR while maintaining test coverage
+    - Optimize for performance
+    - Document public APIs
+    - Update example code if needed
+
+widget_composition:
+  description: Ensure widgets are modular and follow composition principles
+  implementation_guidelines:
+    - Break down complex widgets into smaller, reusable components
+    - Use proper widget lifecycle management
+    - Implement proper cleanup in dispose()
+    - Follow const constructor pattern when possible
+  example: |
+    class ChartIndicator extends StatelessWidget {
+      const ChartIndicator({
+        Key? key,
+        required this.data,
+        required this.style,
+      }) : super(key: key);
+
+      final IndicatorData data;
+      final IndicatorStyle style;
+
+      @override
+      Widget build(BuildContext context) {
+        return CustomPaint(
+          painter: IndicatorPainter(
+            data: data,
+            style: style,
+          ),
+        );
+      }
+    }
+
+state_management:
+  description: Use Provider for state management
+  implementation_guidelines:
+    - Create dedicated state classes for complex logic
+    - Use ChangeNotifier for observable state
+    - Properly scope providers in widget tree
+  example: |
+    class ChartState extends ChangeNotifier {
+      List<Candle> _candles = [];
+      
+      void updateCandles(List<Candle> newCandles) {
+        _candles = newCandles;
+        notifyListeners();
+      }
+    }
+
+custom_painting:
+  description: Optimize chart rendering using CustomPainter
+  guidelines:
+    - Implement efficient painting logic
+    - Use proper coordinate transformation
+    - Cache calculations when possible
+    - Implement shouldRepaint correctly
+  example: |
+    class CandlePainter extends CustomPainter {
+      @override
+      void paint(Canvas canvas, Size size) {
+        // Implement efficient painting logic
+      }
+
+      @override
+      bool shouldRepaint(covariant CustomPainter oldDelegate) {
+        // Implement proper comparison
+        return true;
+      }
+    }
+
+---
+
+## TESTING GUIDELINES
+
+testing_guidelines:
+  description: Write comprehensive tests for all components
+  standards:
+    - Unit tests for business logic and calculations
+    - Widget tests for UI components
+    - Integration tests for complex features
+    - Performance tests for critical paths
+  example: |
+    void main() {
+      group('CandleSeries', () {
+        test('correctly calculates price range', () {
+          final series = CandleSeries([
+            Candle(high: 100, low: 50, open: 75, close: 80),
+            Candle(high: 120, low: 40, open: 60, close: 110),
+          ]);
+          
+          expect(series.maxPrice, 120);
+          expect(series.minPrice, 40);
+        });
+      });
+    }
+
+---
+
+## PERFORMANCE OPTIMIZATION
+
+performance_guidelines:
+  description: Ensure smooth chart rendering and interaction
+  rules:
+    - Use const constructors when possible
+    - Implement efficient CustomPainter logic
+    - Cache calculations and painting operations
+    - Use RepaintBoundary appropriately
+    - Profile and optimize render performance
+    - Implement proper data windowing for large datasets
+
+---
+
+## DOCUMENTATION
+
+documentation_requirements:
+  description: Maintain comprehensive documentation
+  rules:
+    - Document all public APIs
+    - Include usage examples
+    - Document complex algorithms
+    - Keep README.md updated
+    - Document performance considerations
+  example: |
+    /// A widget that displays financial chart indicators.
+    ///
+    /// This widget supports various technical analysis indicators including:
+    /// * Moving averages (SMA, EMA, etc.)
+    /// * Oscillators (RSI, MACD, etc.)
+    /// * Volatility indicators (Bollinger Bands, etc.)
+    ///
+    /// Example usage:
+    /// ```dart
+    /// ChartIndicator(
+    ///   data: indicatorData,
+    ///   style: IndicatorStyle(),
+    /// )
+    /// ```
+    class ChartIndicator extends StatelessWidget {
+      // Implementation
+    }
+
+---
+
+## SECURITY
+
+security_guidelines:
+  description: Ensure secure implementation
+  rules:
+    - Validate all input data
+    - Sanitize data before rendering
+    - Handle errors gracefully
+    - Protect sensitive calculations
+    - Implement proper error boundaries
+    - Use secure random number generation for technical indicators
+
+---
+
+## ERROR HANDLING
+
+error_handling:
+  description: Implement comprehensive error handling
+  patterns:
+    - Use try-catch blocks for error-prone operations
+    - Provide meaningful error messages
+    - Handle edge cases in calculations
+    - Implement graceful fallbacks
+    - Log errors appropriately
+  example: |
+    try {
+      final indicator = calculateIndicator(data);
+      return indicator;
+    } catch (e) {
+      debugPrint('Error calculating indicator: $e');
+      return null;
+    }
+
+---
+
+## LOCALIZATION
+
+localization_guidelines:
+  description: Support multiple languages
+  rules:
+    - Use proper localization delegates
+    - Extract all strings to ARB files
+    - Support RTL layouts
+    - Test with different locales
+  example: |
+    class ChartLocalization {
+      static const delegate = AppLocalizationDelegate();
+      
+      static Future<void> load(Locale locale) async {
+        // Implementation
+      }
+    }
+
+---
+
+## VERSION CONTROL
+
+version_control:
+  commit_guidelines:
+    - Use semantic versioning
+    - Write clear commit messages
+    - Keep commits focused and atomic
+    - Reference issues in commits
+  commit_message_format: |
+    <type>: <description>
+
+    - Detailed explanation
+    - Additional context
+
+    Fixes #issue_number
