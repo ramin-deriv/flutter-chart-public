@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the DrawingTools class from the deriv_chart library, for the Dart programming language.">
+  <title>DrawingTools class - deriv_chart library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">deriv_chart</a></li>
+    <li><a href="../deriv_chart/deriv_chart-library.html">deriv_chart.dart</a></li>
+    <li class="self-crumb">DrawingTools class</li>
+  </ol>
+  <div class="self-name">DrawingTools</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="deriv_chart&#47;deriv_chart-library-sidebar.html"
+    data-below-sidebar="deriv_chart&#47;DrawingTools-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">DrawingTools</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>This calss is used to keep all the methods and data related to drawing tools
+Which need to be shared between the DerivChart and the DrawingToolsDialog</p>
+</section>
+
+
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+
+    <dl class="constructor-summary-list">
+        <dt id="DrawingTools" class="callable">
+          <span class="name"><a href="../deriv_chart/DrawingTools/DrawingTools.html">DrawingTools</a></span><span class="signature">({<span class="parameter" id="-param-onMouseEnterCallback"><span class="type-annotation"><a href="../deriv_chart/OnMouseEnterCallback.html">OnMouseEnterCallback</a>?</span> <span class="parameter-name">onMouseEnterCallback</span>, </span><span class="parameter" id="-param-onMouseExitCallback"><span class="type-annotation"><a href="../deriv_chart/OnMouseExitCallback.html">OnMouseExitCallback</a>?</span> <span class="parameter-name">onMouseExitCallback</span></span>})</span>
+        </dt>
+        <dd>
+          Initializes
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="drawingToolsRepo" class="property">
+  <span class="name"><a href="../deriv_chart/DrawingTools/drawingToolsRepo.html">drawingToolsRepo</a></span>
+  <span class="signature">&#8596; <a href="../deriv_chart/Repository-class.html">Repository</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/DrawingToolConfig-class.html">DrawingToolConfig</a></span>&gt;</span>?</span>
+  
+
+</dt>
+<dd>
+  Keep the reference to the drawing tools repository.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="isDrawingMoving" class="property">
+  <span class="name"><a href="../deriv_chart/DrawingTools/isDrawingMoving.html">isDrawingMoving</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  For tracking the drawing movement
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="onMouseEnterCallback" class="property">
+  <span class="name"><a href="../deriv_chart/DrawingTools/onMouseEnterCallback.html">onMouseEnterCallback</a></span>
+  <span class="signature">&#8596; <a href="../deriv_chart/OnMouseEnterCallback.html">OnMouseEnterCallback</a>?</span>
+  
+
+</dt>
+<dd>
+  Callback to notify mouse enter over the addon.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="onMouseExitCallback" class="property">
+  <span class="name"><a href="../deriv_chart/DrawingTools/onMouseExitCallback.html">onMouseExitCallback</a></span>
+  <span class="signature">&#8596; <a href="../deriv_chart/OnMouseExitCallback.html">OnMouseExitCallback</a>?</span>
+  
+
+</dt>
+<dd>
+  Callback to notify mouse exit over the addon.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="selectedDrawingTool" class="property">
+  <span class="name"><a href="../deriv_chart/DrawingTools/selectedDrawingTool.html">selectedDrawingTool</a></span>
+  <span class="signature">&#8596; <a href="../deriv_chart/DrawingToolConfig-class.html">DrawingToolConfig</a>?</span>
+  
+
+</dt>
+<dd>
+  Selected drawing tool.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="shouldStopDrawing" class="property">
+  <span class="name"><a href="../deriv_chart/DrawingTools/shouldStopDrawing.html">shouldStopDrawing</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span>
+  
+
+</dt>
+<dd>
+  A flag to show when to stop drawing only for drawings which don't have
+fixed number of points like continuous drawing
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="clearDrawingToolSelection" class="callable">
+  <span class="name"><a href="../deriv_chart/DrawingTools/clearDrawingToolSelection.html">clearDrawingToolSelection</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Callback to inform parent about drawing tool removal.
+  
+
+</dd>
+
+        <dt id="getDrawingData" class="callable">
+  <span class="name"><a href="../deriv_chart/DrawingTools/getDrawingData.html">getDrawingData</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/DrawingData-class.html">DrawingData</a>?</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  A method to get the list of drawing data from the repository
+  
+
+</dd>
+
+        <dt id="init" class="callable">
+  <span class="name"><a href="../deriv_chart/DrawingTools/init.html">init</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Remove unfinished drawings before openning the dialog.
+For the scenario where the user adds part of a drawing
+and then opens the dialog.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onAddDrawing" class="callable">
+  <span class="name"><a href="../deriv_chart/DrawingTools/onAddDrawing.html">onAddDrawing</a></span><span class="signature">(<wbr><span class="parameter" id="onAddDrawing-param-drawingId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">drawingId</span>, </span><span class="parameter" id="onAddDrawing-param-drawingParts"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">Drawing</span>&gt;</span></span> <span class="parameter-name">drawingParts</span>, {</span><span class="parameter" id="onAddDrawing-param-isDrawingFinished"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">isDrawingFinished</span> = <span class="default-value">false</span>, </span><span class="parameter" id="onAddDrawing-param-isInfiniteDrawing"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">isInfiniteDrawing</span> = <span class="default-value">false</span>, </span><span class="parameter" id="onAddDrawing-param-edgePoints"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">EdgePoint</span>&gt;</span>?</span> <span class="parameter-name">edgePoints</span></span>})
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Callback to add the new drawing to the list of drawings
+isInfiniteDrawing used for drawings which don't have fixed number of
+points
+  
+
+</dd>
+
+        <dt id="onDrawingToolSelection" class="callable">
+  <span class="name"><a href="../deriv_chart/DrawingTools/onDrawingToolSelection.html">onDrawingToolSelection</a></span><span class="signature">(<wbr><span class="parameter" id="onDrawingToolSelection-param-config"><span class="type-annotation"><a href="../deriv_chart/DrawingToolConfig-class.html">DrawingToolConfig</a></span> <span class="parameter-name">config</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Callback for keeping the selected drawing tool data.
+  
+
+</dd>
+
+        <dt id="onMouseEnter" class="callable">
+  <span class="name"><a href="../deriv_chart/DrawingTools/onMouseEnter.html">onMouseEnter</a></span><span class="signature">(<wbr><span class="parameter" id="onMouseEnter-param-index"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">index</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Called when mouse enters over a drawing tool.
+  
+
+</dd>
+
+        <dt id="onMouseExit" class="callable">
+  <span class="name"><a href="../deriv_chart/DrawingTools/onMouseExit.html">onMouseExit</a></span><span class="signature">(<wbr><span class="parameter" id="onMouseExit-param-index"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">index</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Called when mouse leaves over a drawing tool.
+  
+
+</dd>
+
+        <dt id="onMoveDrawing" class="callable">
+  <span class="name"><a href="../deriv_chart/DrawingTools/onMoveDrawing.html">onMoveDrawing</a></span><span class="signature">(<wbr>{<span class="parameter" id="onMoveDrawing-param-isDrawingMoved"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">isDrawingMoved</span> = <span class="default-value">false</span></span>})
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Callback for tracking the drawing movement.
+  
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">deriv_chart</a></li>
+    <li><a href="../deriv_chart/deriv_chart-library.html">deriv_chart</a></li>
+    <li class="self-crumb">DrawingTools class</li>
+</ol>
+
+
+    <h5>deriv_chart library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    deriv_chart
+      0.3.6
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

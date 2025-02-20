@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="deriv_chart API docs, for the Dart programming language.">
+  <title>deriv_chart - Dart API docs</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="static-assets/github.css?v1">
+  <link rel="stylesheet" href="static-assets/styles.css?v1">
+  <link rel="icon" href="static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="https://github.com/deriv-com/flutter-chart">deriv_chart package</a></li>
+  </ol>
+  <div class="self-name">deriv_chart</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div id="dartdoc-main-content" class="main-content">
+      
+<section class="desc markdown">
+  <h1 id="deriv-chart">Deriv Chart</h1>
+<p>A financial charting library for Flutter applications, offering a comprehensive suite of features for technical analysis and trading visualization. It supports multiple chart types (candlestick, line, etc.), a wide range of technical indicators (RSI, MACD, Bollinger Bands, etc.), and interactive drawing tools. The library comes with customizable themes to match your application's visual style. Built specifically for financial applications, it includes essential features like price markers, barriers, and crosshairs, making it ideal for trading platforms, financial analysis tools, and market data visualization.</p>
+<br>
+<img src="https://raw.githubusercontent.com/deriv-com/flutter-chart/master/doc/images/intro.gif" alt="intro" width="300" height="400">
+<p>|------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <img src="https://raw.githubusercontent.com/deriv-com/flutter-chart/master/doc/images/chart_type_switch.gif" alt="Scaling animation" width="300" height="400"> | <img src="https://raw.githubusercontent.com/deriv-com/flutter-chart/master/screen_shots/cross_hair.gif" alt="Crosshair" width="300" height="400"> |</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Dart SDK: &gt;=3.0.0 &lt;4.0.0</li>
+<li>Flutter: &gt;=3.10.1</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>Add this to your project's pubspec.yaml file:</p>
+<pre class="language-yaml"><code class="language-yaml">deriv_chart: ^0.3.6
+</code></pre>
+<h2 id="usage">Usage</h2>
+<p>Import the library with:</p>
+<pre class="language-dart"><code class="language-dart">import 'package:deriv_chart/deriv_chart.dart';
+</code></pre>
+<h3 id="basic-chart">Basic Chart</h3>
+<p>Simplest usage:</p>
+<pre class="language-dart"><code class="language-dart">final candle1 = Candle(
+  epoch: DateTime(...),
+  high: 400,
+  low: 50,
+  open: 200,
+  close: 100,
+);
+final candle2 = Candle(
+  epoch: DateTime(...),
+  high: 500,
+  low: 100,
+  open: 100,
+  close: 500,
+);
+
+final candles = [candle1, candle2, ...]
+// Or provide your own data from a data source.
+...
+
+Chart(
+  mainSeries: CandleSeries(candles),
+  pipSize: 4, // Number of decimal places when showing values on y-axis
+  granularity: granularity, // duration of 1 candle in ms (for ticks: average ms difference between ticks)
+);
+</code></pre>
+<img src="https://raw.githubusercontent.com/deriv-com/flutter-chart/master/doc/images/simple_candle_series.png" alt="candle_series" width="200" height="300">
+<p>Supply different <code>Series</code> for <code>mainSeries</code> parameter to switch between chart types (candle / line).</p>
+<pre class="language-dart"><code class="language-dart">Chart(
+  mainSeries: LineSeries(candles),
+  pipSize: 4,
+);
+</code></pre>
+<img src="https://raw.githubusercontent.com/deriv-com/flutter-chart/master/doc/images/simple_line_series.png" alt="line_series" width="200" height="300">
+<h3 id="styling-linecandleseries">Styling Line/CandleSeries</h3>
+<p>You can change the appearance of Line/CandleSeries by giving <code>style</code> to them.</p>
+<pre class="language-dart"><code class="language-dart">Chart(
+  mainSeries: CandleSeries(
+    candles, 
+    style: CandleStyle(
+        positiveColor: Colors.green, 
+        negativColor: Colors.red
+    ),
+  ),
+  ...
+);
+</code></pre>
+<h3 id="annotations">Annotations</h3>
+<p>To add horizontal/vertical barriers, specify them in the <code>annotations</code> parameter of the chart.</p>
+<pre class="language-dart"><code class="language-dart">Chart(
+  mainSeries: LineSeries(candles),
+  pipSize: 4,
+  annotations: &lt;ChartAnnotation&gt; [
+    HorizontalBarrier(866.416),
+    VerticalBarrier(candles[100].epoch, title: 'V Barrier'),
+  ],
+);
+</code></pre>
+<img src="https://raw.githubusercontent.com/deriv-com/flutter-chart/master/doc/images/h_and_v_barriers.png" alt="h_and_v_barriers" width="200" height="300">
+<h4 id="styling-annotations">Styling Annotations</h4>
+<p>The appearance of <code>Annotations</code> can also be changed by passing custom styles.</p>
+<pre class="language-dart"><code class="language-dart">HorizontalBarrier(
+      ...
+      style: HorizontalBarrierStyle(
+        color: const Color(0xFF00A79E),
+        isDashed: false,
+      ),
+      visibility: HorizontalBarrierVisibility.forceToStayOnRange,
+    )
+</code></pre>
+<h4 id="horizontal-barriers-visibility">Horizontal Barrier's Visibility</h4>
+<p>A <code>HorizontalBarrier</code> can have three different behaviors when it has a value that is not in the chart's Y-Axis value range:</p>
+<ul>
+<li><code>normal</code>: Won't force the chart to keep the barrier in its Y-Axis range, if the barrier was out of range it will go off the screen.</li>
+<li><code>keepBarrierLabelVisible</code>: Won't force the chart to keep the barrier in its Y-Axis range, if it was out of range, will show it on top/bottom edge with an arrow which indicates its value is beyond the Y-Axis range.</li>
+<li><code>forceToStayOnRange</code>: Will force the chart to keep this barrier in its Y-Axis range by widening its range to cover its value.</li>
+</ul>
+<h4 id="tickindicator">TickIndicator</h4>
+<p>For example there is a special annotation called <code>TickIndicator</code> which is used to show a tick on the chart.</p>
+<pre class="language-dart"><code class="language-dart">Chart(
+  mainSeries: LineSeries(candles),
+  pipSize: 4,
+  annotations: &lt;ChartAnnotation&gt; [
+    TickIndicator(candles.last),
+  ],
+);
+</code></pre>
+<img src="https://raw.githubusercontent.com/deriv-com/flutter-chart/master/doc/images/sample_tick_indicator.png" alt="sample_tick_indicator" width="200" height="300">
+<h3 id="technical-indicators">Technical Indicators</h3>
+<p>Here's a comprehensive example showing how to use multiple indicators with different configurations:</p>
+<h4 id="using-overlayconfigs-and-bottomconfigs">Using overlayConfigs and bottomConfigs</h4>
+<p>You can add indicators by passing <code>overlayConfigs</code> and <code>bottomConfigs</code> to the <code>Chart</code> widget.
+<code>overlayConfigs</code> are indicators that share the same y-axis as the main series and are drawn on top of it.
+<code>bottomConfigs</code> are indicators that have a separate y-axis and are drawn below the main series.:</p>
+<pre class="language-dart"><code class="language-dart">Chart(
+  mainSeries: CandleSeries(candles),
+  overlayConfigs: [
+    // Bollinger Bands
+    BollingerBandsIndicatorConfig(
+      period: 20,
+      standardDeviation: 2,
+      movingAverageType: MovingAverageType.exponential,
+      upperLineStyle: LineStyle(color: Colors.purple),
+      middleLineStyle: LineStyle(color: Colors.black),
+      lowerLineStyle: LineStyle(color: Colors.blue),
+    ),
+  ],
+  // Bottom indicators with separate scale
+  bottomConfigs: [
+    SMIIndicatorConfig(
+      period: 14,
+      signalPeriod: 9,
+      lineStyle: LineStyle(color: Colors.blue, thickness: 2),
+      signalLineStyle: LineStyle(color: Colors.red),
+    ),
+    // Relative Strength Index (RSI)
+    RSIIndicatorConfig(
+      period: 14,
+      lineStyle: LineStyle(
+        color: Colors.green,
+        thickness: 1,
+      ),
+      oscillatorLinesConfig: OscillatorLinesConfig(
+        overboughtValue: 70,
+        oversoldValue: 30,
+        overboughtStyle: LineStyle(color: Colors.red),
+        oversoldStyle: LineStyle(color: Colors.green),
+      ),
+      showZones: true,
+    ),
+  ],
+  pipSize: 4,
+  granularity: 60, // 1 minute candles
+);
+</code></pre>
+<img src="https://raw.githubusercontent.com/deriv-com/flutter-chart/master/doc/images/bb_and_smi_indicators.png" alt="bb_and_smi_indicators" width="200" height="300">
+<h2 id="available-indicators">Available Indicators</h2>
+<p>The package includes the following technical indicators:</p>
+<h3 id="moving-averages">Moving Averages</h3>
+<ul>
+<li>Simple Moving Average (SMA)</li>
+<li>Exponential Moving Average (EMA)</li>
+<li>Double Exponential Moving Average (DEMA)</li>
+<li>Triple Exponential Moving Average (TEMA)</li>
+<li>Triangular Moving Average (TRIMA)</li>
+<li>Weighted Moving Average (WMA)</li>
+<li>Modified Moving Average (MMA)</li>
+<li>Least Squares Moving Average (LSMA)</li>
+<li>Hull Moving Average (HMA)</li>
+<li>Variable Moving Average (VMA)</li>
+<li>Welles Wilder Smoothing Moving Average (WWSMA)</li>
+<li>Zero-Lag Exponential Moving Average (ZELMA)</li>
+</ul>
+<h3 id="oscillators">Oscillators</h3>
+<ul>
+<li>Relative Strength Index (RSI)</li>
+<li>Stochastic Momentum Index (SMI)</li>
+<li>Moving Average Convergence Divergence (MACD)</li>
+<li>Awesome Oscillator</li>
+<li>Williams %R</li>
+<li>Rate of Change (ROC)</li>
+<li>Chande Momentum Oscillator (CMO)</li>
+<li>Gator Oscillator</li>
+</ul>
+<h3 id="trend-indicators">Trend Indicators</h3>
+<ul>
+<li>Average Directional Index (ADX)</li>
+<li>Parabolic SAR</li>
+<li>Ichimoku Cloud</li>
+</ul>
+<h3 id="volatility-indicators">Volatility Indicators</h3>
+<ul>
+<li>Bollinger Bands</li>
+<li>Average True Range (ATR)</li>
+<li>Standard Deviation</li>
+<li>Variance</li>
+</ul>
+<h3 id="channel-indicators">Channel Indicators</h3>
+<ul>
+<li>Donchian Channel</li>
+<li>Moving Average Envelope</li>
+</ul>
+<h3 id="other-indicators">Other Indicators</h3>
+<ul>
+<li>Aroon</li>
+<li>Commodity Channel Index (CCI)</li>
+<li>Detrended Price Oscillator (DPO)</li>
+<li>ZigZag</li>
+<li>Fixed Channel Bands (FCB)</li>
+<li>Bullish/Bearish Pattern Recognition</li>
+</ul>
+<h3 id="drawing-tools">Drawing Tools</h3>
+<p>This section will be updated with comprehensive documentation about how to add and configure drawing tools.</p>
+<p>For now, you can refer to the <a href="/doc/drawing_tools.md">Drawing Tools documentation</a> for more details.</p>
+<h3 id="callbacks">Callbacks</h3>
+<p>Use <code>onVisibleAreaChanged</code> for listening to chart's scrolling and zooming.
+<code>leftEpoch</code> is the timestamp of the chart's left edge.
+<code>rightEpoch</code> is the timestamp of the chart's right edge.
+Check out the example where loading of more data on scrolling is implemented.</p>
+<pre class="language-dart"><code class="language-dart">Chart(
+  mainSeries: LineSeries(candles),
+  pipSize: 4,
+  onVisibleAreaChanged: (int leftEpoch, int rightEpoch) {
+    // do something (e.g. load more data)
+  },
+);
+</code></pre>
+<p>Use <code>onCrosshairAppeared</code> for listening to chart's cross-hair.</p>
+<pre class="language-dart"><code class="language-dart">Chart(
+  mainSeries: LineSeries(candles),
+  pipSize: 4,
+  onCrosshairAppeared: () =&gt; Vibration.vibrate(duration: 50),
+);
+</code></pre>
+<h3 id="markers">Markers</h3>
+<p>Supply <code>markerSeries</code> to show markers on the chart.</p>
+<pre class="language-dart"><code class="language-dart">Chart(
+  ...,
+  markerSeries: MarkerSeries([
+    Marker.up(epoch: 123, quote: 10, onTap: () {}),
+    Marker.down(epoch: 124, quote: 12, onTap: () {}),
+  ]),
+);
+</code></pre>
+<p>Supply <code>activeMarker</code> to show active marker on the chart.
+See <code>/example</code> for a complete implementation.</p>
+<pre class="language-dart"><code class="language-dart">Chart(
+  ...,
+  markerSeries: MarkerSeries(
+    [
+      Marker.up(epoch: 123, quote: 10, onTap: () {}),
+      Marker.down(epoch: 124, quote: 12, onTap: () {}),
+    ],
+    activeMarker: ActiveMarker(
+      epoch: 123,
+      quote: 10,
+      onTap: () {},
+      onOutsideTap: () {
+        // remove active marker
+      },
+    ),
+  ),
+</code></pre>
+<p>Supply <code>entryTick</code> and <code>exitTick</code> to show entry and exit tick markers.</p>
+<pre class="language-dart"><code class="language-dart">Chart(
+  ...,
+  markerSeries: MarkerSeries(
+    [...],
+    entryTick: Tick(epoch: ..., quote: ...),
+    exitTick: Tick(epoch: ..., quote: ...),
+  ),
+</code></pre>
+<h3 id="theme">Theme</h3>
+<p>Chart has its own default dark and light themes that switch depending on <code>Theme.of(context).brightness</code> value.
+You can supply your theme, but then you would have to handle switching yourself. To do so create you own theme class which either implements <code>ChartTheme</code> or extends <code>ChartDefaultDarkTheme</code>/<code>ChartDefaultLightTheme</code> and override only those properties that you need to be different and then pass it to the <code>Chart</code> widget. See <a href="https://github.com/deriv-com/flutter-chart/blob/dev/lib/src/theme/chart_theme.dart">ChartTheme</a> for more info.</p>
+<pre class="language-dart"><code class="language-dart">class CustomTheme extends ChartDefaultDarkTheme {
+  @override
+  GridStyle get gridStyle =&gt; GridStyle(
+        gridLineColor: Colors.yellow,
+        xLabelStyle: textStyle(
+          textStyle: caption2,
+          color: Colors.yellow,
+          fontSize: 13,
+        ),
+      );
+}
+</code></pre>
+<pre class="language-dart"><code class="language-dart">Chart(
+    ...
+    theme: customTheme /*instance of your custom theme*/,
+    ...
+)
+</code></pre>
+<h3 id="localization">Localization</h3>
+<p>To use the ChartLocalization, you should add the <code>ChartLocalization.delegate</code> to your <code>localizationsDelegates</code> inside the <code>MaterialApp</code> that you added the chart in.
+When you want to change the locale of the chart, use this code:</p>
+<pre class="language-dart"><code class="language-dart">ChartLocalization.load(locale);
+</code></pre>
+<h3 id="derivchart">DerivChart</h3>
+<p>A wrapper around the <code>chart</code> widget provides the functionality to add/remove/update indicators and to manage saving/restoring selected ones on storage.
+To learn more about how we can customize the indicators feature using <code>DerivChart</code> check <a href="/doc/deriv_chart_widget_usage.md">this documentation</a>.</p>
+<h4 id="usage-2">Usage:</h4>
+<p>All of the properties from the <code>Chart</code> widget are available here as well, except <code>overlaySeries</code>, <code>bottomSeries</code> that are managed internally.</p>
+<pre class="language-dart"><code class="language-dart">DerivChart(
+   mainSeries: CandleSeries(candles),
+   granularity: 60, // 60 seconds
+   activeSymbol: 'default',
+   pipSize: 4,
+)
+</code></pre>
+<h3 id="chartcontroller">ChartController</h3>
+<p>Can be provided and passed to the chart to control some behaviors of the chart.
+For now, there is only one method <code>scrollToLastTick</code> which makes the chart's scroll position point to the most recent data.</p>
+<pre class="language-dart"><code class="language-dart">final ChartController _controller = ChartController();
+
+....
+
+Chart(
+    ...
+    controller: _controller,
+    ...
+)
+</code></pre>
+<p>and whenever you want to do that, <code>_controller.scrollToLastTick()</code> can be called.</p>
+<h2 id="additional-documentation">Additional Documentation</h2>
+<p>For more detailed information, check out these documentation files:</p>
+<ul>
+<li><a href="/doc/how_chart_lib_works.md">How Chart Library Works</a></li>
+<li><a href="/doc/data_series.png">Data Series</a></li>
+<li><a href="/doc/data_painters.png">Data Painters</a></li>
+<li><a href="/doc/drawing_tools.md">Drawing Tools</a></li>
+<li><a href="/doc/deriv_chart_widget_usage.md">DerivChart Widget Usage</a></li>
+<li><a href="/doc/contribution.md">Contributing</a></li>
+</ul>
+<h2 id="dependencies">Dependencies</h2>
+<p>Key dependencies include:</p>
+<ul>
+<li>deriv_technical_analysis: ^1.1.1</li>
+<li>provider: ^6.0.5</li>
+<li>shared_preferences: ^2.1.0</li>
+<li>intl: ^0.19.0</li>
+</ul>
+<p>For a complete list of dependencies, see the <a href="pubspec.yaml">pubspec.yaml</a> file.</p>
+</section>
+
+
+      <section class="summary">
+          <h2>Libraries</h2>
+        <dl>
+          <dt id="deriv_chart">
+  <span class="name"><a href="deriv_chart/deriv_chart-library.html">deriv_chart</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="messages_all">
+  <span class="name"><a href="generated_intl_messages_all/generated_intl_messages_all-library.html">generated/intl/messages_all</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="messages_en">
+  <span class="name"><a href="generated_intl_messages_en/generated_intl_messages_en-library.html">generated/intl/messages_en</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="messages_es">
+  <span class="name"><a href="generated_intl_messages_es/generated_intl_messages_es-library.html">generated/intl/messages_es</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="l10n">
+  <span class="name"><a href="generated_l10n/generated_l10n-library.html">generated/l10n</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+        </dl>
+      </section>
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="https://github.com/deriv-com/flutter-chart">deriv_chart package</a></li>
+</ol>
+
+
+    <h5 class="hidden-xs"><span class="package-name">deriv_chart</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="deriv_chart/deriv_chart-library.html">deriv_chart</a></li>
+      <li><a href="generated_intl_messages_all/generated_intl_messages_all-library.html">generated/intl/messages_all</a></li>
+      <li><a href="generated_intl_messages_en/generated_intl_messages_en-library.html">generated/intl/messages_en</a></li>
+      <li><a href="generated_intl_messages_es/generated_intl_messages_es-library.html">generated/intl/messages_es</a></li>
+      <li><a href="generated_l10n/generated_l10n-library.html">generated/l10n</a></li>
+</ol>
+
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div>
+
+</main>
+
+<footer>
+  <span class="no-break">
+    deriv_chart
+      0.3.6
+  </span>
+
+  
+</footer>
+
+
+
+<script src="static-assets/highlight.pack.js?v1"></script>
+<script src="static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the DerivChart class from the deriv_chart library, for the Dart programming language.">
+  <title>DerivChart class - deriv_chart library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">deriv_chart</a></li>
+    <li><a href="../deriv_chart/deriv_chart-library.html">deriv_chart.dart</a></li>
+    <li class="self-crumb">DerivChart class</li>
+  </ol>
+  <div class="self-name">DerivChart</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="deriv_chart&#47;deriv_chart-library-sidebar.html"
+    data-below-sidebar="deriv_chart&#47;DerivChart-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">DerivChart</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>A wrapper around the <a href="../deriv_chart/Chart-class.html">Chart</a> which handles adding indicators to the chart.</p>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+  <dt>Inheritance</dt>
+  <dd>
+    <ul class="gt-separated dark clazz-relationships">
+      <li><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></li>
+        <li><a href="https://api.flutter.dev/flutter/foundation/DiagnosticableTree-class.html">DiagnosticableTree</a></li>
+        <li><a href="https://api.flutter.dev/flutter/widgets/Widget-class.html">Widget</a></li>
+        <li><a href="https://api.flutter.dev/flutter/widgets/StatefulWidget-class.html">StatefulWidget</a></li>
+      <li>DerivChart</li>
+    </ul>
+  </dd>
+
+        
+        
+
+
+
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+
+    <dl class="constructor-summary-list">
+        <dt id="DerivChart" class="callable">
+          <span class="name"><a href="../deriv_chart/DerivChart/DerivChart.html">DerivChart</a></span><span class="signature">({<span class="parameter" id="-param-mainSeries"><span>required</span> <span class="type-annotation"><a href="../deriv_chart/DataSeries-class.html">DataSeries</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/Tick-class.html">Tick</a></span>&gt;</span></span> <span class="parameter-name">mainSeries</span>, </span><span class="parameter" id="-param-granularity"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">granularity</span>, </span><span class="parameter" id="-param-activeSymbol"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">activeSymbol</span>, </span><span class="parameter" id="-param-markerSeries"><span class="type-annotation"><a href="../deriv_chart/MarkerSeries-class.html">MarkerSeries</a>?</span> <span class="parameter-name">markerSeries</span>, </span><span class="parameter" id="-param-controller"><span class="type-annotation"><a href="../deriv_chart/ChartController-class.html">ChartController</a>?</span> <span class="parameter-name">controller</span>, </span><span class="parameter" id="-param-onCrosshairAppeared"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-ui/VoidCallback.html">VoidCallback</a>?</span> <span class="parameter-name">onCrosshairAppeared</span>, </span><span class="parameter" id="-param-onCrosshairDisappeared"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-ui/VoidCallback.html">VoidCallback</a>?</span> <span class="parameter-name">onCrosshairDisappeared</span>, </span><span class="parameter" id="-param-onCrosshairHover"><span class="type-annotation"><a href="../deriv_chart/OnCrosshairHoverCallback.html">OnCrosshairHoverCallback</a>?</span> <span class="parameter-name">onCrosshairHover</span>, </span><span class="parameter" id="-param-onVisibleAreaChanged"><span class="type-annotation"><a href="../deriv_chart/VisibleAreaChangedCallback.html">VisibleAreaChangedCallback</a>?</span> <span class="parameter-name">onVisibleAreaChanged</span>, </span><span class="parameter" id="-param-onQuoteAreaChanged"><span class="type-annotation"><a href="../deriv_chart/VisibleQuoteAreaChangedCallback.html">VisibleQuoteAreaChangedCallback</a>?</span> <span class="parameter-name">onQuoteAreaChanged</span>, </span><span class="parameter" id="-param-theme"><span class="type-annotation"><a href="../deriv_chart/ChartTheme-class.html">ChartTheme</a>?</span> <span class="parameter-name">theme</span>, </span><span class="parameter" id="-param-isLive"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">isLive</span> = <span class="default-value">false</span>, </span><span class="parameter" id="-param-dataFitEnabled"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">dataFitEnabled</span> = <span class="default-value">false</span>, </span><span class="parameter" id="-param-showCrosshair"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">showCrosshair</span> = <span class="default-value">true</span>, </span><span class="parameter" id="-param-annotations"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/ChartAnnotation-class.html">ChartAnnotation</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/ChartObject-class.html">ChartObject</a></span>&gt;</span></span>&gt;</span>?</span> <span class="parameter-name">annotations</span>, </span><span class="parameter" id="-param-opacity"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a></span> <span class="parameter-name">opacity</span> = <span class="default-value">1.0</span>, </span><span class="parameter" id="-param-pipSize"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">pipSize</span> = <span class="default-value">4</span>, </span><span class="parameter" id="-param-chartAxisConfig"><span class="type-annotation"><a href="../deriv_chart/ChartAxisConfig-class.html">ChartAxisConfig</a></span> <span class="parameter-name">chartAxisConfig</span> = <span class="default-value">const ChartAxisConfig()</span>, </span><span class="parameter" id="-param-indicatorsRepo"><span class="type-annotation"><a href="../deriv_chart/Repository-class.html">Repository</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/IndicatorConfig-class.html">IndicatorConfig</a></span>&gt;</span>?</span> <span class="parameter-name">indicatorsRepo</span>, </span><span class="parameter" id="-param-drawingToolsRepo"><span class="type-annotation"><a href="../deriv_chart/Repository-class.html">Repository</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/DrawingToolConfig-class.html">DrawingToolConfig</a></span>&gt;</span>?</span> <span class="parameter-name">drawingToolsRepo</span>, </span><span class="parameter" id="-param-drawingTools"><span class="type-annotation"><a href="../deriv_chart/DrawingTools-class.html">DrawingTools</a>?</span> <span class="parameter-name">drawingTools</span>, </span><span class="parameter" id="-param-msPerPx"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a>?</span> <span class="parameter-name">msPerPx</span>, </span><span class="parameter" id="-param-minIntervalWidth"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a>?</span> <span class="parameter-name">minIntervalWidth</span>, </span><span class="parameter" id="-param-maxIntervalWidth"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a>?</span> <span class="parameter-name">maxIntervalWidth</span>, </span><span class="parameter" id="-param-dataFitPadding"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/painting/EdgeInsets-class.html">EdgeInsets</a>?</span> <span class="parameter-name">dataFitPadding</span>, </span><span class="parameter" id="-param-currentTickAnimationDuration"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Duration-class.html">Duration</a>?</span> <span class="parameter-name">currentTickAnimationDuration</span>, </span><span class="parameter" id="-param-quoteBoundsAnimationDuration"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Duration-class.html">Duration</a>?</span> <span class="parameter-name">quoteBoundsAnimationDuration</span>, </span><span class="parameter" id="-param-showCurrentTickBlinkAnimation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span> <span class="parameter-name">showCurrentTickBlinkAnimation</span>, </span><span class="parameter" id="-param-verticalPaddingFraction"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a>?</span> <span class="parameter-name">verticalPaddingFraction</span>, </span><span class="parameter" id="-param-bottomChartTitleMargin"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/painting/EdgeInsets-class.html">EdgeInsets</a>?</span> <span class="parameter-name">bottomChartTitleMargin</span>, </span><span class="parameter" id="-param-showDataFitButton"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span> <span class="parameter-name">showDataFitButton</span>, </span><span class="parameter" id="-param-showScrollToLastTickButton"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span> <span class="parameter-name">showScrollToLastTickButton</span>, </span><span class="parameter" id="-param-loadingAnimationColor"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-ui/Color-class.html">Color</a>?</span> <span class="parameter-name">loadingAnimationColor</span>, </span><span class="parameter" id="-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/foundation/Key-class.html">Key</a>?</span> <span class="parameter-name">key</span></span>})</span>
+        </dt>
+        <dd>
+          Initializes
+            <div class="constructor-modifier features">const</div>
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="activeSymbol" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/activeSymbol.html">activeSymbol</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Current active symbol.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="annotations" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/annotations.html">annotations</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/ChartAnnotation-class.html">ChartAnnotation</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/ChartObject-class.html">ChartObject</a></span>&gt;</span></span>&gt;</span>?</span>
+  
+
+</dt>
+<dd>
+  Chart's annotations
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="bottomChartTitleMargin" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/bottomChartTitleMargin.html">bottomChartTitleMargin</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/painting/EdgeInsets-class.html">EdgeInsets</a>?</span>
+  
+
+</dt>
+<dd>
+  Specifies the margin to prevent overlap.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="chartAxisConfig" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/chartAxisConfig.html">chartAxisConfig</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/ChartAxisConfig-class.html">ChartAxisConfig</a></span>
+  
+
+</dt>
+<dd>
+  Configurations for chart's axes.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="controller" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/controller.html">controller</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/ChartController-class.html">ChartController</a>?</span>
+  
+
+</dt>
+<dd>
+  Chart's controller
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="currentTickAnimationDuration" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/currentTickAnimationDuration.html">currentTickAnimationDuration</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Duration-class.html">Duration</a>?</span>
+  
+
+</dt>
+<dd>
+  Duration of the current tick animated transition.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="dataFitEnabled" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/dataFitEnabled.html">dataFitEnabled</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Starts in data fit mode and adds a data-fit button.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="dataFitPadding" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/dataFitPadding.html">dataFitPadding</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/painting/EdgeInsets-class.html">EdgeInsets</a>?</span>
+  
+
+</dt>
+<dd>
+  Padding around data used in data-fit mode.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="drawingTools" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/drawingTools.html">drawingTools</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/DrawingTools-class.html">DrawingTools</a>?</span>
+  
+
+</dt>
+<dd>
+  Drawing tools
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="drawingToolsRepo" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/drawingToolsRepo.html">drawingToolsRepo</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/Repository-class.html">Repository</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/DrawingToolConfig-class.html">DrawingToolConfig</a></span>&gt;</span>?</span>
+  
+
+</dt>
+<dd>
+  Chart's drawings
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="granularity" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/granularity.html">granularity</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  For candles: Duration of one candle in ms.
+For ticks: Average ms difference between two consecutive ticks.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/widgets/Widget/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="indicatorsRepo" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/indicatorsRepo.html">indicatorsRepo</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/Repository-class.html">Repository</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/IndicatorConfig-class.html">IndicatorConfig</a></span>&gt;</span>?</span>
+  
+
+</dt>
+<dd>
+  Chart's indicators
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="isLive" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/isLive.html">isLive</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Whether the chart should be showing live data or not.
+In case of being true the chart will keep auto-scrolling when its visible
+area is on the newest ticks/candles.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="key" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/widgets/Widget/key.html">key</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/foundation/Key-class.html">Key</a>?</span>
+  
+
+</dt>
+<dd class="inherited">
+  Controls how one widget replaces another widget in the tree.
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="loadingAnimationColor" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/loadingAnimationColor.html">loadingAnimationColor</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-ui/Color-class.html">Color</a>?</span>
+  
+
+</dt>
+<dd>
+  The color of the loading animation.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="mainSeries" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/mainSeries.html">mainSeries</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/DataSeries-class.html">DataSeries</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../deriv_chart/Tick-class.html">Tick</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Chart's main data series
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="markerSeries" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/markerSeries.html">markerSeries</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/MarkerSeries-class.html">MarkerSeries</a>?</span>
+  
+
+</dt>
+<dd>
+  Open position marker series.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="maxIntervalWidth" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/maxIntervalWidth.html">maxIntervalWidth</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a>?</span>
+  
+
+</dt>
+<dd>
+  Specifies the maximum interval width
+that is used for calculating the maximum msPerPx.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="minIntervalWidth" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/minIntervalWidth.html">minIntervalWidth</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a>?</span>
+  
+
+</dt>
+<dd>
+  Specifies the minimum interval width
+that is used for calculating the maximum msPerPx.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="msPerPx" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/msPerPx.html">msPerPx</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a>?</span>
+  
+
+</dt>
+<dd>
+  Specifies the zoom level of the chart.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="onCrosshairAppeared" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/onCrosshairAppeared.html">onCrosshairAppeared</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-ui/VoidCallback.html">VoidCallback</a>?</span>
+  
+
+</dt>
+<dd>
+  Called when crosshair details appear after long press.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="onCrosshairDisappeared" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/onCrosshairDisappeared.html">onCrosshairDisappeared</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-ui/VoidCallback.html">VoidCallback</a>?</span>
+  
+
+</dt>
+<dd>
+  Called when the crosshair is dismissed.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="onCrosshairHover" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/onCrosshairHover.html">onCrosshairHover</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/OnCrosshairHoverCallback.html">OnCrosshairHoverCallback</a>?</span>
+  
+
+</dt>
+<dd>
+  Called when the crosshair cursor is hovered/moved.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="onQuoteAreaChanged" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/onQuoteAreaChanged.html">onQuoteAreaChanged</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/VisibleQuoteAreaChangedCallback.html">VisibleQuoteAreaChangedCallback</a>?</span>
+  
+
+</dt>
+<dd>
+  Callback provided by library user.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="onVisibleAreaChanged" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/onVisibleAreaChanged.html">onVisibleAreaChanged</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/VisibleAreaChangedCallback.html">VisibleAreaChangedCallback</a>?</span>
+  
+
+</dt>
+<dd>
+  Called when chart is scrolled or zoomed.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="opacity" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/opacity.html">opacity</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a></span>
+  
+
+</dt>
+<dd>
+  Chart's opacity, Will be applied on the <a href="../deriv_chart/DerivChart/mainSeries.html">mainSeries</a>.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="pipSize" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/pipSize.html">pipSize</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Number of digits after decimal point in price.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="quoteBoundsAnimationDuration" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/quoteBoundsAnimationDuration.html">quoteBoundsAnimationDuration</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Duration-class.html">Duration</a>?</span>
+  
+
+</dt>
+<dd>
+  Duration of quote bounds animated transition.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="showCrosshair" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/showCrosshair.html">showCrosshair</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Whether the crosshair should be shown or not.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="showCurrentTickBlinkAnimation" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/showCurrentTickBlinkAnimation.html">showCurrentTickBlinkAnimation</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span>
+  
+
+</dt>
+<dd>
+  Whether to show current tick blink animation or not.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="showDataFitButton" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/showDataFitButton.html">showDataFitButton</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span>
+  
+
+</dt>
+<dd>
+  Whether the data fit button is shown or not.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="showScrollToLastTickButton" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/showScrollToLastTickButton.html">showScrollToLastTickButton</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span>
+  
+
+</dt>
+<dd>
+  Whether to show the scroll to last tick button or not.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="theme" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/theme.html">theme</a></span>
+  <span class="signature">&#8594; <a href="../deriv_chart/ChartTheme-class.html">ChartTheme</a>?</span>
+  
+
+</dt>
+<dd>
+  Chart's theme.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="verticalPaddingFraction" class="property">
+  <span class="name"><a href="../deriv_chart/DerivChart/verticalPaddingFraction.html">verticalPaddingFraction</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a>?</span>
+  
+
+</dt>
+<dd>
+  Fraction of the chart's height taken by top or bottom padding.
+Quote scaling (drag on quote area) is controlled by this variable.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="createElement" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/widgets/StatefulWidget/createElement.html">createElement</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/widgets/StatefulElement-class.html">StatefulElement</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Creates a <a href="https://api.flutter.dev/flutter/widgets/StatefulElement-class.html">StatefulElement</a> to manage this widget's location in the tree.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="createState" class="callable">
+  <span class="name"><a href="../deriv_chart/DerivChart/createState.html">createState</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; _DerivChartState</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Creates the mutable state for this widget at a given location in the tree.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="debugDescribeChildren" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/foundation/DiagnosticableTree/debugDescribeChildren.html">debugDescribeChildren</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/foundation/DiagnosticsNode-class.html">DiagnosticsNode</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns a list of <a href="https://api.flutter.dev/flutter/foundation/DiagnosticsNode-class.html">DiagnosticsNode</a> objects describing this node's
+children.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="debugFillProperties" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/widgets/Widget/debugFillProperties.html">debugFillProperties</a></span><span class="signature">(<wbr><span class="parameter" id="debugFillProperties-param-properties"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/foundation/DiagnosticPropertiesBuilder-class.html">DiagnosticPropertiesBuilder</a></span> <span class="parameter-name">properties</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Add additional properties associated with the node.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toDiagnosticsNode" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/foundation/DiagnosticableTree/toDiagnosticsNode.html">toDiagnosticsNode</a></span><span class="signature">(<wbr>{<span class="parameter" id="toDiagnosticsNode-param-name"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">name</span>, </span><span class="parameter" id="toDiagnosticsNode-param-style"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/foundation/DiagnosticsTreeStyle.html">DiagnosticsTreeStyle</a>?</span> <span class="parameter-name">style</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/foundation/DiagnosticsNode-class.html">DiagnosticsNode</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns a debug representation of the object that is used by debugging
+tools and by <a href="https://api.flutter.dev/flutter/foundation/DiagnosticsNode/toStringDeep.html">DiagnosticsNode.toStringDeep</a>.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/foundation/Diagnosticable/toString.html">toString</a></span><span class="signature">(<wbr>{<span class="parameter" id="toString-param-minLevel"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/foundation/DiagnosticLevel.html">DiagnosticLevel</a></span> <span class="parameter-name">minLevel</span> = <span class="default-value">DiagnosticLevel.info</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toStringDeep" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/foundation/DiagnosticableTree/toStringDeep.html">toStringDeep</a></span><span class="signature">(<wbr>{<span class="parameter" id="toStringDeep-param-prefixLineOne"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">prefixLineOne</span> = <span class="default-value">&#39;&#39;</span>, </span><span class="parameter" id="toStringDeep-param-prefixOtherLines"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">prefixOtherLines</span>, </span><span class="parameter" id="toStringDeep-param-minLevel"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/foundation/DiagnosticLevel.html">DiagnosticLevel</a></span> <span class="parameter-name">minLevel</span> = <span class="default-value">DiagnosticLevel.debug</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns a string representation of this node and its descendants.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toStringShallow" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/foundation/DiagnosticableTree/toStringShallow.html">toStringShallow</a></span><span class="signature">(<wbr>{<span class="parameter" id="toStringShallow-param-joiner"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">joiner</span> = <span class="default-value">&#39;, &#39;</span>, </span><span class="parameter" id="toStringShallow-param-minLevel"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/foundation/DiagnosticLevel.html">DiagnosticLevel</a></span> <span class="parameter-name">minLevel</span> = <span class="default-value">DiagnosticLevel.debug</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns a one-line detailed description of the object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toStringShort" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/widgets/Widget/toStringShort.html">toStringShort</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A short, textual description of this widget.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/widgets/Widget/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">deriv_chart</a></li>
+    <li><a href="../deriv_chart/deriv_chart-library.html">deriv_chart</a></li>
+    <li class="self-crumb">DerivChart class</li>
+</ol>
+
+
+    <h5>deriv_chart library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    deriv_chart
+      0.3.6
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

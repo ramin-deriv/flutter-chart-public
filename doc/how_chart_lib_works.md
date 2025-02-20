@@ -83,6 +83,57 @@ Both MainChart and BottomCharts:
 - Update and repaint when the viewport changes
 - Support user interactions like zooming and scrolling
 
+# Chart Widgets Hierarchy
+
+The chart library implements a hierarchical structure of chart widgets, each building upon the capabilities of its parent:
+
+```
+┌─────────────────────┐
+│     BasicChart      │
+│   (Base Features)   │
+└─────────┬─────────┬─┘
+          │         │
+          ▼         ▼
+    ┌─────────┐  ┌─────────┐
+    │MainChart│  │BottomChart
+    └─────────┘  └─────────┘
+```
+
+## BasicChart
+
+BasicChart serves as the foundation for all chart widgets, providing essential chart functionality:
+- Takes a single MainSeries for data visualization
+- Manages Y-axis range through topBoundEpoch and bottomBoundEpoch
+- Provides coordinate conversion functions:
+  - Uses its Y-axis management to convert values (quotes) to y-positions
+  - Works with XAxisWrapper's XAxisModel to convert time (epoch) to x-positions
+  - Together these enable plotting any (epoch, quote) point on the canvas
+- Handles Y-axis scaling and animations
+- Manages grid lines and labels
+- Supports user interactions for Y-axis scaling
+
+## MainChart
+
+MainChart extends BasicChart to create the primary chart area by adding:
+- Support for multiple ChartData types (mainSeries, overlaySeries, markerSeries)
+- Crosshair functionality for price/time inspection
+- Drawing tools for technical analysis
+- Overlay indicators that share the same Y-axis scale
+
+## BottomChart
+
+BottomChart extends BasicChart to create secondary chart areas that:
+- Display technical indicators requiring independent Y-axis scaling below the MainChart
+- Maintain separate Y-axis ranges while sharing X-axis viewport
+- Support dynamic addition/removal of indicators
+- Sync zooming and scrolling with MainChart
+
+This hierarchical structure allows for:
+- Code reuse through inheritance
+- Clear separation of responsibilities
+- Flexible composition of chart features
+- Independent Y-axis management with shared X-axis coordination
+
 # Market data
 
 The market data(input data of chart) is a list of _Ticks_ or _OHLC_.
@@ -253,7 +304,16 @@ Chart has its own default dark and light themes that switch depending on Theme.o
 
 # BasicChart
 
-**BasicChart** is a simple chart widget that takes only one `Series` class to paint. It handles common functionalities of handling Y-axis range, scaling and its animation, top/bottom padding.
+**BasicChart** is a simple chart widget that serves as the foundation for all chart widgets. It:
+- Takes a single Series class to paint
+- Manages Y-axis range through topBoundEpoch and bottomBoundEpoch
+- Provides coordinate conversion between data points and canvas positions
+- Handles Y-axis scaling, animations, and padding
+- Manages grid lines and labels
+- In its build method, uses both:
+  - XAxisModel's xFromEpoch function to convert time (epoch) to x-positions
+  - Its own yFromQuote function to convert values (quotes) to y-positions
+  Together these enable plotting any data point from MainSeries or other Series (ChartData) on the canvas
 
 # MainChart
 
