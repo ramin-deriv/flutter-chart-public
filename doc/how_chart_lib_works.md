@@ -305,7 +305,8 @@ Chart has its own default dark and light themes that switch depending on Theme.o
 # BasicChart
 
 **BasicChart** is a simple chart widget that serves as the foundation for all chart widgets. It:
-- Takes a single Series class to paint
+- Takes a single Series class to paint (see [Data Visualization](#data-visualisation) for Series hierarchy)
+- Uses CustomPaint in its build method to paint the Series data (which extends from ChartData)
 - Manages Y-axis range through topBoundEpoch and bottomBoundEpoch
 - Provides coordinate conversion between data points and canvas positions
 - Handles Y-axis scaling, animations, and padding
@@ -318,7 +319,7 @@ Chart has its own default dark and light themes that switch depending on Theme.o
 # MainChart
 
 **MainChart** is a subclass of **BasicChart** that serves as the primary chart area. It is responsible for:
-- Displaying the main market data through various chart types (Line, Candlestick, etc.)
+- Displaying the main market data through various chart types (LineSeries, CandleSeries, etc. as described in [Data Visualization](#data-visualisation))
 - Showing overlay indicators that share the same Y-axis scale (like Moving Average)
 - Supporting drawing tools for technical analysis
 - Managing crosshair interactions for price/time inspection
@@ -328,7 +329,7 @@ Chart has its own default dark and light themes that switch depending on Theme.o
 # BottomChart
 
 **BottomChart** extends from **BasicChart** to provide separate chart areas for indicators that require their own Y-axis scale. Key features:
-- Displays technical indicators like RSI, MACD, or Volume that need independent scaling
+- Displays technical indicators (RSISeries, MACDSeries, etc. as described in [Data Visualization](#data-visualisation)) that need independent scaling
 - Maintains its own Y-axis range and scaling while sharing the X-axis viewport
 - Can be dynamically added, removed, or reordered
 - Supports user interactions like zooming and scrolling in sync with MainChart
