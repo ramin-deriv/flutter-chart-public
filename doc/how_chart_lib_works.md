@@ -1,3 +1,46 @@
+# Widget Structure
+
+The chart library follows a nested widget structure to handle different responsibilities:
+
+```
+┌─────────────────────────┐
+│      XAxisWrapper      │
+│                         │
+│  ┌───────────────────┐  │
+│  │  GestureManager   │  │
+│  │                   │  │
+│  │  ┌─────────────┐  │  │
+│  │  │    Chart    │  │  │
+│  │  │             │  │  │
+│  │  └─────────────┘  │  │
+│  │                   │  │
+│  └───────────────────┘  │
+│                         │
+└─────────────────────────┘
+```
+
+1. **XAxisWrapper**: The outermost widget that:
+   - Provides platform-specific X-axis implementations (web/mobile)
+   - Manages chart data entries and live data state
+   - Handles data fit mode and zoom level (msPerPx)
+   - Controls scroll animation and visible area changes
+
+2. **GestureManager**: Wrapped inside XAxisWrapper to:
+   - Handle user interactions (pan, zoom, tap)
+   - Manage gesture states and animations
+   - Control chart navigation and interaction behavior
+
+3. **Chart**: The core widget containing:
+   - MainChart: Primary chart area for price data visualization
+   - BottomCharts: Optional secondary charts for indicators
+   - Shared X-axis coordination between main and bottom charts
+   - Y-axis management for each chart section
+
+This layered structure ensures separation of concerns:
+- XAxisWrapper handles platform specifics and data management
+- GestureManager focuses on user interaction
+- Chart concentrates on data visualization and coordination
+
 # Market data
 
 The market data(input data of chart) is a list of _Ticks_ or _OHLC_.
@@ -59,7 +102,7 @@ the number from `intervals` list is selected as an interval that using it with t
 # X-Axis scrolling
 
 Scrolling in the chart happens by updating **rightBoundEpoch** of the chart's X-Axis.
-changing the **rightBoundEpoch** amount will change the chart’s scroll position. **rightBoundEpoch** be on the last tick when we first load the chart.
+changing the **rightBoundEpoch** amount will change the chart's scroll position. **rightBoundEpoch** be on the last tick when we first load the chart.
 
 # Zooming
 
