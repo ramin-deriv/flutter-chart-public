@@ -4,7 +4,7 @@ The chart library follows a nested widget structure to handle different responsi
 
 ```
 ┌─────────────────────────┐
-│      XAxisWrapper      │
+│      XAxisWrapper       │
 │                         │
 │  ┌───────────────────┐  │
 │  │  GestureManager   │  │
