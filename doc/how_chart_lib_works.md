@@ -41,6 +41,48 @@ This layered structure ensures separation of concerns:
 - GestureManager focuses on user interaction
 - Chart concentrates on data visualization and coordination
 
+# Chart Structure
+
+The Chart widget has two implementations based on the platform (web/mobile):
+
+```
+┌─────────────────────────┐
+│         Chart           │
+│                         │
+│  ┌───────────────────┐  │
+│  │    MainChart      │  │
+│  │   (Main Data)     │  │
+│  └───────────────────┘  │
+│                         │
+│  ┌───────────────────┐  │
+│  │   BottomCharts    │  │
+│  │(Bottom Indicators)│  │
+│  └───────────────────┘  │
+│          ...            │
+│          ...            │
+│          ...            │
+└─────────────────────────┘
+```
+
+1. **MainChart**: The primary chart area that displays:
+   - Market data visualization (Line, Candlestick charts)
+   - Overlay indicators (like Moving Average)
+   - Drawing tools for technical analysis
+   - Crosshair for price/time inspection
+   - Other visual elements like barriers and markers
+
+2. **BottomCharts**: Additional chart areas below the MainChart that:
+   - Display separate indicator charts (like RSI, MACD)
+   - Have their own Y-axis scale independent of MainChart
+   - Share the same X-axis viewport with MainChart
+   - Can be added/removed dynamically
+
+Both MainChart and BottomCharts:
+- Share the same X-axis viewport through XAxisWrapper
+- Manage their own Y-axis range and scaling
+- Update and repaint when the viewport changes
+- Support user interactions like zooming and scrolling
+
 # Market data
 
 The market data(input data of chart) is a list of _Ticks_ or _OHLC_.
@@ -215,11 +257,21 @@ Chart has its own default dark and light themes that switch depending on Theme.o
 
 # MainChart
 
-**MainChart** is a subclass of **BasicChart** and a customized widget that can show multiple `ChartData` (like `overlaySeries and `markerSeries`) and adds crosshair feature and some other minor features.
+**MainChart** is a subclass of **BasicChart** that serves as the primary chart area. It is responsible for:
+- Displaying the main market data through various chart types (Line, Candlestick, etc.)
+- Showing overlay indicators that share the same Y-axis scale (like Moving Average)
+- Supporting drawing tools for technical analysis
+- Managing crosshair interactions for price/time inspection
+- Handling visual elements like barriers and markers
+- Coordinating with the shared X-axis viewport
 
 # BottomChart
 
-Sometimes we need to show two charts on the screen, for example for showing bottom indicators. In that case, we use **BottomChart** that extends from **BasicChart** to show the other chart widgets.
+**BottomChart** extends from **BasicChart** to provide separate chart areas for indicators that require their own Y-axis scale. Key features:
+- Displays technical indicators like RSI, MACD, or Volume that need independent scaling
+- Maintains its own Y-axis range and scaling while sharing the X-axis viewport
+- Can be dynamically added, removed, or reordered
+- Supports user interactions like zooming and scrolling in sync with MainChart
 ![plot](basic-chart.png)
 
 # Chart
