@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:deriv_chart/src/deriv_chart/drawing_tool_chart/interactive_layer.dart';
 import 'package:deriv_chart/src/misc/chart_controller.dart';
 import 'package:deriv_chart/src/models/chart_axis_config.dart';
 import 'package:deriv_chart/src/models/tick.dart';
@@ -351,6 +352,8 @@ class _ChartImplementationState extends BasicChartState<MainChart> {
                 if (widget.markerSeries != null) _buildMarkerArea(),
                 if (widget.drawingTools != null)
                   _buildDrawingToolChart(widget.drawingTools!),
+                if (widget.drawingTools != null)
+                  InteractiveLayer(drawingTools: widget.drawingTools!),
                 if (kIsWeb) _buildCrosshairAreaWeb(),
                 if (!kIsWeb && !(widget.drawingTools?.isDrawingMoving ?? false))
                   _buildCrosshairArea(),
