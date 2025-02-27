@@ -121,16 +121,25 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
                     draggableEndPoint: _draggableEndPoint,
                     leftEpoch: xAxis.leftBoundEpoch,
                     rightEpoch: xAxis.rightBoundEpoch,
+                    onDrawingToolClicked: (DrawingData drawingData) {
+                      print('#### onDrawingToolClicked ${drawingData.id}');
+                      // if (widget.selectedDrawingTool != null &&
+                      //     widget.selectedDrawingTool!.configId != e.id) {
+                      //   widget.drawingTools.clearDrawingToolSelection();
+                      // }
+                      // widget.drawingTools.onMouseEnter(e.id);
+                    },
                     updatePositionCallback: (
                       EdgePoint edgePoint,
                       DraggableEdgePoint draggableEdgePoint,
-                    ) =>
-                        draggableEdgePoint.updatePosition(
-                      edgePoint.epoch,
-                      edgePoint.quote,
-                      xAxis.xFromEpoch,
-                      widget.quoteToCanvasY,
-                    ),
+                    ) {
+                      return draggableEdgePoint.updatePosition(
+                        edgePoint.epoch,
+                        edgePoint.quote,
+                        xAxis.xFromEpoch,
+                        widget.quoteToCanvasY,
+                      );
+                    },
                     setIsOverStartPoint: ({
                       required bool isOverPoint,
                     }) {
@@ -170,6 +179,7 @@ class _DrawingPainter extends CustomPainter {
     required this.updatePositionCallback,
     required this.leftEpoch,
     required this.rightEpoch,
+    required this.onDrawingToolClicked,
     this.isDrawingToolSelected = false,
     this.isTouchHeld = false,
     this.draggableMiddlePoint,
@@ -206,6 +216,8 @@ class _DrawingPainter extends CustomPainter {
   final int rightEpoch;
 
   double Function(double) quoteFromY;
+
+  final Function(DrawingData) onDrawingToolClicked;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -272,11 +284,10 @@ class _DrawingPainter extends CustomPainter {
         setIsOverMiddlePoint: setIsOverMiddlePoint,
         setIsOverEndPoint: setIsOverEndPoint,
       )) {
-        if (isDrawingToolSelected) {
-          return false;
-        }
+        onDrawingToolClicked(drawingData);
         return true;
       }
+      return false;
     }
 
     if (!isTouchHeld && drawingData.isDrawingFinished) {
