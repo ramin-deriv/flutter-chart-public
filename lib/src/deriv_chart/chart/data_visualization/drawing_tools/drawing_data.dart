@@ -68,3 +68,6 @@ class DrawingData {
     return false;
   }
 }
+
+
+abstract class
