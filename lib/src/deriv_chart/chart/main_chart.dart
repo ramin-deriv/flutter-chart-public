@@ -350,10 +350,17 @@ class _ChartImplementationState extends BasicChartState<MainChart> {
                   _buildSeries(widget.overlaySeries!),
                 _buildAnnotations(),
                 if (widget.markerSeries != null) _buildMarkerArea(),
+                // if (widget.drawingTools != null)
+                //   _buildDrawingToolChart(widget.drawingTools!),
                 if (widget.drawingTools != null)
-                  _buildDrawingToolChart(widget.drawingTools!),
-                if (widget.drawingTools != null)
-                  InteractiveLayer(drawingTools: widget.drawingTools!),
+                  InteractiveLayer(
+                    drawingTools: widget.drawingTools!,
+                    series: widget.mainSeries as DataSeries<Tick>,
+                    chartConfig: context.watch<ChartConfig>(),
+                    quoteToCanvasY: chartQuoteToCanvasY,
+                    epochToCanvasX: xAxis.xFromEpoch,
+                    quoteFromCanvasY: chartQuoteFromCanvasY,
+                  ),
                 if (kIsWeb) _buildCrosshairAreaWeb(),
                 if (!kIsWeb && !(widget.drawingTools?.isDrawingMoving ?? false))
                   _buildCrosshairArea(),
