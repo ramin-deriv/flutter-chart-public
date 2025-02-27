@@ -71,7 +71,9 @@ abstract class DrawingToolConfig extends AddOnConfig {
   static String configIdKey = 'configId';
 
   /// Returns back the [InteractableDrawing] instance of this drawing tool.
-  InteractableDrawing getInteractableDrawing();
+  InteractableDrawing getInteractableDrawing() {
+    throw UnimplementedError('getInteractableDrawing() is not implemented.');
+  }
 
   /// Creates a copy of this object.
   DrawingToolConfig copyWith({
@@ -113,4 +115,20 @@ abstract class InteractableDrawing {
 
   /// The drawing tool config.
   final DrawingToolConfig config;
+}
+
+/// Interactable drawing for line drawing tool.
+class LineInteractableDrawing extends InteractableDrawing {
+  /// Initializes [LineInteractableDrawing].
+  LineInteractableDrawing({
+    required LineDrawingToolConfig config,
+    required this.startPoint,
+    required this.endPoint,
+  }) : super(config: config);
+
+  /// Start point of the line.
+  final EdgePoint startPoint;
+
+  /// End point of the line.
+  final EdgePoint endPoint;
 }
