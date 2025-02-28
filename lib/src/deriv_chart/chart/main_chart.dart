@@ -178,6 +178,8 @@ class _ChartImplementationState extends BasicChartState<MainChart> {
       verticalPaddingFraction = widget.verticalPaddingFraction!;
     }
 
+    print('#### InteractiveLayer MainChart ${DateTime.now()}');
+
     _setupController();
   }
 

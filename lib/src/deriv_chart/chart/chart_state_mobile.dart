@@ -9,6 +9,8 @@ class _ChartStateMobile extends _ChartState {
 
     _bottomSectionHeight =
         _getBottomIndicatorsSectionHeightFraction(widget.bottomConfigs.length);
+
+    print('#### ChartStateMobile initState ${DateTime.now()}');
   }
 
   @override

@@ -87,6 +87,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   void initState() {
     super.initState();
 
+    _setDrawingsFromConfigs();
+
     // register the callback
     context.read<GestureManagerState>()
       ..registerCallback(onPanUpdate)
@@ -95,20 +97,15 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       ..registerCallback(onLongPressMoveUpdate);
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    _setDrawingsFromConfigs();
-  }
-
   void _setDrawingsFromConfigs() {
-    _interactableDrawings.clear();
+    if (widget.drawingTools.drawingToolsRepo != null) {
+      _interactableDrawings.clear();
 
-    final Repository<DrawingToolConfig> repo =
-        context.watch<Repository<DrawingToolConfig>>();
-    for (final config in repo.items) {
-      _interactableDrawings.add(config.getInteractableDrawing());
+      final Repository<DrawingToolConfig> repo =
+          widget.drawingTools.drawingToolsRepo!;
+      for (final config in repo.items) {
+        _interactableDrawings.add(config.getInteractableDrawing());
+      }
     }
   }
 
@@ -202,8 +199,6 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
 
       // Update the config in the repository
       repo.updateAt(index, updatedConfig);
-
-      print('Repository updated with debounce');
     });
   }
 
@@ -269,7 +264,6 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
                     leftEpoch: xAxis.leftBoundEpoch,
                     rightEpoch: xAxis.rightBoundEpoch,
                     onDrawingToolClicked: () {
-                      print('Drawing tool clicked ${e.config.configId}');
                       _selectedDrawing = e;
                     },
                     updatePositionCallback: (
