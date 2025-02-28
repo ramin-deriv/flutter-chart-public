@@ -228,6 +228,7 @@ class LineInteractableDrawing extends InteractableDrawing {
 
     // Check if this drawing is selected
     final bool isCurrentlySelected = isDrawingSelected(this);
+    print('isCurrentlySelected: $isCurrentlySelected');
 
     // Use glowy paint style if selected, otherwise use normal paint style
     final Paint paint = isCurrentlySelected

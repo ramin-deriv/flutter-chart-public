@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/add_ons/repository.dart';
-import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/draggable_edge_point.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/edge_point.dart';
-import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/point.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/models/animation_info.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/gestures/gesture_manager.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/x_axis/x_axis_model.dart';
@@ -213,16 +211,18 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       )) {
         anyDrawingHit = true;
         selectedDrawing = drawing;
+        _selectedDrawing = selectedDrawing;
         break;
       }
     }
 
     // If no drawing was hit, clear the selection
     if (!anyDrawingHit) {
-      setState(() {
-        _selectedDrawing = null;
-      });
+      _selectedDrawing = null;
     }
+
+    setState(() {});
+
     return selectedDrawing;
   }
 
@@ -271,35 +271,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
                       isSelected: _isDrawingSelected,
                       leftEpoch: xAxis.leftBoundEpoch,
                       rightEpoch: xAxis.rightBoundEpoch,
-                      onDrawingToolClicked: () {
-                        _selectedDrawing = e;
-                      },
-                      updatePositionCallback: (
-                        EdgePoint edgePoint,
-                        DraggableEdgePoint draggableEdgePoint,
-                      ) {
-                        return draggableEdgePoint.updatePosition(
-                          edgePoint.epoch,
-                          edgePoint.quote,
-                          xAxis.xFromEpoch,
-                          widget.quoteToCanvasY,
-                        );
-                      },
-                      setIsOverStartPoint: ({
-                        required bool isOverPoint,
-                      }) {
-                        // isOverStartPoint = isOverPoint;
-                      },
-                      setIsOverMiddlePoint: ({
-                        required bool isOverPoint,
-                      }) {
-                        // isOverMiddlePoint = isOverPoint;
-                      },
-                      setIsOverEndPoint: ({
-                        required bool isOverPoint,
-                      }) {
-                        // isOverEndPoint = isOverPoint;
-                      },
+                      // onDrawingToolClicked: () => _selectedDrawing = e,
                     ),
                   ))
               .toList(),
@@ -323,15 +295,11 @@ class _DrawingPainter extends CustomPainter {
     required this.epochToX,
     required this.quoteToY,
     required this.quoteFromY,
-    required this.setIsOverStartPoint,
-    required this.updatePositionCallback,
     required this.leftEpoch,
     required this.rightEpoch,
-    required this.onDrawingToolClicked,
+    // required this.onDrawingToolClicked,
     required this.isSelected,
     this.isDrawingToolSelected = false,
-    this.setIsOverMiddlePoint,
-    this.setIsOverEndPoint,
   });
 
   final InteractableDrawing drawing;
@@ -343,13 +311,6 @@ class _DrawingPainter extends CustomPainter {
   final int Function(double x) epochFromX;
   final double Function(int x) epochToX;
   final double Function(double y) quoteToY;
-  final void Function({required bool isOverPoint}) setIsOverStartPoint;
-  final void Function({required bool isOverPoint})? setIsOverMiddlePoint;
-  final void Function({required bool isOverPoint})? setIsOverEndPoint;
-  final Point Function(
-    EdgePoint edgePoint,
-    DraggableEdgePoint draggableEdgePoint,
-  ) updatePositionCallback;
 
   /// Current left epoch of the chart.
   final int leftEpoch;
@@ -359,7 +320,7 @@ class _DrawingPainter extends CustomPainter {
 
   double Function(double) quoteFromY;
 
-  final Function() onDrawingToolClicked;
+  // final Function() onDrawingToolClicked;
 
   /// Returns `true` if the drawing tool is selected.
   final bool Function(InteractableDrawing) isSelected;
@@ -390,7 +351,7 @@ class _DrawingPainter extends CustomPainter {
   @override
   bool hitTest(Offset position) {
     if (drawing.hitTest(position, epochToX, quoteToY)) {
-      onDrawingToolClicked();
+      // onDrawingToolClicked();
       return true;
     }
     return false;
