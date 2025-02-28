@@ -80,6 +80,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
     context.read<GestureManagerState>()
       ..registerCallback(onPanUpdate)
       ..registerCallback(onLongPressStart)
+      ..registerCallback(onTap)
       ..registerCallback(onLongPressMoveUpdate);
   }
 
@@ -109,6 +110,27 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
 
   void onPanUpdate(DragUpdateDetails details) {
     // handle pan update
+  }
+
+  void onTap(TapUpDetails details) {
+    bool anyDrawingHit = false;
+    for (final drawing in _interactableDrawings) {
+      if (drawing.hitTest(
+        details.localPosition,
+        widget.epochToCanvasX,
+        widget.quoteToCanvasY,
+      )) {
+        anyDrawingHit = true;
+        break;
+      }
+    }
+
+    // If no drawing was hit, clear the selection
+    if (!anyDrawingHit) {
+      setState(() {
+        _selectedDrawing = null;
+      });
+    }
   }
 
   void onLongPressStart(LongPressStartDetails details) {
