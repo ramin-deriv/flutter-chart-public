@@ -84,8 +84,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   }
 
   @override
-  void didUpdateWidget(covariant InteractiveLayer oldWidget) {
-    super.didUpdateWidget(oldWidget);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
     _setDrawingsFromConfigs();
   }
