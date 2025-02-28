@@ -81,6 +81,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
 
   final List<InteractableDrawing> _interactableDrawings = [];
 
+  bool _panningStartedWithAToolDragged = false;
+
   /// Timer for debouncing repository updates
   Timer? _debounceTimer;
 
@@ -95,11 +97,12 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
 
     // register the callback
     context.read<GestureManagerState>()
-      ..registerCallback(onPanUpdate)
       ..registerCallback(onLongPressStart)
       ..registerCallback(onTap)
       ..registerCallback(onLongPressMoveUpdate);
   }
+
+  void onTap(TapUpDetails details) => _ifDrawingSelected(details.localPosition);
 
   void _setDrawingsFromConfigs() {
     _interactableDrawings.clear();
@@ -208,15 +211,17 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
     super.dispose();
   }
 
-  void onTap(TapUpDetails details) {
+  InteractableDrawing? _ifDrawingSelected(Offset position) {
     bool anyDrawingHit = false;
+    InteractableDrawing? selectedDrawing;
     for (final drawing in _interactableDrawings) {
       if (drawing.hitTest(
-        details.localPosition,
+        position,
         widget.epochToCanvasX,
         widget.quoteToCanvasY,
       )) {
         anyDrawingHit = true;
+        selectedDrawing = drawing;
         break;
       }
     }
@@ -227,6 +232,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
         _selectedDrawing = null;
       });
     }
+    return selectedDrawing;
   }
 
   void onLongPressStart(LongPressStartDetails details) {
@@ -243,58 +249,79 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   @override
   Widget build(BuildContext context) {
     final XAxisModel xAxis = context.watch<XAxisModel>();
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        ..._interactableDrawings
-            .map((e) => CustomPaint(
-                  foregroundPainter: _DrawingPainter(
-                    drawing: e,
-                    series: widget.series,
-                    config: e.config,
-                    theme: context.watch<ChartTheme>(),
-                    chartConfig: widget.chartConfig,
-                    epochFromX: xAxis.epochFromX,
-                    epochToX: xAxis.xFromEpoch,
-                    quoteToY: widget.quoteToCanvasY,
-                    quoteFromY: widget.quoteFromCanvasY,
-                    isDrawingToolSelected: widget.selectedDrawingTool != null,
-                    isSelected: _isDrawingSelected,
-                    leftEpoch: xAxis.leftBoundEpoch,
-                    rightEpoch: xAxis.rightBoundEpoch,
-                    onDrawingToolClicked: () {
-                      _selectedDrawing = e;
-                    },
-                    updatePositionCallback: (
-                      EdgePoint edgePoint,
-                      DraggableEdgePoint draggableEdgePoint,
-                    ) {
-                      return draggableEdgePoint.updatePosition(
-                        edgePoint.epoch,
-                        edgePoint.quote,
-                        xAxis.xFromEpoch,
-                        widget.quoteToCanvasY,
-                      );
-                    },
-                    setIsOverStartPoint: ({
-                      required bool isOverPoint,
-                    }) {
-                      // isOverStartPoint = isOverPoint;
-                    },
-                    setIsOverMiddlePoint: ({
-                      required bool isOverPoint,
-                    }) {
-                      // isOverMiddlePoint = isOverPoint;
-                    },
-                    setIsOverEndPoint: ({
-                      required bool isOverPoint,
-                    }) {
-                      // isOverEndPoint = isOverPoint;
-                    },
-                  ),
-                ))
-            .toList(),
-      ],
+    return GestureDetector(
+      onTapUp: (details) {
+        _ifDrawingSelected(details.localPosition);
+      },
+      onPanStart: (details) {
+        final selectedTool = _ifDrawingSelected(details.localPosition);
+        if (selectedTool != null) {
+          _panningStartedWithAToolDragged = true;
+        }
+
+        _selectedDrawing = selectedTool;
+      },
+      onPanUpdate: (details) {
+        if (_panningStartedWithAToolDragged) {
+          onPanUpdate(details);
+        }
+      },
+      onPanEnd: (details) {
+        _panningStartedWithAToolDragged = false;
+      },
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          ..._interactableDrawings
+              .map((e) => CustomPaint(
+                    foregroundPainter: _DrawingPainter(
+                      drawing: e,
+                      series: widget.series,
+                      config: e.config,
+                      theme: context.watch<ChartTheme>(),
+                      chartConfig: widget.chartConfig,
+                      epochFromX: xAxis.epochFromX,
+                      epochToX: xAxis.xFromEpoch,
+                      quoteToY: widget.quoteToCanvasY,
+                      quoteFromY: widget.quoteFromCanvasY,
+                      isDrawingToolSelected: widget.selectedDrawingTool != null,
+                      isSelected: _isDrawingSelected,
+                      leftEpoch: xAxis.leftBoundEpoch,
+                      rightEpoch: xAxis.rightBoundEpoch,
+                      onDrawingToolClicked: () {
+                        _selectedDrawing = e;
+                      },
+                      updatePositionCallback: (
+                        EdgePoint edgePoint,
+                        DraggableEdgePoint draggableEdgePoint,
+                      ) {
+                        return draggableEdgePoint.updatePosition(
+                          edgePoint.epoch,
+                          edgePoint.quote,
+                          xAxis.xFromEpoch,
+                          widget.quoteToCanvasY,
+                        );
+                      },
+                      setIsOverStartPoint: ({
+                        required bool isOverPoint,
+                      }) {
+                        // isOverStartPoint = isOverPoint;
+                      },
+                      setIsOverMiddlePoint: ({
+                        required bool isOverPoint,
+                      }) {
+                        // isOverMiddlePoint = isOverPoint;
+                      },
+                      setIsOverEndPoint: ({
+                        required bool isOverPoint,
+                      }) {
+                        // isOverEndPoint = isOverPoint;
+                      },
+                    ),
+                  ))
+              .toList(),
+        ],
+      ),
     );
   }
 }
