@@ -101,9 +101,12 @@ class LineDrawingToolConfig extends DrawingToolConfig {
   }
 
   @override
-  InteractableDrawing getInteractableDrawing() => LineInteractableDrawing(
+  InteractableDrawing getInteractableDrawing() {
+    print('Created LineInteractableDrawing ${DateTime.now()}');
+    return LineInteractableDrawing(
         config: this,
         startPoint: edgePoints.first,
         endPoint: edgePoints.last,
       );
+  }
 }
