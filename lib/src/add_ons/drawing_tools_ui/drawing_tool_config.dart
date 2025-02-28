@@ -118,6 +118,14 @@ abstract class InteractableDrawing {
 
   /// Returns `true` if the drawing tool is hit by the given offset.
   bool hitTest(Offset offset);
+
+  void paint(
+    Canvas canvas,
+    Size size,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+    AnimationInfo animationInfo,
+  );
 }
 
 /// Interactable drawing for line drawing tool.
@@ -137,6 +145,23 @@ class LineInteractableDrawing extends InteractableDrawing {
 
   @override
   bool hitTest(Offset offset) {
-    throw UnimplementedError();
+    return false;
+  }
+
+  @override
+  void paint(
+    Canvas canvas,
+    Size size,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+    AnimationInfo animationInfo,
+  ) {
+    canvas.drawLine(
+      Offset(epochToX(startPoint.epoch), quoteToY(startPoint.quote)),
+      Offset(epochToX(endPoint.epoch), quoteToY(endPoint.quote)),
+      Paint()
+        ..color = Colors.red
+        ..strokeWidth = 2,
+    );
   }
 }
