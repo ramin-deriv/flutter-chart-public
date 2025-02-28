@@ -140,13 +140,9 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
                     isDrawingToolSelected: widget.selectedDrawingTool != null,
                     leftEpoch: xAxis.leftBoundEpoch,
                     rightEpoch: xAxis.rightBoundEpoch,
-                    onDrawingToolClicked: (DrawingData drawingData) {
-                      print('#### onDrawingToolClicked ${drawingData.id}');
-                      // if (widget.selectedDrawingTool != null &&
-                      //     widget.selectedDrawingTool!.configId != e.id) {
-                      //   widget.drawingTools.clearDrawingToolSelection();
-                      // }
-                      // widget.drawingTools.onMouseEnter(e.id);
+                    onDrawingToolClicked: () {
+                      print('Drawing tool clicked ${e.config.configId}');
+                      _selectedDrawing = e;
                     },
                     updatePositionCallback: (
                       EdgePoint edgePoint,
@@ -228,7 +224,7 @@ class _DrawingPainter extends CustomPainter {
 
   double Function(double) quoteFromY;
 
-  final Function(DrawingData) onDrawingToolClicked;
+  final Function() onDrawingToolClicked;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -254,7 +250,10 @@ class _DrawingPainter extends CustomPainter {
 
   @override
   bool hitTest(Offset position) {
-    print('#### hitTest $position');
-    return drawing.hitTest(position, epochToX, quoteToY);
+    if (drawing.hitTest(position, epochToX, quoteToY)) {
+      onDrawingToolClicked();
+      return true;
+    }
+    return false;
   }
 }
