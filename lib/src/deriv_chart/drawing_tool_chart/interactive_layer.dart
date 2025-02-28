@@ -120,7 +120,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   }
 
   bool _isDrawingSelected(InteractableDrawing drawing) =>
-      drawing == _selectedDrawing;
+      drawing.config.configId == _selectedDrawing?.config.configId;
 
   @override
   Widget build(BuildContext context) {

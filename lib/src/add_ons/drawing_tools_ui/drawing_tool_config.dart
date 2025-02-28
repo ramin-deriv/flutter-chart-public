@@ -2,6 +2,7 @@ import 'package:deriv_chart/deriv_chart.dart';
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/callbacks.dart';
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_item.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/drawing_tool_label_painter.dart';
+import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/drawing_paint_style.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/drawing_pattern.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/edge_point.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/point.dart';
@@ -198,12 +199,38 @@ class LineInteractableDrawing extends InteractableDrawing {
     AnimationInfo animationInfo,
     IsDrawingSelected isDrawingSelected,
   ) {
-    canvas.drawLine(
-      Offset(epochToX(startPoint.epoch), quoteToY(startPoint.quote)),
-      Offset(epochToX(endPoint.epoch), quoteToY(endPoint.quote)),
-      Paint()
-        ..color = Colors.red
-        ..strokeWidth = 2,
-    );
+    final config = this.config as LineDrawingToolConfig;
+    final LineStyle lineStyle = config.lineStyle;
+    final DrawingPaintStyle paintStyle = DrawingPaintStyle();
+
+    final Offset startOffset =
+        Offset(epochToX(startPoint.epoch), quoteToY(startPoint.quote));
+    final Offset endOffset =
+        Offset(epochToX(endPoint.epoch), quoteToY(endPoint.quote));
+
+    // Check if this drawing is selected
+    final bool isCurrentlySelected = isDrawingSelected(this);
+
+    // Use glowy paint style if selected, otherwise use normal paint style
+    final Paint paint = isCurrentlySelected
+        ? paintStyle.glowyLinePaintStyle(lineStyle.color, lineStyle.thickness)
+        : paintStyle.linePaintStyle(lineStyle.color, lineStyle.thickness);
+
+    canvas.drawLine(startOffset, endOffset, paint);
+
+    // Draw endpoints with glowy effect if selected
+    if (isCurrentlySelected) {
+      final double markerRadius = 5;
+      canvas.drawCircle(
+        startOffset,
+        markerRadius,
+        paintStyle.glowyCirclePaintStyle(lineStyle.color),
+      );
+      canvas.drawCircle(
+        endOffset,
+        markerRadius,
+        paintStyle.glowyCirclePaintStyle(lineStyle.color),
+      );
+    }
   }
 }
