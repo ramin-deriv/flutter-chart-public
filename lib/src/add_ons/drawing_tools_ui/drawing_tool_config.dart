@@ -115,6 +115,9 @@ abstract class InteractableDrawing {
 
   /// The drawing tool config.
   final DrawingToolConfig config;
+
+  /// Returns `true` if the drawing tool is hit by the given offset.
+  bool hitTest(Offset offset);
 }
 
 /// Interactable drawing for line drawing tool.
@@ -131,4 +134,9 @@ class LineInteractableDrawing extends InteractableDrawing {
 
   /// End point of the line.
   final EdgePoint endPoint;
+
+  @override
+  bool hitTest(Offset offset) {
+    throw UnimplementedError();
+  }
 }

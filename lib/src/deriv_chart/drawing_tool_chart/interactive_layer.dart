@@ -84,6 +84,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   DraggableEdgePoint _draggableEndPoint = DraggableEdgePoint();
   bool isTouchHeld = false;
 
+  InteractableDrawing? _selectedDrawing;
+
   @override
   Widget build(BuildContext context) {
     final XAxisModel xAxis = context.watch<XAxisModel>();
