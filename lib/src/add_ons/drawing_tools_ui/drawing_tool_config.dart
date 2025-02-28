@@ -185,7 +185,6 @@ class LineInteractableDrawing extends InteractableDrawing {
         dotProduct >= 0 && dotProduct <= lineLength * lineLength;
 
     final result = isWithinRange && distance <= 8;
-    print('Hit the line? $result');
     // Return true if within range and close enough to line (8 pixel margin)
     return result;
   }
@@ -220,17 +219,18 @@ class LineInteractableDrawing extends InteractableDrawing {
 
     // Draw endpoints with glowy effect if selected
     if (isCurrentlySelected) {
-      final double markerRadius = 5;
-      canvas.drawCircle(
-        startOffset,
-        markerRadius,
-        paintStyle.glowyCirclePaintStyle(lineStyle.color),
-      );
-      canvas.drawCircle(
-        endOffset,
-        markerRadius,
-        paintStyle.glowyCirclePaintStyle(lineStyle.color),
-      );
+      const double markerRadius = 5;
+      canvas
+        ..drawCircle(
+          startOffset,
+          markerRadius,
+          paintStyle.glowyCirclePaintStyle(lineStyle.color),
+        )
+        ..drawCircle(
+          endOffset,
+          markerRadius,
+          paintStyle.glowyCirclePaintStyle(lineStyle.color),
+        );
     }
   }
 }
