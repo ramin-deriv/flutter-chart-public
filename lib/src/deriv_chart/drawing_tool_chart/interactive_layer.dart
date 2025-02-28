@@ -28,6 +28,7 @@ class InteractiveLayer extends StatefulWidget {
     required this.quoteToCanvasY,
     required this.quoteFromCanvasY,
     required this.epochToCanvasX,
+    required this.epochFromCanvasX,
     this.selectedDrawingTool,
     super.key,
   });
@@ -46,6 +47,9 @@ class InteractiveLayer extends StatefulWidget {
 
   /// Converts canvas Y coordinate to quote.
   final QuoteFromY quoteFromCanvasY;
+
+  /// Converts canvas X coordinate to epoch.
+  final EpochFromX epochFromCanvasX;
 
   /// Converts epoch to canvas X coordinate.
   final EpochToX epochToCanvasX;
@@ -100,9 +104,13 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
     }
   }
 
-  void onPanUpdate(DragUpdateDetails details) {
-    // handle pan update
-  }
+  void onPanUpdate(DragUpdateDetails details) => _selectedDrawing?.onDragUpdate(
+        details,
+        widget.epochFromCanvasX,
+        widget.quoteFromCanvasY,
+        widget.epochToCanvasX,
+        widget.quoteToCanvasY,
+      );
 
   void onTap(TapUpDetails details) {
     bool anyDrawingHit = false;

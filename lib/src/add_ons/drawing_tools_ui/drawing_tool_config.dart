@@ -121,6 +121,20 @@ abstract class InteractableDrawing {
   /// Returns `true` if the drawing tool is hit by the given offset.
   bool hitTest(Offset offset, EpochToX epochToX, QuoteToY quoteToY);
 
+  /// Called when the drawing tool is dragged and updates the drawing position
+  /// properties based on the dragging [details].
+  ///
+  /// Each drawing will know how to handle and update itself accordingly based
+  /// on where the dragging position is like if it's dragging a point or a line
+  /// of the tool.
+  void onDragUpdate(
+    DragUpdateDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+  );
+
   /// Paints the drawing tool on the chart.
   void paint(
     Canvas canvas,
@@ -142,10 +156,10 @@ class LineInteractableDrawing extends InteractableDrawing {
   }) : super(config: config);
 
   /// Start point of the line.
-  final EdgePoint startPoint;
+  EdgePoint startPoint;
 
   /// End point of the line.
-  final EdgePoint endPoint;
+  EdgePoint endPoint;
 
   @override
   bool hitTest(Offset offset, EpochToX epochToX, QuoteToY quoteToY) {
@@ -233,4 +247,13 @@ class LineInteractableDrawing extends InteractableDrawing {
         );
     }
   }
+
+  @override
+  void onDragUpdate(
+    DragUpdateDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+  ) {}
 }

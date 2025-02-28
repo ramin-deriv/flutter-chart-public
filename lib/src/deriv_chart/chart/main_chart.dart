@@ -360,6 +360,7 @@ class _ChartImplementationState extends BasicChartState<MainChart> {
                     quoteToCanvasY: chartQuoteToCanvasY,
                     epochToCanvasX: xAxis.xFromEpoch,
                     quoteFromCanvasY: chartQuoteFromCanvasY,
+                    epochFromCanvasX: xAxis.epochFromX,
                   ),
                 if (kIsWeb) _buildCrosshairAreaWeb(),
                 if (!kIsWeb && !(widget.drawingTools?.isDrawingMoving ?? false))
