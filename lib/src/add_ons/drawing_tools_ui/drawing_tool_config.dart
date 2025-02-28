@@ -5,6 +5,7 @@ import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_too
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/drawing_pattern.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/edge_point.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/point.dart';
+import 'package:deriv_chart/src/deriv_chart/drawing_tool_chart/interactive_layer.dart';
 import 'package:flutter/material.dart';
 
 /// Drawing tools config
@@ -119,12 +120,14 @@ abstract class InteractableDrawing {
   /// Returns `true` if the drawing tool is hit by the given offset.
   bool hitTest(Offset offset, EpochToX epochToX, QuoteToY quoteToY);
 
+  /// Paints the drawing tool on the chart.
   void paint(
     Canvas canvas,
     Size size,
     EpochToX epochToX,
     QuoteToY quoteToY,
     AnimationInfo animationInfo,
+    IsDrawingSelected isDrawingSelected,
   );
 }
 
@@ -193,6 +196,7 @@ class LineInteractableDrawing extends InteractableDrawing {
     EpochToX epochToX,
     QuoteToY quoteToY,
     AnimationInfo animationInfo,
+    IsDrawingSelected isDrawingSelected,
   ) {
     canvas.drawLine(
       Offset(epochToX(startPoint.epoch), quoteToY(startPoint.quote)),

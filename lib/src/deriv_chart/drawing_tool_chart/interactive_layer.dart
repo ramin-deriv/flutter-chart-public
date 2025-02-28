@@ -119,6 +119,9 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
     // handle long press move update
   }
 
+  bool _isDrawingSelected(InteractableDrawing drawing) =>
+      drawing == _selectedDrawing;
+
   @override
   Widget build(BuildContext context) {
     final XAxisModel xAxis = context.watch<XAxisModel>();
@@ -138,6 +141,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
                     quoteToY: widget.quoteToCanvasY,
                     quoteFromY: widget.quoteFromCanvasY,
                     isDrawingToolSelected: widget.selectedDrawingTool != null,
+                    isSelected: _isDrawingSelected,
                     leftEpoch: xAxis.leftBoundEpoch,
                     rightEpoch: xAxis.rightBoundEpoch,
                     onDrawingToolClicked: () {
@@ -178,6 +182,9 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   }
 }
 
+/// A callback which calling it should return if the [drawing] is selected.
+typedef IsDrawingSelected = bool Function(InteractableDrawing drawing);
+
 class _DrawingPainter extends CustomPainter {
   _DrawingPainter({
     required this.drawing,
@@ -194,6 +201,7 @@ class _DrawingPainter extends CustomPainter {
     required this.leftEpoch,
     required this.rightEpoch,
     required this.onDrawingToolClicked,
+    required this.isSelected,
     this.isDrawingToolSelected = false,
     this.setIsOverMiddlePoint,
     this.setIsOverEndPoint,
@@ -226,6 +234,9 @@ class _DrawingPainter extends CustomPainter {
 
   final Function() onDrawingToolClicked;
 
+  /// Returns `true` if the drawing tool is selected.
+  final bool Function(InteractableDrawing) isSelected;
+
   @override
   void paint(Canvas canvas, Size size) {
     YAxisConfig.instance.yAxisClipping(canvas, size, () {
@@ -235,6 +246,7 @@ class _DrawingPainter extends CustomPainter {
         epochToX,
         quoteToY,
         const AnimationInfo(),
+        isSelected,
       );
       // TODO(NA): Paint the [drawing]
     });
