@@ -255,5 +255,45 @@ class LineInteractableDrawing extends InteractableDrawing {
     QuoteFromY quoteFromY,
     EpochToX epochToX,
     QuoteToY quoteToY,
-  ) {}
+  ) {
+    // Get the drag delta in screen coordinates
+    final Offset delta = details.delta;
+    
+    // Convert start and end points to screen coordinates
+    final Offset startOffset = Offset(
+      epochToX(startPoint.epoch),
+      quoteToY(startPoint.quote),
+    );
+    final Offset endOffset = Offset(
+      epochToX(endPoint.epoch),
+      quoteToY(endPoint.quote),
+    );
+    
+    // Apply the delta to get new screen coordinates
+    final Offset newStartOffset = startOffset + delta;
+    final Offset newEndOffset = endOffset + delta;
+    
+    // Convert back to epoch and quote coordinates
+    final int newStartEpoch = epochFromX(newStartOffset.dx);
+    final double newStartQuote = quoteFromY(newStartOffset.dy);
+    final int newEndEpoch = epochFromX(newEndOffset.dx);
+    final double newEndQuote = quoteFromY(newEndOffset.dy);
+    
+    // Update the start and end points
+    startPoint = EdgePoint(
+      epoch: newStartEpoch,
+      quote: newStartQuote,
+    );
+    endPoint = EdgePoint(
+      epoch: newEndEpoch,
+      quote: newEndQuote,
+    );
+    
+    // Note: The actual config update should be handled by the InteractiveLayer
+    // which has access to the Repository. This method only updates the local
+    // startPoint and endPoint properties, which will be reflected in the drawing.
+    //
+    // The InteractiveLayer should periodically check if the selected drawing's
+    // points have changed and update the config in the repository accordingly.
+  }
 }

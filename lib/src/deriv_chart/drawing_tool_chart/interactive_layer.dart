@@ -104,13 +104,73 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
     }
   }
 
-  void onPanUpdate(DragUpdateDetails details) => _selectedDrawing?.onDragUpdate(
-        details,
-        widget.epochFromCanvasX,
-        widget.quoteFromCanvasY,
-        widget.epochToCanvasX,
-        widget.quoteToCanvasY,
-      );
+  void onPanUpdate(DragUpdateDetails details) {
+    if (_selectedDrawing == null) {
+      return;
+    }
+    
+    // Store the original points before update
+    final originalPoints = _getDrawingPoints(_selectedDrawing!);
+    
+    // Update the drawing
+    _selectedDrawing!.onDragUpdate(
+      details,
+      widget.epochFromCanvasX,
+      widget.quoteFromCanvasY,
+      widget.epochToCanvasX,
+      widget.quoteToCanvasY,
+    );
+    
+    // Check if points have changed and update the config in the repository
+    final updatedPoints = _getDrawingPoints(_selectedDrawing!);
+    if (_havePointsChanged(originalPoints, updatedPoints)) {
+      _updateConfigInRepository(_selectedDrawing!);
+    }
+  }
+  
+  /// Gets the points from a drawing (specific to each drawing type)
+  List<EdgePoint> _getDrawingPoints(InteractableDrawing drawing) {
+    if (drawing is LineInteractableDrawing) {
+      return [drawing.startPoint, drawing.endPoint];
+    }
+    // Add cases for other drawing types as needed
+    return [];
+  }
+  
+  /// Checks if points have changed
+  bool _havePointsChanged(List<EdgePoint> original, List<EdgePoint> updated) {
+    if (original.length != updated.length) return true;
+    
+    for (int i = 0; i < original.length; i++) {
+      if (original[i].epoch != updated[i].epoch ||
+          original[i].quote != updated[i].quote) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+  
+  /// Updates the config in the repository
+  void _updateConfigInRepository(InteractableDrawing drawing) {
+    final Repository<DrawingToolConfig> repo =
+        context.read<Repository<DrawingToolConfig>>();
+    
+    // Find the index of the config in the repository
+    final int index = repo.items.indexWhere(
+      (config) => config.configId == drawing.config.configId
+    );
+    
+    if (index == -1) return; // Config not found
+    
+    // Create a new config with updated edge points
+    final updatedConfig = drawing.config.copyWith(
+      edgePoints: _getDrawingPoints(drawing),
+    );
+    
+    // Update the config in the repository
+    repo.updateAt(index, updatedConfig);
+  }
 
   void onTap(TapUpDetails details) {
     bool anyDrawingHit = false;
