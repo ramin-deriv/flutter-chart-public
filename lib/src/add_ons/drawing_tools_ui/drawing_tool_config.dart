@@ -115,6 +115,11 @@ abstract class InteractableDrawing {
   /// Initializes [InteractableDrawing].
   InteractableDrawing({required this.config});
 
+  static const double _hitTestMargin = 16;
+
+  /// The margin for hit testing.
+  double get hitTestMargin => _hitTestMargin;
+
   /// The drawing tool config.
   final DrawingToolConfig config;
 
@@ -178,7 +183,7 @@ class LineInteractableDrawing extends InteractableDrawing {
 
     // If line length is too small, treat it as a point
     if (lineLength < 1) {
-      return (offset - startOffset).distance <= 8;
+      return (offset - startOffset).distance <= hitTestMargin;
     }
 
     // Calculate perpendicular distance from point to line
@@ -198,7 +203,7 @@ class LineInteractableDrawing extends InteractableDrawing {
     final bool isWithinRange =
         dotProduct >= 0 && dotProduct <= lineLength * lineLength;
 
-    final result = isWithinRange && distance <= 8;
+    final result = isWithinRange && distance <= hitTestMargin;
     // Return true if within range and close enough to line (8 pixel margin)
     return result;
   }

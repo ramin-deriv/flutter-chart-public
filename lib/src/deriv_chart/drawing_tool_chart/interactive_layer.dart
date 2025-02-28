@@ -96,10 +96,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
     widget.drawingToolsRepo.addListener(_setDrawingsFromConfigs);
 
     // register the callback
-    context.read<GestureManagerState>()
-      ..registerCallback(onLongPressStart)
-      ..registerCallback(onTap)
-      ..registerCallback(onLongPressMoveUpdate);
+    context.read<GestureManagerState>().registerCallback(onTap);
   }
 
   void onTap(TapUpDetails details) => _ifDrawingSelected(details.localPosition);
@@ -129,13 +126,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       widget.quoteToCanvasY,
     );
 
-    setState(() {
-      if (_interactableDrawings.isNotEmpty) {
-        final fromDrawings =
-            _interactableDrawings.first as LineInteractableDrawing;
-        final selectedOne = _selectedDrawing as LineInteractableDrawing;
-      }
-    });
+    setState(() {});
 
     // Check if points have changed and update the config in the repository
     final updatedPoints = _getDrawingPoints(_selectedDrawing!);
@@ -233,14 +224,6 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       });
     }
     return selectedDrawing;
-  }
-
-  void onLongPressStart(LongPressStartDetails details) {
-    // handle long press start
-  }
-
-  void onLongPressMoveUpdate(LongPressMoveUpdateDetails details) {
-    // handle long press move update
   }
 
   bool _isDrawingSelected(InteractableDrawing drawing) =>
