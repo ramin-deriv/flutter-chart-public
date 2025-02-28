@@ -252,6 +252,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       onPanEnd: (details) {
         _panningStartedWithAToolDragged = false;
       },
+      // TODO(NA): Move this part into separate widget. InteractiveLayer only cares about the interactions and selected tool movement
+      // It can delegate it to an inner component as well. which we can have different interaction behaviours like per platform as well.
       child: Stack(
         fit: StackFit.expand,
         children: [
