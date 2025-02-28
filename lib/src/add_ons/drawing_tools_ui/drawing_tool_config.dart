@@ -117,7 +117,7 @@ abstract class InteractableDrawing {
   final DrawingToolConfig config;
 
   /// Returns `true` if the drawing tool is hit by the given offset.
-  bool hitTest(Offset offset);
+  bool hitTest(Offset offset, EpochToX epochToX, QuoteToY quoteToY);
 
   void paint(
     Canvas canvas,
@@ -144,8 +144,46 @@ class LineInteractableDrawing extends InteractableDrawing {
   final EdgePoint endPoint;
 
   @override
-  bool hitTest(Offset offset) {
-    return false;
+  bool hitTest(Offset offset, EpochToX epochToX, QuoteToY quoteToY) {
+    // Convert start and end points from epoch/quote to screen coordinates
+    final Offset startOffset = Offset(
+      epochToX(startPoint.epoch),
+      quoteToY(startPoint.quote),
+    );
+    final Offset endOffset = Offset(
+      epochToX(endPoint.epoch),
+      quoteToY(endPoint.quote),
+    );
+
+    // Calculate line length
+    final double lineLength = (endOffset - startOffset).distance;
+
+    // If line length is too small, treat it as a point
+    if (lineLength < 1) {
+      return (offset - startOffset).distance <= 8;
+    }
+
+    // Calculate perpendicular distance from point to line
+    // Formula: |((y2-y1)x - (x2-x1)y + x2y1 - y2x1)| / sqrt((y2-y1)² + (x2-x1)²)
+    final double distance = ((endOffset.dy - startOffset.dy) * offset.dx -
+                (endOffset.dx - startOffset.dx) * offset.dy +
+                endOffset.dx * startOffset.dy -
+                endOffset.dy * startOffset.dx)
+            .abs() /
+        lineLength;
+
+    // Check if point is within the line segment (not just the infinite line)
+    final double dotProduct =
+        (offset.dx - startOffset.dx) * (endOffset.dx - startOffset.dx) +
+            (offset.dy - startOffset.dy) * (endOffset.dy - startOffset.dy);
+
+    final bool isWithinRange =
+        dotProduct >= 0 && dotProduct <= lineLength * lineLength;
+
+    final result = isWithinRange && distance <= 8;
+    print('Hit the line? $result');
+    // Return true if within range and close enough to line (8 pixel margin)
+    return result;
   }
 
   @override

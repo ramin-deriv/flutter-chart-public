@@ -255,6 +255,6 @@ class _DrawingPainter extends CustomPainter {
   @override
   bool hitTest(Offset position) {
     print('#### hitTest $position');
-    return drawing.hitTest(position);
+    return drawing.hitTest(position, epochToX, quoteToY);
   }
 }
