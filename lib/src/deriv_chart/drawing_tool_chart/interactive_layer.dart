@@ -55,16 +55,45 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   /// 4. This widget knows the current selected tool, will update its position when its interacted
   /// 5. the decision to make which tool is selected based on the user click and it's coordinate will happen here
   /// 6.
+  ///
+
+  DraggableEdgePoint _draggableStartPoint = DraggableEdgePoint();
+  DraggableEdgePoint _draggableMiddlePoint = DraggableEdgePoint();
+  DraggableEdgePoint _draggableEndPoint = DraggableEdgePoint();
+  bool isTouchHeld = false;
+
+  InteractableDrawing? _selectedDrawing;
+
+  List<InteractableDrawing> _interactableDrawings = [];
 
   @override
   void initState() {
     super.initState();
+
+    _setDrawingsFromConfigs();
 
     // register the callback
     context.read<GestureManagerState>()
       ..registerCallback(onPanUpdate)
       ..registerCallback(onLongPressStart)
       ..registerCallback(onLongPressMoveUpdate);
+  }
+
+  @override
+  void didUpdateWidget(covariant InteractiveLayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    _setDrawingsFromConfigs();
+  }
+
+  void _setDrawingsFromConfigs() {
+    _interactableDrawings.clear();
+
+    final Repository<DrawingToolConfig> repo =
+        context.watch<Repository<DrawingToolConfig>>();
+    for (final config in repo.items) {
+      _interactableDrawings.add(config.getInteractableDrawing());
+    }
   }
 
   void onPanUpdate(DragUpdateDetails details) {
@@ -79,37 +108,18 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
     // handle long press move update
   }
 
-  DraggableEdgePoint _draggableStartPoint = DraggableEdgePoint();
-  DraggableEdgePoint _draggableMiddlePoint = DraggableEdgePoint();
-  DraggableEdgePoint _draggableEndPoint = DraggableEdgePoint();
-  bool isTouchHeld = false;
-
-  InteractableDrawing? _selectedDrawing;
-
   @override
   Widget build(BuildContext context) {
     final XAxisModel xAxis = context.watch<XAxisModel>();
-
-    final Repository<DrawingToolConfig> repo =
-        context.watch<Repository<DrawingToolConfig>>();
-    final List<DrawingToolConfig> configs = repo.items.toList();
-
-    final List<DrawingData?> drawings = configs
-        .map<DrawingData?>((DrawingToolConfig config) => config.drawingData)
-        .toList();
-
     return Stack(
       fit: StackFit.expand,
       children: [
-        ...drawings
+        ..._interactableDrawings
             .map((e) => CustomPaint(
                   foregroundPainter: _DrawingPainter(
-                    drawingData: e!,
+                    drawing: e,
                     series: widget.series,
-                    config: repo.items
-                        .where((DrawingToolConfig config) =>
-                            config.configId == e.id)
-                        .first,
+                    config: e.config,
                     theme: context.watch<ChartTheme>(),
                     chartConfig: widget.chartConfig,
                     epochFromX: xAxis.epochFromX,
@@ -167,7 +177,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
 
 class _DrawingPainter extends CustomPainter {
   _DrawingPainter({
-    required this.drawingData,
+    required this.drawing,
     required this.series,
     required this.config,
     required this.theme,
@@ -190,7 +200,7 @@ class _DrawingPainter extends CustomPainter {
     this.setIsOverEndPoint,
   });
 
-  final DrawingData drawingData;
+  final InteractableDrawing drawing;
   final DataSeries<Tick> series;
   final DrawingToolConfig config;
   final ChartTheme theme;
@@ -223,81 +233,19 @@ class _DrawingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (final Drawing drawingPart in drawingData.drawingParts) {
-      YAxisConfig.instance.yAxisClipping(canvas, size, () {
-        drawingPart.onPaint(
-          canvas,
-          size,
-          theme,
-          epochFromX,
-          quoteFromY,
-          epochToX,
-          quoteToY,
-          config,
-          drawingData,
-          series,
-          updatePositionCallback,
-          draggableStartPoint,
-          draggableMiddlePoint: draggableMiddlePoint,
-          draggableEndPoint: draggableEndPoint,
-        );
-      });
-
-      drawingPart.onLabelPaint(
-        canvas,
-        size,
-        theme,
-        chartConfig,
-        epochFromX,
-        quoteFromY,
-        epochToX,
-        quoteToY,
-        config,
-        drawingData,
-        series,
-      );
-    }
+    YAxisConfig.instance.yAxisClipping(canvas, size, () {
+      // TODO(NA): Paint the [drawing]
+    });
   }
 
   @override
-  bool shouldRepaint(_DrawingPainter oldDelegate) => drawingData.shouldRepaint(
-        oldDelegate.drawingData,
-        leftEpoch,
-        rightEpoch,
-        draggableStartPoint,
-        draggableEndPoint: draggableEndPoint,
-      );
+  bool shouldRepaint(_DrawingPainter oldDelegate) =>
+      // TODO(NA): Return true/false based on the [drawing] state
+      true;
 
   @override
   bool shouldRebuildSemantics(_DrawingPainter oldDelegate) => false;
 
   @override
-  bool hitTest(Offset position) {
-    for (final Drawing drawingPart in drawingData.drawingParts) {
-      if (drawingPart.hitTest(
-        position,
-        epochToX,
-        quoteToY,
-        config,
-        draggableStartPoint,
-        setIsOverStartPoint,
-        draggableMiddlePoint: draggableMiddlePoint,
-        draggableEndPoint: draggableEndPoint,
-        setIsOverMiddlePoint: setIsOverMiddlePoint,
-        setIsOverEndPoint: setIsOverEndPoint,
-      )) {
-        onDrawingToolClicked(drawingData);
-        return true;
-      }
-      return false;
-    }
-
-    if (!isTouchHeld && drawingData.isDrawingFinished) {
-      /// For deselecting the drawing when tapping outside of the drawing.
-      drawingData
-        ..isSelected = false
-        ..isHovered = false;
-    }
-    return false;
-  }
+  bool hitTest(Offset position) => drawing.hitTest(position);
 }
