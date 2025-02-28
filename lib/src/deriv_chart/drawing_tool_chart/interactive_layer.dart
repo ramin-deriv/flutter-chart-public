@@ -31,12 +31,16 @@ class InteractiveLayer extends StatefulWidget {
     required this.quoteFromCanvasY,
     required this.epochToCanvasX,
     required this.epochFromCanvasX,
+    required this.drawingToolsRepo,
     this.selectedDrawingTool,
     super.key,
   });
 
   /// Drawing tools.
   final DrawingTools drawingTools;
+
+  /// Drawing tools repo.
+  final Repository<DrawingToolConfig> drawingToolsRepo;
 
   /// Main Chart series
   final DataSeries<Tick> series;
@@ -87,7 +91,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   void initState() {
     super.initState();
 
-    _setDrawingsFromConfigs();
+    widget.drawingToolsRepo.addListener(_setDrawingsFromConfigs);
 
     // register the callback
     context.read<GestureManagerState>()
@@ -98,14 +102,10 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   }
 
   void _setDrawingsFromConfigs() {
-    if (widget.drawingTools.drawingToolsRepo != null) {
-      _interactableDrawings.clear();
+    _interactableDrawings.clear();
 
-      final Repository<DrawingToolConfig> repo =
-          widget.drawingTools.drawingToolsRepo!;
-      for (final config in repo.items) {
-        _interactableDrawings.add(config.getInteractableDrawing());
-      }
+    for (final config in widget.drawingToolsRepo.items) {
+      _interactableDrawings.add(config.getInteractableDrawing());
     }
   }
 
@@ -131,9 +131,6 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
         final fromDrawings =
             _interactableDrawings.first as LineInteractableDrawing;
         final selectedOne = _selectedDrawing as LineInteractableDrawing;
-
-        print(
-            'fromDrawings: ${fromDrawings.startPoint.quote} SelectedOne: ${selectedOne.startPoint.quote},   (${fromDrawings.hashCode}, ${selectedOne.hashCode})');
       }
     });
 
@@ -206,6 +203,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   void dispose() {
     // Cancel the debounce timer when the widget is disposed
     _debounceTimer?.cancel();
+
+    widget.drawingToolsRepo.removeListener(_setDrawingsFromConfigs);
     super.dispose();
   }
 
