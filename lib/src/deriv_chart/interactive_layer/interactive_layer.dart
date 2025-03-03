@@ -14,6 +14,7 @@ import '../chart/data_visualization/chart_data.dart';
 import '../chart/data_visualization/chart_series/data_series.dart';
 import '../chart/data_visualization/drawing_tools/ray/ray_line_drawing.dart';
 import '../drawing_tool_chart/drawing_tools.dart';
+import 'interactable_drawing.dart';
 import 'interactable_drawing_custom_painter.dart';
 
 /// Interactive layer of the chart package where elements can be drawn and can
