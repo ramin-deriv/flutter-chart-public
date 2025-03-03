@@ -1,7 +1,6 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/line/line_drawing_tool_config.dart';
 import 'package:deriv_chart/src/theme/painting_styles/line_style.dart';
-import 'package:flutter/animation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../chart/data_visualization/chart_data.dart';
@@ -18,7 +17,7 @@ import 'interactable_drawing_custom_painter.dart';
 /// with the tools in the runtime.
 /// During the time that user interacts with a tool. by some debounce mechanism
 /// This class will update the config which is supposed to be saved in the storage.
-abstract class InteractableDrawing {
+abstract class InteractableDrawing<T extends DrawingToolConfig> {
   /// Initializes [InteractableDrawing].
   InteractableDrawing({required this.config});
 
@@ -28,7 +27,10 @@ abstract class InteractableDrawing {
   double get hitTestMargin => _hitTestMargin;
 
   /// The drawing tool config.
-  final DrawingToolConfig config;
+  final T config;
+
+  /// Returns the updated config.
+  T getUpdatedConfig();
 
   /// Returns `true` if the drawing tool is hit by the given offset.
   bool hitTest(Offset offset, EpochToX epochToX, QuoteToY quoteToY);
@@ -81,7 +83,8 @@ abstract class InteractableDrawing {
 }
 
 /// Interactable drawing for line drawing tool.
-class LineInteractableDrawing extends InteractableDrawing {
+class LineInteractableDrawing
+    extends InteractableDrawing<LineDrawingToolConfig> {
   /// Initializes [LineInteractableDrawing].
   LineInteractableDrawing({
     required LineDrawingToolConfig config,
@@ -146,7 +149,6 @@ class LineInteractableDrawing extends InteractableDrawing {
     AnimationInfo animationInfo,
     IsDrawingSelected isDrawingSelected,
   ) {
-    final config = this.config as LineDrawingToolConfig;
     final LineStyle lineStyle = config.lineStyle;
     final DrawingPaintStyle paintStyle = DrawingPaintStyle();
 
@@ -230,4 +232,8 @@ class LineInteractableDrawing extends InteractableDrawing {
     // The InteractiveLayer should periodically check if the selected drawing's
     // points have changed and update the config in the repository accordingly.
   }
+
+  @override
+  LineDrawingToolConfig getUpdatedConfig() =>
+      config.copyWith(edgePoints: <EdgePoint>[startPoint, endPoint]);
 }

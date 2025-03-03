@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/add_ons/repository.dart';
-import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/edge_point.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/gestures/gesture_manager.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/x_axis/x_axis_model.dart';
 import 'package:deriv_chart/src/models/chart_config.dart';
@@ -112,9 +111,6 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       return;
     }
 
-    // Store the original points before update
-    final originalPoints = _getDrawingPoints(_selectedDrawing!);
-
     // Update the drawing
     _selectedDrawing!.onDragUpdate(
       details,
@@ -126,36 +122,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
 
     setState(() {});
 
-    // Check if points have changed and update the config in the repository
-    final updatedPoints = _getDrawingPoints(_selectedDrawing!);
-    if (_havePointsChanged(originalPoints, updatedPoints)) {
-      _updateConfigInRepository(_selectedDrawing!);
-    }
-  }
-
-  /// Gets the points from a drawing (specific to each drawing type)
-  List<EdgePoint> _getDrawingPoints(InteractableDrawing drawing) {
-    if (drawing is LineInteractableDrawing) {
-      return [drawing.startPoint, drawing.endPoint];
-    }
-    // Add cases for other drawing types as needed
-    return [];
-  }
-
-  /// Checks if points have changed
-  bool _havePointsChanged(List<EdgePoint> original, List<EdgePoint> updated) {
-    if (original.length != updated.length) {
-      return true;
-    }
-
-    for (int i = 0; i < original.length; i++) {
-      if (original[i].epoch != updated[i].epoch ||
-          original[i].quote != updated[i].quote) {
-        return true;
-      }
-    }
-
-    return false;
+    _updateConfigInRepository(_selectedDrawing!);
   }
 
   /// Updates the config in the repository with debouncing
@@ -181,13 +148,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
         return; // Config not found
       }
 
-      // Create a new config with updated edge points
-      final updatedConfig = drawing.config.copyWith(
-        edgePoints: _getDrawingPoints(drawing),
-      );
-
       // Update the config in the repository
-      repo.updateAt(index, updatedConfig);
+      repo.updateAt(index, drawing.getUpdatedConfig());
     });
   }
 
