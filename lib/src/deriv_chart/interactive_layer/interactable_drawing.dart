@@ -35,12 +35,14 @@ abstract class InteractableDrawing {
 
   /// Called when the drawing tool dragging is started.
   void onDragStart(
-    DragUpdateDetails details,
+    DragStartDetails details,
     EpochFromX epochFromX,
     QuoteFromY quoteFromY,
     EpochToX epochToX,
     QuoteToY quoteToY,
-  ) {}
+  ) {
+    print('onDragStart $runtimeType}');
+  }
 
   /// Called when the drawing tool is dragged and updates the drawing position
   /// properties based on the dragging [details].
@@ -58,12 +60,14 @@ abstract class InteractableDrawing {
 
   /// Called when the drawing tool dragging is ended.
   void onDragEnd(
-    DragUpdateDetails details,
+    DragEndDetails details,
     EpochFromX epochFromX,
     QuoteFromY quoteFromY,
     EpochToX epochToX,
     QuoteToY quoteToY,
-  ) {}
+  ) {
+    print('onDragEnd $runtimeType');
+  }
 
   /// Paints the drawing tool on the chart.
   void paint(

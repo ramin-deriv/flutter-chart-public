@@ -243,6 +243,13 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
         }
 
         _selectedDrawing = selectedTool;
+        _selectedDrawing?.onDragStart(
+          details,
+          widget.epochFromCanvasX,
+          widget.quoteFromCanvasY,
+          widget.epochToCanvasX,
+          widget.quoteToCanvasY,
+        );
       },
       onPanUpdate: (details) {
         if (_panningStartedWithAToolDragged) {
@@ -250,6 +257,13 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
         }
       },
       onPanEnd: (details) {
+        _selectedDrawing?.onDragEnd(
+          details,
+          widget.epochFromCanvasX,
+          widget.quoteFromCanvasY,
+          widget.epochToCanvasX,
+          widget.quoteToCanvasY,
+        );
         _panningStartedWithAToolDragged = false;
       },
       // TODO(NA): Move this part into separate widget. InteractiveLayer only cares about the interactions and selected tool movement
