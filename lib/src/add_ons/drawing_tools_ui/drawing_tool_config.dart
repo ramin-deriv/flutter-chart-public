@@ -6,7 +6,7 @@ import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_too
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/drawing_pattern.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/edge_point.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/point.dart';
-import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactive_layer.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactable_drawing_custom_painter.dart';
 import 'package:flutter/material.dart';
 
 /// Drawing tools config
@@ -228,7 +228,6 @@ class LineInteractableDrawing extends InteractableDrawing {
 
     // Check if this drawing is selected
     final bool isCurrentlySelected = isDrawingSelected(this);
-    print('isCurrentlySelected: $isCurrentlySelected');
 
     // Use glowy paint style if selected, otherwise use normal paint style
     final Paint paint = isCurrentlySelected
