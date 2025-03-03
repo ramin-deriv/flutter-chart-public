@@ -96,6 +96,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
     for (final config in widget.drawingToolsRepo.items) {
       _interactableDrawings.add(config.getInteractableDrawing());
     }
+
+    setState(() {});
   }
 
   /// Updates the config in the repository with debouncing
@@ -126,6 +128,9 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
     });
   }
 
+  void _addDrawingToRepo(InteractableDrawing<dynamic> drawing) =>
+      widget.drawingToolsRepo.add(drawing.getUpdatedConfig());
+
   @override
   void dispose() {
     // Cancel the debounce timer when the widget is disposed
@@ -146,6 +151,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       series: widget.series,
       chartConfig: widget.chartConfig,
       onSaveDrawingChange: _updateConfigInRepository,
+      onAddDrawing: _addDrawingToRepo,
     );
   }
 }
@@ -160,11 +166,13 @@ class _InteractiveLayerGestureHandler extends StatefulWidget {
     required this.series,
     required this.chartConfig,
     this.onSaveDrawingChange,
+    this.onAddDrawing,
   });
 
   final List<InteractableDrawing> drawings;
 
   final Function(InteractableDrawing<dynamic>)? onSaveDrawingChange;
+  final Function(InteractableDrawing<dynamic>)? onAddDrawing;
 
   /// Main Chart series
   final DataSeries<Tick> series;
