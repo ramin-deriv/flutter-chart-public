@@ -262,17 +262,13 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
                     foregroundPainter: _DrawingPainter(
                       drawing: e,
                       series: widget.series,
-                      config: e.config,
                       theme: context.watch<ChartTheme>(),
                       chartConfig: widget.chartConfig,
                       epochFromX: xAxis.epochFromX,
                       epochToX: xAxis.xFromEpoch,
                       quoteToY: widget.quoteToCanvasY,
                       quoteFromY: widget.quoteFromCanvasY,
-                      isDrawingToolSelected: widget.selectedDrawingTool != null,
                       isSelected: _isDrawingSelected,
-                      leftEpoch: xAxis.leftBoundEpoch,
-                      rightEpoch: xAxis.rightBoundEpoch,
                       // onDrawingToolClicked: () => _selectedDrawing = e,
                     ),
                   ))
@@ -290,35 +286,22 @@ class _DrawingPainter extends CustomPainter {
   _DrawingPainter({
     required this.drawing,
     required this.series,
-    required this.config,
     required this.theme,
     required this.chartConfig,
     required this.epochFromX,
     required this.epochToX,
     required this.quoteToY,
     required this.quoteFromY,
-    required this.leftEpoch,
-    required this.rightEpoch,
-    // required this.onDrawingToolClicked,
     required this.isSelected,
-    this.isDrawingToolSelected = false,
   });
 
   final InteractableDrawing drawing;
   final DataSeries<Tick> series;
-  final DrawingToolConfig config;
   final ChartTheme theme;
   final ChartConfig chartConfig;
-  final bool isDrawingToolSelected;
   final int Function(double x) epochFromX;
   final double Function(int x) epochToX;
   final double Function(double y) quoteToY;
-
-  /// Current left epoch of the chart.
-  final int leftEpoch;
-
-  /// Current right epoch of the chart.
-  final int rightEpoch;
 
   double Function(double) quoteFromY;
 
