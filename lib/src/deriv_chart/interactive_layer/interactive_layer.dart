@@ -262,6 +262,22 @@ class _InteractiveLayerGestureHandlerState
                       ),
                     ))
                 .toList(),
+            ..._interactiveState.additionalDrawings
+                .map((e) => CustomPaint(
+                      foregroundPainter: InteractableDrawingCustomPainter(
+                        drawing: e,
+                        series: widget.series,
+                        theme: context.watch<ChartTheme>(),
+                        chartConfig: widget.chartConfig,
+                        epochFromX: xAxis.epochFromX,
+                        epochToX: xAxis.xFromEpoch,
+                        quoteToY: widget.quoteToY,
+                        quoteFromY: widget.quoteFromY,
+                        getDrawingState: _interactiveState.getToolState,
+                        // onDrawingToolClicked: () => _selectedDrawing = e,
+                      ),
+                    ))
+                .toList(),
           ],
         ),
       ),
@@ -292,6 +308,9 @@ abstract class InteractiveState {
   InteractiveState({required this.interactiveLayer});
 
   DrawingToolState getToolState(InteractableDrawing<DrawingToolConfig> drawing);
+
+  /// Additional drawings of the state to be drawn on top of the main drawings.
+  List<InteractableDrawing<DrawingToolConfig>> get additionalDrawings => [];
 
   final InteractiveLayerBase interactiveLayer;
 
@@ -415,6 +434,10 @@ class InteractiveAddingToolState extends InteractiveState {
   final DrawingToolConfig addingTool;
 
   InteractableDrawing<DrawingToolConfig>? _addingDrawing;
+
+  @override
+  List<InteractableDrawing<DrawingToolConfig>> get additionalDrawings =>
+      [if (_addingDrawing != null) _addingDrawing!];
 
   @override
   DrawingToolState getToolState(
