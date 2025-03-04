@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/add_ons/repository.dart';
@@ -15,6 +16,7 @@ import '../chart/data_visualization/drawing_tools/ray/ray_line_drawing.dart';
 import '../drawing_tool_chart/drawing_tools.dart';
 import 'interactable_drawing.dart';
 import 'interactable_drawing_custom_painter.dart';
+// ignore_for_file: public_member_api_docs
 
 /// Interactive layer of the chart package where elements can be drawn and can
 /// be interacted with.
@@ -29,7 +31,7 @@ class InteractiveLayer extends StatefulWidget {
     required this.epochToCanvasX,
     required this.epochFromCanvasX,
     required this.drawingToolsRepo,
-    this.selectedDrawingTool,
+    this.addingDrawingTool,
     super.key,
   });
 
@@ -57,8 +59,11 @@ class InteractiveLayer extends StatefulWidget {
   /// Converts epoch to canvas X coordinate.
   final EpochToX epochToCanvasX;
 
-  /// Selected drawing tool.
-  final DrawingToolConfig? selectedDrawingTool;
+  /// Drawing tool to be added.
+  ///
+  /// If it's not null that means we're in the process of adding this drawing
+  /// tool
+  final DrawingToolConfig? addingDrawingTool;
 
   @override
   State<InteractiveLayer> createState() => _InteractiveLayerState();
@@ -150,6 +155,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       quoteToY: widget.quoteToCanvasY,
       series: widget.series,
       chartConfig: widget.chartConfig,
+      addingDrawingTool: widget.addingDrawingTool,
+      onClearAddingDrawingTool: widget.drawingTools.clearDrawingToolSelection,
       onSaveDrawingChange: _updateConfigInRepository,
       onAddDrawing: _addDrawingToRepo,
     );
@@ -165,6 +172,8 @@ class _InteractiveLayerGestureHandler extends StatefulWidget {
     required this.quoteToY,
     required this.series,
     required this.chartConfig,
+    required this.onClearAddingDrawingTool,
+    this.addingDrawingTool,
     this.onSaveDrawingChange,
     this.onAddDrawing,
   });
@@ -173,6 +182,11 @@ class _InteractiveLayerGestureHandler extends StatefulWidget {
 
   final Function(InteractableDrawing<dynamic>)? onSaveDrawingChange;
   final Function(InteractableDrawing<dynamic>)? onAddDrawing;
+
+  final DrawingToolConfig? addingDrawingTool;
+
+  /// To be called whenever adding the [addingDrawingTool] is done to clear it.
+  final VoidCallback onClearAddingDrawingTool;
 
   /// Main Chart series
   final DataSeries<Tick> series;
@@ -191,78 +205,110 @@ class _InteractiveLayerGestureHandler extends StatefulWidget {
 }
 
 class _InteractiveLayerGestureHandlerState
-    extends State<_InteractiveLayerGestureHandler> {
+    extends State<_InteractiveLayerGestureHandler>
+    implements InteractiveLayerBase {
   InteractableDrawing? _selectedDrawing;
 
   bool _panningStartedWithAToolDragged = false;
 
+  late InteractiveState _interactiveState;
+
   @override
   void initState() {
     super.initState();
+
+    _interactiveState = InteractiveNormalState(interactiveLayer: this);
 
     // register the callback
     context.read<GestureManagerState>().registerCallback(onTap);
   }
 
   @override
+  void didUpdateWidget(covariant _InteractiveLayerGestureHandler oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.addingDrawingTool != null) {
+      updateStateTo(
+        InteractiveAddingToolState(
+          widget.addingDrawingTool!,
+          interactiveLayer: this,
+        ),
+      );
+    }
+  }
+
+  @override
+  void updateStateTo(InteractiveState state) =>
+      setState(() => _interactiveState = state);
+
+  @override
   Widget build(BuildContext context) {
     final XAxisModel xAxis = context.watch<XAxisModel>();
-    return GestureDetector(
-      onTapUp: (details) {
-        _ifDrawingSelected(details.localPosition);
-      },
-      onPanStart: (details) {
-        final selectedTool = _ifDrawingSelected(details.localPosition);
-        if (selectedTool != null) {
-          _panningStartedWithAToolDragged = true;
-        }
+    print('##### $_interactiveState');
+    return Semantics(
+      child: GestureDetector(
+        onTapUp: (details) {
+          _interactiveState.onTap(details);
+          if (_interactiveState is InteractiveNormalState) {
+            final selectedDrawing = _ifDrawingSelected(details.localPosition);
+            if (selectedDrawing != null) {
+              _updateStateTo(InteractiveSelectedToolState(
+                selected: selectedDrawing,
+                onDone: () => _updateStateTo(InteractiveNormalState()),
+              ));
 
-        _selectedDrawing = selectedTool;
-        _selectedDrawing?.onDragStart(
-          details,
-          widget.epochFromX,
-          widget.quoteFromY,
-          widget.epochToX,
-          widget.quoteToY,
-        );
-      },
-      onPanUpdate: (details) {
-        if (_panningStartedWithAToolDragged) {
-          onPanUpdate(details);
-        }
-      },
-      onPanEnd: (details) {
-        _selectedDrawing?.onDragEnd(
-          details,
-          widget.epochFromX,
-          widget.quoteFromY,
-          widget.epochToX,
-          widget.quoteToY,
-        );
-        _panningStartedWithAToolDragged = false;
-      },
-      // TODO(NA): Move this part into separate widget. InteractiveLayer only cares about the interactions and selected tool movement
-      // It can delegate it to an inner component as well. which we can have different interaction behaviours like per platform as well.
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          ...widget.drawings
-              .map((e) => CustomPaint(
-                    foregroundPainter: InteractableDrawingCustomPainter(
-                      drawing: e,
-                      series: widget.series,
-                      theme: context.watch<ChartTheme>(),
-                      chartConfig: widget.chartConfig,
-                      epochFromX: xAxis.epochFromX,
-                      epochToX: xAxis.xFromEpoch,
-                      quoteToY: widget.quoteToY,
-                      quoteFromY: widget.quoteFromY,
-                      isSelected: _isDrawingSelected,
-                      // onDrawingToolClicked: () => _selectedDrawing = e,
-                    ),
-                  ))
-              .toList(),
-        ],
+              _interactiveState.onTap(details);
+            }
+          } else {
+            _interactiveState.onTap(
+              details,
+            );
+          }
+        },
+        onPanStart: (details) {
+          final selectedTool = _ifDrawingSelected(details.localPosition);
+
+          if (selectedTool != null &&
+              _interactiveState is InteractiveSelectedToolState) {
+            _panningStartedWithAToolDragged = true;
+            _selectedDrawing = selectedTool;
+            _interactiveState.onPanStart(details);
+          }
+        },
+        onPanUpdate: (details) {
+          if (_panningStartedWithAToolDragged) {
+            onPanUpdate(details);
+          }
+        },
+        onPanEnd: (details) {
+          _selectedDrawing?.onDragEnd(
+            details,
+          );
+          _panningStartedWithAToolDragged = false;
+        },
+        // TODO(NA): Move this part into separate widget. InteractiveLayer only cares about the interactions and selected tool movement
+        // It can delegate it to an inner component as well. which we can have different interaction behaviours like per platform as well.
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ...widget.drawings
+                .map((e) => CustomPaint(
+                      foregroundPainter: InteractableDrawingCustomPainter(
+                        drawing: e,
+                        series: widget.series,
+                        theme: context.watch<ChartTheme>(),
+                        chartConfig: widget.chartConfig,
+                        epochFromX: xAxis.epochFromX,
+                        epochToX: xAxis.xFromEpoch,
+                        quoteToY: widget.quoteToY,
+                        quoteFromY: widget.quoteFromY,
+                        getDrawingState: _interactiveState.getToolState,
+                        // onDrawingToolClicked: () => _selectedDrawing = e,
+                      ),
+                    ))
+                .toList(),
+          ],
+        ),
       ),
     );
   }
@@ -316,4 +362,170 @@ class _InteractiveLayerGestureHandlerState
 
   bool _isDrawingSelected(InteractableDrawing drawing) =>
       drawing.config.configId == _selectedDrawing?.config.configId;
+
+  @override
+  List<InteractableDrawing<DrawingToolConfig>> get drawings => widget.drawings;
+
+  @override
+  EpochFromX get epochFromX => widget.epochFromX;
+
+  @override
+  EpochToX get epochToX => widget.epochToX;
+
+  @override
+  QuoteFromY get quoteFromY => widget.quoteFromY;
+
+  @override
+  QuoteToY get quoteToY => widget.quoteToY;
+}
+
+abstract class InteractiveState {
+  InteractiveState({required this.interactiveLayer});
+
+  DrawingToolState getToolState(InteractableDrawing<DrawingToolConfig> drawing);
+
+  final InteractiveLayerBase interactiveLayer;
+
+  EpochFromX get epochFromX => interactiveLayer.epochFromX;
+
+  QuoteFromY get quoteFromY => interactiveLayer.quoteFromY;
+
+  EpochToX get epochToX => interactiveLayer.epochToX;
+
+  QuoteToY get quoteToY => interactiveLayer.quoteToY;
+
+  void onTap(
+    TapUpDetails details,
+  );
+
+  void onPanUpdate(
+    DragUpdateDetails details,
+  );
+
+  void onPanEnd(
+    DragEndDetails details,
+  );
+
+  void onPanStart(
+    DragStartDetails details,
+  );
+}
+
+class InteractiveNormalState extends InteractiveState {
+  InteractiveNormalState({required super.interactiveLayer});
+
+  @override
+  DrawingToolState getToolState(
+    InteractableDrawing<DrawingToolConfig> drawing,
+  ) =>
+      DrawingToolState.normal;
+
+  @override
+  void onPanEnd(DragEndDetails details) {}
+
+  @override
+  void onPanStart(DragStartDetails details) {}
+
+  @override
+  void onPanUpdate(DragUpdateDetails details) {}
+
+  @override
+  void onTap(TapUpDetails details) {
+    for (final drawing in interactiveLayer.drawings) {
+      if (drawing.hitTest(
+        details.localPosition,
+        epochToX,
+        quoteToY,
+      )) {
+        interactiveLayer.updateStateTo(
+          InteractiveSelectedToolState(
+            selected: drawing,
+            interactiveLayer: interactiveLayer,
+          ),
+        );
+        return;
+      }
+    }
+  }
+}
+
+class InteractiveSelectedToolState extends InteractiveState {
+  InteractiveSelectedToolState({
+    required this.selected,
+    required super.interactiveLayer,
+  });
+
+  final InteractableDrawing selected;
+
+  @override
+  DrawingToolState getToolState(
+      InteractableDrawing<DrawingToolConfig> drawing) {
+    return drawing.config.configId == selected.config.configId
+        ? DrawingToolState.selected
+        : DrawingToolState.normal;
+  }
+
+  @override
+  void onPanEnd(DragEndDetails details) {
+    selected.onDragEnd(details, epochFromX, quoteFromY, epochToX, quoteToY);
+
+    interactiveLayer.updateStateTo(
+        InteractiveNormalState(interactiveLayer: interactiveLayer));
+  }
+
+  @override
+  void onPanStart(DragStartDetails details) {
+    selected.onDragStart(details, epochFromX, quoteFromY, epochToX, quoteToY);
+  }
+
+  @override
+  void onPanUpdate(DragUpdateDetails details) {
+    selected.onDragUpdate(details, epochFromX, quoteFromY, epochToX, quoteToY);
+  }
+
+  @override
+  void onTap(TapUpDetails details) {}
+}
+
+class InteractiveAddingToolState extends InteractiveState {
+  InteractiveAddingToolState(
+    this.addingTool, {
+    required super.interactiveLayer,
+  });
+
+  final DrawingToolConfig addingTool;
+
+  @override
+  DrawingToolState getToolState(
+    InteractableDrawing<DrawingToolConfig> drawing,
+  ) =>
+      drawing.config.configId == addingTool.configId
+          ? DrawingToolState.adding
+          : DrawingToolState.normal;
+
+  @override
+  void onPanEnd(DragEndDetails details) {}
+
+  @override
+  void onPanStart(DragStartDetails details) {}
+
+  @override
+  void onPanUpdate(DragUpdateDetails details) {}
+
+  @override
+  void onTap(TapUpDetails details) {}
+}
+
+abstract class InteractiveLayerBase {
+  void updateStateTo(InteractiveState state);
+
+  List<InteractableDrawing<DrawingToolConfig>> get drawings;
+
+  EpochFromX get epochFromX;
+
+  QuoteFromY get quoteFromY;
+
+  EpochToX get epochToX;
+
+  QuoteToY get quoteToY;
 }

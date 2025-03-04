@@ -10,7 +10,9 @@ import '../chart/data_visualization/models/animation_info.dart';
 import '../chart/y_axis/y_axis_config.dart';
 
 /// A callback which calling it should return if the [drawing] is selected.
-typedef IsDrawingSelected = bool Function(InteractableDrawing drawing);
+typedef GetDrawingState = DrawingToolState Function(
+  InteractableDrawing drawing,
+);
 
 /// Interactable drawing custom painter.
 class InteractableDrawingCustomPainter extends CustomPainter {
@@ -24,7 +26,7 @@ class InteractableDrawingCustomPainter extends CustomPainter {
     required this.epochToX,
     required this.quoteToY,
     required this.quoteFromY,
-    required this.isSelected,
+    required this.getDrawingState,
   });
 
   final InteractableDrawing drawing;
@@ -40,7 +42,7 @@ class InteractableDrawingCustomPainter extends CustomPainter {
   // final Function() onDrawingToolClicked;
 
   /// Returns `true` if the drawing tool is selected.
-  final bool Function(InteractableDrawing) isSelected;
+  final DrawingToolState Function(InteractableDrawing) getDrawingState;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -51,7 +53,7 @@ class InteractableDrawingCustomPainter extends CustomPainter {
         epochToX,
         quoteToY,
         const AnimationInfo(),
-        isSelected,
+        getDrawingState,
       );
       // TODO(NA): Paint the [drawing]
     });
