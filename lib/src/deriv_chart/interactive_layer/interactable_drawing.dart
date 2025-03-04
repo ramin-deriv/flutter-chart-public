@@ -47,6 +47,17 @@ abstract class InteractableDrawing<T extends DrawingToolConfig> {
   bool hitTest(Offset offset, EpochToX epochToX, QuoteToY quoteToY);
 
   /// Called when the drawing tool dragging is started.
+  void onTap(
+    TapUpDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+  ) {
+    print('onDragStart $runtimeType}');
+  }
+
+  /// Called when the drawing tool dragging is started.
   void onDragStart(
     DragStartDetails details,
     EpochFromX epochFromX,
@@ -104,21 +115,25 @@ class LineInteractableDrawing
   }) : super(config: config);
 
   /// Start point of the line.
-  EdgePoint startPoint;
+  EdgePoint? startPoint;
 
   /// End point of the line.
-  EdgePoint endPoint;
+  EdgePoint? endPoint;
 
   @override
   bool hitTest(Offset offset, EpochToX epochToX, QuoteToY quoteToY) {
+    if (startPoint == null || endPoint == null) {
+      return false;
+    }
+
     // Convert start and end points from epoch/quote to screen coordinates
     final Offset startOffset = Offset(
-      epochToX(startPoint.epoch),
-      quoteToY(startPoint.quote),
+      epochToX(startPoint!.epoch),
+      quoteToY(startPoint!.quote),
     );
     final Offset endOffset = Offset(
-      epochToX(endPoint.epoch),
-      quoteToY(endPoint.quote),
+      epochToX(endPoint!.epoch),
+      quoteToY(endPoint!.quote),
     );
 
     // Calculate line length
@@ -163,35 +178,85 @@ class LineInteractableDrawing
     final LineStyle lineStyle = config.lineStyle;
     final DrawingPaintStyle paintStyle = DrawingPaintStyle();
 
-    final Offset startOffset =
-        Offset(epochToX(startPoint.epoch), quoteToY(startPoint.quote));
-    final Offset endOffset =
-        Offset(epochToX(endPoint.epoch), quoteToY(endPoint.quote));
+    if (startPoint != null && endPoint != null) {
+      final Offset startOffset =
+          Offset(epochToX(startPoint!.epoch), quoteToY(startPoint!.quote));
+      final Offset endOffset =
+          Offset(epochToX(endPoint!.epoch), quoteToY(endPoint!.quote));
 
-    // Check if this drawing is selected
-    final DrawingToolState state = getDrawingState(this);
+      // Check if this drawing is selected
+      final DrawingToolState state = getDrawingState(this);
 
-    // Use glowy paint style if selected, otherwise use normal paint style
-    final Paint paint = state == DrawingToolState.selected
-        ? paintStyle.glowyLinePaintStyle(lineStyle.color, lineStyle.thickness)
-        : paintStyle.linePaintStyle(lineStyle.color, lineStyle.thickness);
+      // Use glowy paint style if selected, otherwise use normal paint style
+      final Paint paint = state == DrawingToolState.selected
+          ? paintStyle.glowyLinePaintStyle(lineStyle.color, lineStyle.thickness)
+          : paintStyle.linePaintStyle(lineStyle.color, lineStyle.thickness);
 
-    canvas.drawLine(startOffset, endOffset, paint);
+      canvas.drawLine(startOffset, endOffset, paint);
 
-    // Draw endpoints with glowy effect if selected
-    if (state == DrawingToolState.selected) {
-      const double markerRadius = 5;
-      canvas
-        ..drawCircle(
-          startOffset,
-          markerRadius,
-          paintStyle.glowyCirclePaintStyle(lineStyle.color),
-        )
-        ..drawCircle(
-          endOffset,
-          markerRadius,
-          paintStyle.glowyCirclePaintStyle(lineStyle.color),
-        );
+      // Draw endpoints with glowy effect if selected
+      if (state == DrawingToolState.selected) {
+        const double markerRadius = 5;
+        canvas
+          ..drawCircle(
+            startOffset,
+            markerRadius,
+            paintStyle.glowyCirclePaintStyle(lineStyle.color),
+          )
+          ..drawCircle(
+            endOffset,
+            markerRadius,
+            paintStyle.glowyCirclePaintStyle(lineStyle.color),
+          );
+      }
+    } else {
+      if (startPoint != null) {
+        _drawPoint(
+            startPoint!, epochToX, quoteToY, canvas, paintStyle, lineStyle);
+      }
+
+      if (endPoint != null) {
+        _drawPoint(
+            endPoint!, epochToX, quoteToY, canvas, paintStyle, lineStyle);
+      }
+    }
+  }
+
+  void _drawPoint(
+    EdgePoint point,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+    Canvas canvas,
+    DrawingPaintStyle paintStyle,
+    LineStyle lineStyle,
+  ) {
+    canvas.drawCircle(
+      Offset(epochToX(startPoint!.epoch), quoteToY(startPoint!.quote)),
+      5,
+      paintStyle.glowyCirclePaintStyle(lineStyle.color),
+    );
+  }
+
+  @override
+  void onTap(
+    TapUpDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+  ) {
+    super.onTap(details, epochFromX, quoteFromY, epochToX, quoteToY);
+
+    if (startPoint == null) {
+      startPoint = EdgePoint(
+        epoch: epochFromX(details.localPosition.dx),
+        quote: quoteFromY(details.localPosition.dy),
+      );
+    } else {
+      endPoint ??= EdgePoint(
+        epoch: epochFromX(details.localPosition.dx),
+        quote: quoteFromY(details.localPosition.dy),
+      );
     }
   }
 
@@ -203,17 +268,21 @@ class LineInteractableDrawing
     EpochToX epochToX,
     QuoteToY quoteToY,
   ) {
+    if (startPoint == null || endPoint == null) {
+      return;
+    }
+
     // Get the drag delta in screen coordinates
     final Offset delta = details.delta;
 
     // Convert start and end points to screen coordinates
     final Offset startOffset = Offset(
-      epochToX(startPoint.epoch),
-      quoteToY(startPoint.quote),
+      epochToX(startPoint!.epoch),
+      quoteToY(startPoint!.quote),
     );
     final Offset endOffset = Offset(
-      epochToX(endPoint.epoch),
-      quoteToY(endPoint.quote),
+      epochToX(endPoint!.epoch),
+      quoteToY(endPoint!.quote),
     );
 
     // Apply the delta to get new screen coordinates
@@ -246,5 +315,8 @@ class LineInteractableDrawing
 
   @override
   LineDrawingToolConfig getUpdatedConfig() =>
-      config.copyWith(edgePoints: <EdgePoint>[startPoint, endPoint]);
+      config.copyWith(edgePoints: <EdgePoint>[
+        if (startPoint != null) startPoint!,
+        if (endPoint != null) endPoint!
+      ]);
 }

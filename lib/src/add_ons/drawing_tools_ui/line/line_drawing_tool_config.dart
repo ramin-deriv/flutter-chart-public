@@ -104,7 +104,8 @@ class LineDrawingToolConfig extends DrawingToolConfig {
   @override
   InteractableDrawing getInteractableDrawing() => LineInteractableDrawing(
         config: this,
-        startPoint: edgePoints.first,
-        endPoint: edgePoints.last,
+        // TODO(NA): improve the logic.
+        startPoint: edgePoints.isNotEmpty ? edgePoints.first : null,
+        endPoint: edgePoints.isNotEmpty ? edgePoints.last : null,
       );
 }

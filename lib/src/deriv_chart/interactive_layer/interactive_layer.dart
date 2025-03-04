@@ -217,7 +217,8 @@ class _InteractiveLayerGestureHandlerState
   void didUpdateWidget(covariant _InteractiveLayerGestureHandler oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.addingDrawingTool != null) {
+    if (widget.addingDrawingTool != null &&
+        widget.addingDrawingTool != oldWidget.addingDrawingTool) {
       updateStateTo(
         InteractiveAddingToolState(
           widget.addingDrawingTool!,
@@ -413,6 +414,8 @@ class InteractiveAddingToolState extends InteractiveState {
 
   final DrawingToolConfig addingTool;
 
+  InteractableDrawing<DrawingToolConfig>? _addingDrawing;
+
   @override
   DrawingToolState getToolState(
     InteractableDrawing<DrawingToolConfig> drawing,
@@ -431,7 +434,17 @@ class InteractiveAddingToolState extends InteractiveState {
   void onPanUpdate(DragUpdateDetails details) {}
 
   @override
-  void onTap(TapUpDetails details) {}
+  void onTap(TapUpDetails details) {
+    _addingDrawing ??= addingTool.getInteractableDrawing();
+
+    _addingDrawing!.onTap(
+      details,
+      epochFromX,
+      quoteFromY,
+      epochToX,
+      quoteToY,
+    );
+  }
 }
 
 abstract class InteractiveLayerBase {
