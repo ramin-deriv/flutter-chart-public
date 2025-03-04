@@ -276,53 +276,7 @@ class _InteractiveLayerGestureHandlerState
 
   void onTap(TapUpDetails details) {
     _interactiveState.onTap(details);
-    // _ifDrawingSelected(details.localPosition);
   }
-
-  // void onPanUpdate(DragUpdateDetails details) {
-  //   if (_selectedDrawing == null) {
-  //     return;
-  //   }
-  //
-  //   // Update the drawing
-  //   _selectedDrawing!.onDragUpdate(
-  //     details,
-  //     widget.epochFromX,
-  //     widget.quoteFromY,
-  //     widget.epochToX,
-  //     widget.quoteToY,
-  //   );
-  //
-  //   setState(() {});
-  //
-  //   widget.onSaveDrawingChange?.call(_selectedDrawing!);
-  // }
-
-  // InteractableDrawing? _ifDrawingSelected(Offset position) {
-  //   bool anyDrawingHit = false;
-  //   InteractableDrawing? selectedDrawing;
-  //   for (final drawing in widget.drawings) {
-  //     if (drawing.hitTest(
-  //       position,
-  //       widget.epochToX,
-  //       widget.quoteToY,
-  //     )) {
-  //       anyDrawingHit = true;
-  //       selectedDrawing = drawing;
-  //       _selectedDrawing = selectedDrawing;
-  //       break;
-  //     }
-  //   }
-  //
-  //   // If no drawing was hit, clear the selection
-  //   if (!anyDrawingHit) {
-  //     _selectedDrawing = null;
-  //   }
-  //
-  //   setState(() {});
-  //
-  //   return selectedDrawing;
-  // }
 
   @override
   List<InteractableDrawing<DrawingToolConfig>> get drawings => widget.drawings;
