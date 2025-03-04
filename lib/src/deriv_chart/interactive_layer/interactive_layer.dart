@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/add_ons/repository.dart';
@@ -207,9 +206,7 @@ class _InteractiveLayerGestureHandler extends StatefulWidget {
 class _InteractiveLayerGestureHandlerState
     extends State<_InteractiveLayerGestureHandler>
     implements InteractiveLayerBase {
-  InteractableDrawing? _selectedDrawing;
-
-  bool _panningStartedWithAToolDragged = false;
+  // InteractableDrawing? _selectedDrawing;
 
   late InteractiveState _interactiveState;
 
@@ -244,48 +241,12 @@ class _InteractiveLayerGestureHandlerState
   @override
   Widget build(BuildContext context) {
     final XAxisModel xAxis = context.watch<XAxisModel>();
-    print('##### $_interactiveState');
     return Semantics(
       child: GestureDetector(
-        onTapUp: (details) {
-          _interactiveState.onTap(details);
-          if (_interactiveState is InteractiveNormalState) {
-            final selectedDrawing = _ifDrawingSelected(details.localPosition);
-            if (selectedDrawing != null) {
-              _updateStateTo(InteractiveSelectedToolState(
-                selected: selectedDrawing,
-                onDone: () => _updateStateTo(InteractiveNormalState()),
-              ));
-
-              _interactiveState.onTap(details);
-            }
-          } else {
-            _interactiveState.onTap(
-              details,
-            );
-          }
-        },
-        onPanStart: (details) {
-          final selectedTool = _ifDrawingSelected(details.localPosition);
-
-          if (selectedTool != null &&
-              _interactiveState is InteractiveSelectedToolState) {
-            _panningStartedWithAToolDragged = true;
-            _selectedDrawing = selectedTool;
-            _interactiveState.onPanStart(details);
-          }
-        },
-        onPanUpdate: (details) {
-          if (_panningStartedWithAToolDragged) {
-            onPanUpdate(details);
-          }
-        },
-        onPanEnd: (details) {
-          _selectedDrawing?.onDragEnd(
-            details,
-          );
-          _panningStartedWithAToolDragged = false;
-        },
+        onTapUp: (details) => _interactiveState.onTap(details),
+        onPanStart: (details) => _interactiveState.onPanStart(details),
+        onPanUpdate: (details) => _interactiveState.onPanUpdate(details),
+        onPanEnd: (details) => _interactiveState.onPanEnd(details),
         // TODO(NA): Move this part into separate widget. InteractiveLayer only cares about the interactions and selected tool movement
         // It can delegate it to an inner component as well. which we can have different interaction behaviours like per platform as well.
         child: Stack(
@@ -313,55 +274,55 @@ class _InteractiveLayerGestureHandlerState
     );
   }
 
-  void onTap(TapUpDetails details) => _ifDrawingSelected(details.localPosition);
-
-  void onPanUpdate(DragUpdateDetails details) {
-    if (_selectedDrawing == null) {
-      return;
-    }
-
-    // Update the drawing
-    _selectedDrawing!.onDragUpdate(
-      details,
-      widget.epochFromX,
-      widget.quoteFromY,
-      widget.epochToX,
-      widget.quoteToY,
-    );
-
-    setState(() {});
-
-    widget.onSaveDrawingChange?.call(_selectedDrawing!);
+  void onTap(TapUpDetails details) {
+    _interactiveState.onTap(details);
+    // _ifDrawingSelected(details.localPosition);
   }
 
-  InteractableDrawing? _ifDrawingSelected(Offset position) {
-    bool anyDrawingHit = false;
-    InteractableDrawing? selectedDrawing;
-    for (final drawing in widget.drawings) {
-      if (drawing.hitTest(
-        position,
-        widget.epochToX,
-        widget.quoteToY,
-      )) {
-        anyDrawingHit = true;
-        selectedDrawing = drawing;
-        _selectedDrawing = selectedDrawing;
-        break;
-      }
-    }
+  // void onPanUpdate(DragUpdateDetails details) {
+  //   if (_selectedDrawing == null) {
+  //     return;
+  //   }
+  //
+  //   // Update the drawing
+  //   _selectedDrawing!.onDragUpdate(
+  //     details,
+  //     widget.epochFromX,
+  //     widget.quoteFromY,
+  //     widget.epochToX,
+  //     widget.quoteToY,
+  //   );
+  //
+  //   setState(() {});
+  //
+  //   widget.onSaveDrawingChange?.call(_selectedDrawing!);
+  // }
 
-    // If no drawing was hit, clear the selection
-    if (!anyDrawingHit) {
-      _selectedDrawing = null;
-    }
-
-    setState(() {});
-
-    return selectedDrawing;
-  }
-
-  bool _isDrawingSelected(InteractableDrawing drawing) =>
-      drawing.config.configId == _selectedDrawing?.config.configId;
+  // InteractableDrawing? _ifDrawingSelected(Offset position) {
+  //   bool anyDrawingHit = false;
+  //   InteractableDrawing? selectedDrawing;
+  //   for (final drawing in widget.drawings) {
+  //     if (drawing.hitTest(
+  //       position,
+  //       widget.epochToX,
+  //       widget.quoteToY,
+  //     )) {
+  //       anyDrawingHit = true;
+  //       selectedDrawing = drawing;
+  //       _selectedDrawing = selectedDrawing;
+  //       break;
+  //     }
+  //   }
+  //
+  //   // If no drawing was hit, clear the selection
+  //   if (!anyDrawingHit) {
+  //     _selectedDrawing = null;
+  //   }
+  //
+  //   setState(() {});
+  //
+  //   return selectedDrawing;
+  // }
 
   @override
   List<InteractableDrawing<DrawingToolConfig>> get drawings => widget.drawings;
@@ -394,21 +355,13 @@ abstract class InteractiveState {
 
   QuoteToY get quoteToY => interactiveLayer.quoteToY;
 
-  void onTap(
-    TapUpDetails details,
-  );
+  void onTap(TapUpDetails details);
 
-  void onPanUpdate(
-    DragUpdateDetails details,
-  );
+  void onPanUpdate(DragUpdateDetails details);
 
-  void onPanEnd(
-    DragEndDetails details,
-  );
+  void onPanEnd(DragEndDetails details);
 
-  void onPanStart(
-    DragStartDetails details,
-  );
+  void onPanStart(DragStartDetails details);
 }
 
 class InteractiveNormalState extends InteractiveState {
@@ -484,7 +437,28 @@ class InteractiveSelectedToolState extends InteractiveState {
   }
 
   @override
-  void onTap(TapUpDetails details) {}
+  void onTap(TapUpDetails details) {
+    for (final drawing in interactiveLayer.drawings) {
+      if (drawing.hitTest(
+        details.localPosition,
+        epochToX,
+        quoteToY,
+      )) {
+        interactiveLayer.updateStateTo(
+          InteractiveSelectedToolState(
+            selected: drawing,
+            interactiveLayer: interactiveLayer,
+          ),
+        );
+
+        return;
+      }
+    }
+
+    interactiveLayer.updateStateTo(
+      InteractiveNormalState(interactiveLayer: interactiveLayer),
+    );
+  }
 }
 
 class InteractiveAddingToolState extends InteractiveState {
