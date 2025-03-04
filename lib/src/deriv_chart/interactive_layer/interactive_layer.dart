@@ -30,7 +30,6 @@ class InteractiveLayer extends StatefulWidget {
     required this.epochToCanvasX,
     required this.epochFromCanvasX,
     required this.drawingToolsRepo,
-    this.addingDrawingTool,
     super.key,
   });
 
@@ -57,12 +56,6 @@ class InteractiveLayer extends StatefulWidget {
 
   /// Converts epoch to canvas X coordinate.
   final EpochToX epochToCanvasX;
-
-  /// Drawing tool to be added.
-  ///
-  /// If it's not null that means we're in the process of adding this drawing
-  /// tool
-  final DrawingToolConfig? addingDrawingTool;
 
   @override
   State<InteractiveLayer> createState() => _InteractiveLayerState();
@@ -154,7 +147,7 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       quoteToY: widget.quoteToCanvasY,
       series: widget.series,
       chartConfig: widget.chartConfig,
-      addingDrawingTool: widget.addingDrawingTool,
+      addingDrawingTool: widget.drawingTools.selectedDrawingTool,
       onClearAddingDrawingTool: widget.drawingTools.clearDrawingToolSelection,
       onSaveDrawingChange: _updateConfigInRepository,
       onAddDrawing: _addDrawingToRepo,
