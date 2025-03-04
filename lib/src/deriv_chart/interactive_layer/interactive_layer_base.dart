@@ -28,5 +28,5 @@ abstract class InteractiveLayerBase {
   void clearAddingDrawing();
 
   /// Adds the [drawing] to the interactive layer.
-  void onAddDrawing(InteractableDrawing<dynamic> drawing);
+  void onAddDrawing(InteractableDrawing<DrawingToolConfig> drawing);
 }

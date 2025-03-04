@@ -129,8 +129,12 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
     });
   }
 
-  void _addDrawingToRepo(InteractableDrawing<dynamic> drawing) =>
-      widget.drawingToolsRepo.add(drawing.getUpdatedConfig());
+  void _addDrawingToRepo(InteractableDrawing<DrawingToolConfig> drawing) =>
+      widget.drawingToolsRepo.add(
+        drawing.getUpdatedConfig().copyWith(
+              configId: DateTime.now().millisecondsSinceEpoch.toString(),
+            ),
+      );
 
   @override
   void dispose() {
@@ -177,7 +181,7 @@ class _InteractiveLayerGestureHandler extends StatefulWidget {
   final List<InteractableDrawing> drawings;
 
   final Function(InteractableDrawing<dynamic>)? onSaveDrawingChange;
-  final Function(InteractableDrawing<dynamic>)? onAddDrawing;
+  final Function(InteractableDrawing<DrawingToolConfig>)? onAddDrawing;
 
   final DrawingToolConfig? addingDrawingTool;
 
@@ -313,7 +317,7 @@ class _InteractiveLayerGestureHandlerState
   }
 
   @override
-  void onAddDrawing(InteractableDrawing<dynamic> drawing) {
+  void onAddDrawing(InteractableDrawing<DrawingToolConfig> drawing) {
     widget.onAddDrawing?.call(drawing);
   }
 }
