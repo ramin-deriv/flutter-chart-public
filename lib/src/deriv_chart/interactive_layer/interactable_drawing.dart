@@ -46,13 +46,20 @@ abstract class InteractableDrawing<T extends DrawingToolConfig> {
   /// Returns `true` if the drawing tool is hit by the given offset.
   bool hitTest(Offset offset, EpochToX epochToX, QuoteToY quoteToY);
 
-  /// Called when the drawing tool dragging is started.
-  void onTap(
+  /// The tap event that is called when the [InteractableDrawing] is in adding
+  /// state.
+  ///
+  /// the drawing can use the tap to capture and create the coordinates required
+  /// for its shape.
+  ///
+  /// [onDone] is a callback that should be called when the drawing is done.
+  void onCreateTap(
     TapUpDetails details,
     EpochFromX epochFromX,
     QuoteFromY quoteFromY,
     EpochToX epochToX,
     QuoteToY quoteToY,
+    VoidCallback onDone,
   ) {
     print('onDragStart $runtimeType}');
   }
@@ -238,15 +245,14 @@ class LineInteractableDrawing
   }
 
   @override
-  void onTap(
+  void onCreateTap(
     TapUpDetails details,
     EpochFromX epochFromX,
     QuoteFromY quoteFromY,
     EpochToX epochToX,
     QuoteToY quoteToY,
+    VoidCallback onDone,
   ) {
-    super.onTap(details, epochFromX, quoteFromY, epochToX, quoteToY);
-
     if (startPoint == null) {
       startPoint = EdgePoint(
         epoch: epochFromX(details.localPosition.dx),
@@ -257,6 +263,7 @@ class LineInteractableDrawing
         epoch: epochFromX(details.localPosition.dx),
         quote: quoteFromY(details.localPosition.dy),
       );
+      onDone();
     }
   }
 

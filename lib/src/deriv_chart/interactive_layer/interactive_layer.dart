@@ -302,6 +302,16 @@ class _InteractiveLayerGestureHandlerState
 
   @override
   QuoteToY get quoteToY => widget.quoteToY;
+
+  @override
+  void clearAddingDrawing() {
+    widget.onClearAddingDrawingTool.call();
+  }
+
+  @override
+  void onAddDrawing(InteractableDrawing<dynamic> drawing) {
+    widget.onAddDrawing?.call(drawing);
+  }
 }
 
 abstract class InteractiveState {
@@ -460,13 +470,15 @@ class InteractiveAddingToolState extends InteractiveState {
   void onTap(TapUpDetails details) {
     _addingDrawing ??= addingTool.getInteractableDrawing();
 
-    _addingDrawing!.onTap(
-      details,
-      epochFromX,
-      quoteFromY,
-      epochToX,
-      quoteToY,
-    );
+    _addingDrawing!
+        .onCreateTap(details, epochFromX, quoteFromY, epochToX, quoteToY, () {
+      interactiveLayer
+        ..clearAddingDrawing()
+        ..onAddDrawing(_addingDrawing!)
+        ..updateStateTo(
+          InteractiveNormalState(interactiveLayer: interactiveLayer),
+        );
+    });
   }
 }
 
@@ -482,4 +494,8 @@ abstract class InteractiveLayerBase {
   EpochToX get epochToX;
 
   QuoteToY get quoteToY;
+
+  void clearAddingDrawing();
+
+  void onAddDrawing(InteractableDrawing<dynamic> drawing);
 }
