@@ -37,18 +37,23 @@ class InteractiveSelectedToolState extends InteractiveState
   bool _draggingStartedOnTool = false;
 
   @override
-  DrawingToolState getToolState(
+  Set<DrawingToolState> getToolState(
     InteractableDrawing<DrawingToolConfig> drawing,
   ) {
-    final hoveredDrawing = super.getToolState(drawing);
+    final Set<DrawingToolState> hoveredState = super.getToolState(drawing);
 
-    if (hoveredDrawing == DrawingToolState.hovered) {
-      return DrawingToolState.hovered;
+    // If this is the selected drawing
+    if (drawing.config.configId == selected.config.configId) {
+      // Return dragging state if we're currently dragging the tool
+      if (_draggingStartedOnTool) {
+        return hoveredState..add(DrawingToolState.dragging);
+      }
+      // Otherwise return selected state
+      return hoveredState..add(DrawingToolState.selected);
     }
 
-    return drawing.config.configId == selected.config.configId
-        ? DrawingToolState.selected
-        : DrawingToolState.normal;
+    // For all other drawings, return normal state
+    return hoveredState;
   }
 
   @override

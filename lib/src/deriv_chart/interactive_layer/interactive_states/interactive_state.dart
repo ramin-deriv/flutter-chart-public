@@ -30,7 +30,9 @@ abstract class InteractiveState {
   ///
   /// This method determines the visual and behavioral state of a specific drawing tool.
   /// Each concrete state implementation returns different [DrawingToolState] values:
-  DrawingToolState getToolState(InteractableDrawing<DrawingToolConfig> drawing);
+  Set<DrawingToolState> getToolState(
+    InteractableDrawing<DrawingToolConfig> drawing,
+  );
 
   /// Additional drawings of the state to be drawn on top of the main drawings.
   ///

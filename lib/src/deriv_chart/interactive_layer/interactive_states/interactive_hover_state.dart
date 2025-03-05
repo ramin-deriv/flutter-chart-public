@@ -12,12 +12,12 @@ mixin InteractiveHoverState on InteractiveState {
   InteractableDrawing<DrawingToolConfig>? _hoveredTool;
 
   @override
-  DrawingToolState getToolState(
-      InteractableDrawing<DrawingToolConfig> drawing) {
-    return drawing == _hoveredTool
-        ? DrawingToolState.hovered
-        : DrawingToolState.normal;
-  }
+  Set<DrawingToolState> getToolState(
+    InteractableDrawing<DrawingToolConfig> drawing,
+  ) =>
+      drawing == _hoveredTool
+          ? {DrawingToolState.hovered}
+          : {DrawingToolState.normal};
 
   @override
   void onHover(PointerHoverEvent event) {

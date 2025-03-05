@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/line/line_drawing_tool_config.dart';
 import 'package:deriv_chart/src/theme/painting_styles/line_style.dart';
 import 'package:flutter/widgets.dart';
@@ -33,12 +34,12 @@ class LineInteractableDrawing
 
   @override
   void onDragStart(
-      DragStartDetails details,
-      EpochFromX epochFromX,
-      QuoteFromY quoteFromY,
-      EpochToX epochToX,
-      QuoteToY quoteToY,
-      ) {
+    DragStartDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+  ) {
     if (startPoint == null || endPoint == null) {
       return;
     }
@@ -112,10 +113,10 @@ class LineInteractableDrawing
     // Calculate perpendicular distance from point to line
     // Formula: |((y2-y1)x - (x2-x1)y + x2y1 - y2x1)| / sqrt((y2-y1)² + (x2-x1)²)
     final double distance = ((endOffset.dy - startOffset.dy) * offset.dx -
-        (endOffset.dx - startOffset.dx) * offset.dy +
-        endOffset.dx * startOffset.dy -
-        endOffset.dy * startOffset.dx)
-        .abs() /
+                (endOffset.dx - startOffset.dx) * offset.dy +
+                endOffset.dx * startOffset.dy -
+                endOffset.dy * startOffset.dx)
+            .abs() /
         lineLength;
 
     // Check if point is within the line segment (not just the infinite line)
@@ -132,35 +133,35 @@ class LineInteractableDrawing
 
   @override
   void paint(
-      Canvas canvas,
-      Size size,
-      EpochToX epochToX,
-      QuoteToY quoteToY,
-      AnimationInfo animationInfo,
-      GetDrawingState getDrawingState,
-      ) {
+    Canvas canvas,
+    Size size,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+    AnimationInfo animationInfo,
+    GetDrawingState getDrawingState,
+  ) {
     final LineStyle lineStyle = config.lineStyle;
     final DrawingPaintStyle paintStyle = DrawingPaintStyle();
 
     if (startPoint != null && endPoint != null) {
       final Offset startOffset =
-      Offset(epochToX(startPoint!.epoch), quoteToY(startPoint!.quote));
+          Offset(epochToX(startPoint!.epoch), quoteToY(startPoint!.quote));
       final Offset endOffset =
-      Offset(epochToX(endPoint!.epoch), quoteToY(endPoint!.quote));
+          Offset(epochToX(endPoint!.epoch), quoteToY(endPoint!.quote));
 
       // Check if this drawing is selected
-      final DrawingToolState state = getDrawingState(this);
+      final Set<DrawingToolState> state = getDrawingState(this);
 
       // Use glowy paint style if selected, otherwise use normal paint style
-      final Paint paint = state == DrawingToolState.selected
+      final Paint paint = state.contains(DrawingToolState.selected)
           ? paintStyle.glowyLinePaintStyle(lineStyle.color, lineStyle.thickness)
           : paintStyle.linePaintStyle(lineStyle.color, lineStyle.thickness);
 
       canvas.drawLine(startOffset, endOffset, paint);
 
       // Draw endpoints with glowy effect if selected
-      if (state == DrawingToolState.selected ||
-          state == DrawingToolState.hovered) {
+      if (state.contains(DrawingToolState.selected) ||
+          state.contains(DrawingToolState.hovered)) {
         const double markerRadius = 5;
         canvas
           ..drawCircle(
@@ -173,6 +174,11 @@ class LineInteractableDrawing
             markerRadius,
             paintStyle.glowyCirclePaintStyle(lineStyle.color),
           );
+      }
+
+      // Draw alignment guides when dragging
+      if (state.contains(DrawingToolState.dragging)) {
+        _drawAlignmentGuides(canvas, size, startOffset, endOffset, paintStyle);
       }
     } else {
       if (startPoint != null) {
@@ -187,14 +193,95 @@ class LineInteractableDrawing
     }
   }
 
+  /// Draws alignment guides (horizontal and vertical lines) from the points
+  void _drawAlignmentGuides(Canvas canvas, Size size, Offset startOffset,
+      Offset endOffset, DrawingPaintStyle paintStyle) {
+    // Create a dashed paint style for the alignment guides
+    final Paint guidesPaint = Paint()
+      ..color = const Color(0x80FFFFFF) // Semi-transparent white
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+
+    // Create a path for dashed lines
+    final Path horizontalPath1 = Path();
+    final Path verticalPath1 = Path();
+    final Path horizontalPath2 = Path();
+    final Path verticalPath2 = Path();
+
+    // Draw horizontal and vertical guides from start point
+    horizontalPath1
+      ..moveTo(0, startOffset.dy)
+      ..lineTo(size.width, startOffset.dy);
+
+    verticalPath1
+      ..moveTo(startOffset.dx, 0)
+      ..lineTo(startOffset.dx, size.height);
+
+    // Draw horizontal and vertical guides from end point
+    horizontalPath2
+      ..moveTo(0, endOffset.dy)
+      ..lineTo(size.width, endOffset.dy);
+
+    verticalPath2
+      ..moveTo(endOffset.dx, 0)
+      ..lineTo(endOffset.dx, size.height);
+
+    // Draw the dashed lines
+    canvas
+      ..drawPath(
+        _dashPath(horizontalPath1,
+            dashArray: _CircularIntervalList<double>(<double>[5, 5])),
+        guidesPaint,
+      )
+      ..drawPath(
+        _dashPath(verticalPath1,
+            dashArray: _CircularIntervalList<double>(<double>[5, 5])),
+        guidesPaint,
+      )
+      ..drawPath(
+        _dashPath(horizontalPath2,
+            dashArray: _CircularIntervalList<double>(<double>[5, 5])),
+        guidesPaint,
+      )
+      ..drawPath(
+        _dashPath(verticalPath2,
+            dashArray: _CircularIntervalList<double>(<double>[5, 5])),
+        guidesPaint,
+      );
+  }
+
+  /// Creates a dashed path from a regular path
+  Path _dashPath(
+    Path source, {
+    required _CircularIntervalList<double> dashArray,
+  }) {
+    final Path dest = Path();
+    for (final ui.PathMetric metric in source.computeMetrics()) {
+      double distance = 0;
+      bool draw = true;
+      while (distance < metric.length) {
+        final double len = dashArray.next;
+        if (draw) {
+          dest.addPath(
+            metric.extractPath(distance, distance + len),
+            Offset.zero,
+          );
+        }
+        distance += len;
+        draw = !draw;
+      }
+    }
+    return dest;
+  }
+
   void _drawPoint(
-      EdgePoint point,
-      EpochToX epochToX,
-      QuoteToY quoteToY,
-      Canvas canvas,
-      DrawingPaintStyle paintStyle,
-      LineStyle lineStyle,
-      ) {
+    EdgePoint point,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+    Canvas canvas,
+    DrawingPaintStyle paintStyle,
+    LineStyle lineStyle,
+  ) {
     canvas.drawCircle(
       Offset(epochToX(point.epoch), quoteToY(point.quote)),
       5,
@@ -204,13 +291,13 @@ class LineInteractableDrawing
 
   @override
   void onCreateTap(
-      TapUpDetails details,
-      EpochFromX epochFromX,
-      QuoteFromY quoteFromY,
-      EpochToX epochToX,
-      QuoteToY quoteToY,
-      VoidCallback onDone,
-      ) {
+    TapUpDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+    VoidCallback onDone,
+  ) {
     if (startPoint == null) {
       startPoint = EdgePoint(
         epoch: epochFromX(details.localPosition.dx),
@@ -227,12 +314,12 @@ class LineInteractableDrawing
 
   @override
   void onDragUpdate(
-      DragUpdateDetails details,
-      EpochFromX epochFromX,
-      QuoteFromY quoteFromY,
-      EpochToX epochToX,
-      QuoteToY quoteToY,
-      ) {
+    DragUpdateDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+  ) {
     if (startPoint == null || endPoint == null) {
       return;
     }
@@ -244,7 +331,7 @@ class LineInteractableDrawing
     if (_isDraggingStartPoint != null) {
       // Get the current point being dragged
       final EdgePoint pointBeingDragged =
-      _isDraggingStartPoint! ? startPoint! : endPoint!;
+          _isDraggingStartPoint! ? startPoint! : endPoint!;
 
       // Get the current screen position of the point
       final Offset currentOffset = Offset(
@@ -314,12 +401,12 @@ class LineInteractableDrawing
 
   @override
   void onDragEnd(
-      DragEndDetails details,
-      EpochFromX epochFromX,
-      QuoteFromY quoteFromY,
-      EpochToX epochToX,
-      QuoteToY quoteToY,
-      ) {
+    DragEndDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+  ) {
     // Reset the dragging flag when drag is complete
     _isDraggingStartPoint = null;
   }
@@ -330,4 +417,19 @@ class LineInteractableDrawing
         if (startPoint != null) startPoint!,
         if (endPoint != null) endPoint!
       ]);
+}
+
+/// A circular array for dash patterns
+class _CircularIntervalList<T> {
+  _CircularIntervalList(this._values);
+
+  final List<T> _values;
+  int _index = 0;
+
+  T get next {
+    if (_index >= _values.length) {
+      _index = 0;
+    }
+    return _values[_index++];
+  }
 }

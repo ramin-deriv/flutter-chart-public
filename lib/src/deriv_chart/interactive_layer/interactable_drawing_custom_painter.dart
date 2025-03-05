@@ -9,7 +9,7 @@ import '../chart/data_visualization/models/animation_info.dart';
 import '../chart/y_axis/y_axis_config.dart';
 
 /// A callback which calling it should return if the [drawing] is selected.
-typedef GetDrawingState = DrawingToolState Function(
+typedef GetDrawingState = Set<DrawingToolState> Function(
   InteractableDrawing drawing,
 );
 
@@ -53,7 +53,7 @@ class InteractableDrawingCustomPainter extends CustomPainter {
   double Function(double) quoteFromY;
 
   /// Returns `true` if the drawing tool is selected.
-  final DrawingToolState Function(InteractableDrawing) getDrawingState;
+  final Set<DrawingToolState> Function(InteractableDrawing) getDrawingState;
 
   @override
   void paint(Canvas canvas, Size size) {
