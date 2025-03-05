@@ -1,5 +1,4 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
-import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/drawing.dart';
 import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactive_states/Interactive_hover_state.dart';
 import 'package:flutter/widgets.dart';
 

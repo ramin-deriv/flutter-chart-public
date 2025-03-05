@@ -1,4 +1,3 @@
-import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactable_drawing.dart';
 import 'package:deriv_chart/src/models/chart_config.dart';
 import 'package:deriv_chart/src/theme/chart_theme.dart';
@@ -29,17 +28,29 @@ class InteractableDrawingCustomPainter extends CustomPainter {
     required this.getDrawingState,
   });
 
+  /// Drawing to paint.
   final InteractableDrawing drawing;
+
+  /// The main series of the chart.
   final DataSeries<Tick> series;
+
+  /// Chart theme.
   final ChartTheme theme;
+
+  /// Chart's general config.
   final ChartConfig chartConfig;
+
+  /// Converts x coordinate (in pixels) to epoch timestamp.
   final int Function(double x) epochFromX;
+
+  /// Converts epoch timestamp to x coordinate (in pixels).
   final double Function(int x) epochToX;
+
+  /// Converts y coordinate (in pixels) to quote value.
   final double Function(double y) quoteToY;
 
+  /// Converts quote value to y coordinate (in pixels).
   double Function(double) quoteFromY;
-
-  // final Function() onDrawingToolClicked;
 
   /// Returns `true` if the drawing tool is selected.
   final DrawingToolState Function(InteractableDrawing) getDrawingState;

@@ -60,9 +60,6 @@ abstract class InteractableDrawing<T extends DrawingToolConfig> {
   /// The drawing tool config.
   final T config;
 
-  @protected
-  DrawingToolState state = DrawingToolState.normal;
-
   /// Returns the updated config.
   T getUpdatedConfig();
 
@@ -83,9 +80,7 @@ abstract class InteractableDrawing<T extends DrawingToolConfig> {
     EpochToX epochToX,
     QuoteToY quoteToY,
     VoidCallback onDone,
-  ) {
-    print('onDragStart $runtimeType}');
-  }
+  ) {}
 
   /// Called when the drawing tool dragging is started.
   void onDragStart(
@@ -94,9 +89,7 @@ abstract class InteractableDrawing<T extends DrawingToolConfig> {
     QuoteFromY quoteFromY,
     EpochToX epochToX,
     QuoteToY quoteToY,
-  ) {
-    print('onDragStart $runtimeType}');
-  }
+  ) {}
 
   /// Called when the drawing tool is dragged and updates the drawing position
   /// properties based on the dragging [details].
@@ -119,9 +112,7 @@ abstract class InteractableDrawing<T extends DrawingToolConfig> {
     QuoteFromY quoteFromY,
     EpochToX epochToX,
     QuoteToY quoteToY,
-  ) {
-    print('onDragEnd $runtimeType');
-  }
+  ) {}
 
   /// Paints the drawing tool on the chart.
   void paint(

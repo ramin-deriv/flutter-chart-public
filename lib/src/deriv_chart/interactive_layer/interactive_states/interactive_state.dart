@@ -1,7 +1,6 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/chart_data.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/widgets.dart';
 
 import '../interactable_drawing.dart';
 import '../interactive_layer_base.dart';

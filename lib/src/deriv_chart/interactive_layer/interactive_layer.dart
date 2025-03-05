@@ -125,8 +125,6 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       }
 
       // Update the config in the repository
-      final config = drawing.getUpdatedConfig();
-      print('#### Updated config ${config.toJson()}');
       repo.updateAt(index, drawing.getUpdatedConfig());
     });
   }

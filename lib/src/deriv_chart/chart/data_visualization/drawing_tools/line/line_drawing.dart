@@ -231,9 +231,6 @@ class LineDrawing extends Drawing with LineVectorDrawingMixin {
             (_startPoint!.isClicked(position, markerRadius) ||
                 _endPoint!.isClicked(position, markerRadius));
 
-    print(
-        'returnValue: $returnValue distance: $distance lineLength: $lineLength isWithinRange: $isWithinRange distance.abs(): ${distance.abs()} lineStyle.thickness: ${lineStyle.thickness}  ');
-
     return returnValue;
   }
 }
