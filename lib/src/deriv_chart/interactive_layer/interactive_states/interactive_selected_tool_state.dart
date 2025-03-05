@@ -1,5 +1,6 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/drawing.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactive_states/Interactive_hover_state.dart';
 import 'package:flutter/widgets.dart';
 
 import '../interactable_drawing.dart';
@@ -14,7 +15,8 @@ import 'interactive_state.dart';
 ///
 /// It handles user interactions specifically for when a drawing tool is selected,
 /// providing appropriate responses to gestures and maintaining the selected state.
-class InteractiveSelectedToolState extends InteractiveState {
+class InteractiveSelectedToolState extends InteractiveState
+    with InteractiveHoverState {
   /// Initializes the state with the interactive layer and the [selected] tool.
   ///
   /// The [selected] parameter is the drawing tool that has been selected by the user
@@ -37,7 +39,14 @@ class InteractiveSelectedToolState extends InteractiveState {
 
   @override
   DrawingToolState getToolState(
-      InteractableDrawing<DrawingToolConfig> drawing) {
+    InteractableDrawing<DrawingToolConfig> drawing,
+  ) {
+    final hoveredDrawing = super.getToolState(drawing);
+
+    if (hoveredDrawing == DrawingToolState.hovered) {
+      return DrawingToolState.hovered;
+    }
+
     return drawing.config.configId == selected.config.configId
         ? DrawingToolState.selected
         : DrawingToolState.normal;
