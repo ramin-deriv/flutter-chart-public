@@ -125,6 +125,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       }
 
       // Update the config in the repository
+      final config = drawing.getUpdatedConfig();
+      print('#### Updated config ${config.toJson()}');
       repo.updateAt(index, drawing.getUpdatedConfig());
     });
   }
@@ -312,12 +314,13 @@ class _InteractiveLayerGestureHandlerState
   QuoteToY get quoteToY => widget.quoteToY;
 
   @override
-  void clearAddingDrawing() {
-    widget.onClearAddingDrawingTool.call();
-  }
+  void clearAddingDrawing() => widget.onClearAddingDrawingTool.call();
 
   @override
-  void onAddDrawing(InteractableDrawing<DrawingToolConfig> drawing) {
-    widget.onAddDrawing?.call(drawing);
-  }
+  void onAddDrawing(InteractableDrawing<DrawingToolConfig> drawing) =>
+      widget.onAddDrawing?.call(drawing);
+
+  @override
+  void onSaveDrawing(InteractableDrawing<DrawingToolConfig> drawing) =>
+      widget.onSaveDrawingChange?.call(drawing);
 }

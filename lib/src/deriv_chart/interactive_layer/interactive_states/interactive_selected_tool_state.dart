@@ -27,6 +27,7 @@ class InteractiveSelectedToolState extends InteractiveState {
   @override
   void onPanEnd(DragEndDetails details) {
     selected.onDragEnd(details, epochFromX, quoteFromY, epochToX, quoteToY);
+    interactiveLayer.onSaveDrawing(selected);
   }
 
   @override
