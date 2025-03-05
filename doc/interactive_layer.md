@@ -20,6 +20,7 @@ This is the default state when no drawing tools are selected or being added. In 
 - The user can tap on existing drawing tools to select them
 - The user can initiate adding a new drawing tool
 - All drawing tools are in the `DrawingToolState.normal` state
+- Includes hover functionality through the `InteractiveHoverState` mixin
 
 ### InteractiveSelectedToolState
 
@@ -28,6 +29,7 @@ This state is active when a drawing tool is selected. In this state:
 - The user can drag the selected tool to move it
 - The user can modify specific points of the selected tool
 - Tapping outside the selected tool returns to the `InteractiveNormalState`
+- Includes hover functionality through the `InteractiveHoverState` mixin
 
 ### InteractiveAddingToolState
 
@@ -36,11 +38,21 @@ This state is active when a new drawing tool is being added to the chart. In thi
 - The user can tap on the chart to define points for the new tool (e.g., start and end points for a line)
 - Once the tool creation is complete, the state transitions back to `InteractiveNormalState`
 
+### InteractiveHoverState
+
+This is implemented as a mixin rather than a standalone state, allowing it to be combined with other states:
+- Provides hover detection functionality to any state that includes it
+- Changes a drawing tool's state to `DrawingToolState.hovered` when the pointer hovers over it
+- Reverts the tool's state when the pointer moves away
+- Currently used by both `InteractiveNormalState` and `InteractiveSelectedToolState`
+
+This mixin-based approach allows hover functionality to be reused across different states without code duplication, following the composition over inheritance principle.
+
 ## State Transitions
 
 The Interactive Layer manages transitions between states based on user interactions:
 
-![Interactive Layer State Transitions](images/interactive_layer.png)
+![Interactive Layer State Transitions](images/interactive_layer_2.png)
 
 The diagram above illustrates the state transitions in the Interactive Layer:
 
@@ -48,6 +60,8 @@ The diagram above illustrates the state transitions in the Interactive Layer:
 2. **SelectedToolState → NormalState**: Occurs when the user taps outside the selected tool
 3. **NormalState → AddingToolState**: Occurs when the user initiates adding a new drawing tool
 4. **AddingToolState → NormalState**: Occurs when the new tool creation is complete
+
+Note that both NormalState and SelectedToolState include the HoverState functionality through the mixin pattern, as shown in the nested boxes in the diagram.
 
 ## DrawingToolState
 
