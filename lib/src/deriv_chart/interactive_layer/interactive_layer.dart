@@ -272,7 +272,7 @@ class _InteractiveLayerGestureHandlerState
                       ),
                     ))
                 .toList(),
-            ..._interactiveState.additionalDrawings
+            ..._interactiveState.previewDrawings
                 .map((e) => CustomPaint(
                       foregroundPainter: InteractableDrawingCustomPainter(
                         drawing: e,
