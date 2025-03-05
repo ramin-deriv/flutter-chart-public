@@ -90,6 +90,8 @@ class InteractiveSelectedToolState extends InteractiveState
         epochToX,
         quoteToY,
       );
+
+      interactiveLayer.onSaveDrawing(selected);
     }
   }
 
