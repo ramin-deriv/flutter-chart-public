@@ -141,6 +141,57 @@ class LineInteractableDrawing
   /// End point of the line.
   EdgePoint? endPoint;
 
+  // Tracks which point is being dragged, if any
+  // null: dragging the whole line
+  // true: dragging the start point
+  // false: dragging the end point
+  bool? _isDraggingStartPoint;
+
+  @override
+  void onDragStart(
+    DragStartDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+  ) {
+    if (startPoint == null || endPoint == null) {
+      return;
+    }
+
+    // Reset the dragging flag
+    _isDraggingStartPoint = null;
+
+    // Convert start and end points from epoch/quote to screen coordinates
+    final Offset startOffset = Offset(
+      epochToX(startPoint!.epoch),
+      quoteToY(startPoint!.quote),
+    );
+    final Offset endOffset = Offset(
+      epochToX(endPoint!.epoch),
+      quoteToY(endPoint!.quote),
+    );
+
+    // Check if the drag is starting on one of the endpoints
+    final double startDistance = (details.localPosition - startOffset).distance;
+    final double endDistance = (details.localPosition - endOffset).distance;
+
+    // If the drag is starting on the start point
+    if (startDistance <= hitTestMargin) {
+      _isDraggingStartPoint = true;
+      return;
+    }
+
+    // If the drag is starting on the end point
+    if (endDistance <= hitTestMargin) {
+      _isDraggingStartPoint = false;
+      return;
+    }
+
+    // If we reach here, the drag is on the line itself, not on a specific point
+    // _isDraggingStartPoint remains null, indicating we're dragging the whole line
+  }
+
   @override
   bool hitTest(Offset offset, EpochToX epochToX, QuoteToY quoteToY) {
     if (startPoint == null || endPoint == null) {
@@ -297,35 +348,69 @@ class LineInteractableDrawing
     // Get the drag delta in screen coordinates
     final Offset delta = details.delta;
 
-    // Convert start and end points to screen coordinates
-    final Offset startOffset = Offset(
-      epochToX(startPoint!.epoch),
-      quoteToY(startPoint!.quote),
-    );
-    final Offset endOffset = Offset(
-      epochToX(endPoint!.epoch),
-      quoteToY(endPoint!.quote),
-    );
+    // If we're dragging a specific point (start or end point)
+    if (_isDraggingStartPoint != null) {
+      // Get the current point being dragged
+      EdgePoint pointBeingDragged =
+          _isDraggingStartPoint! ? startPoint! : endPoint!;
 
-    // Apply the delta to get new screen coordinates
-    final Offset newStartOffset = startOffset + delta;
-    final Offset newEndOffset = endOffset + delta;
+      // Get the current screen position of the point
+      final Offset currentOffset = Offset(
+        epochToX(pointBeingDragged.epoch),
+        quoteToY(pointBeingDragged.quote),
+      );
 
-    // Convert back to epoch and quote coordinates
-    final int newStartEpoch = epochFromX(newStartOffset.dx);
-    final double newStartQuote = quoteFromY(newStartOffset.dy);
-    final int newEndEpoch = epochFromX(newEndOffset.dx);
-    final double newEndQuote = quoteFromY(newEndOffset.dy);
+      // Apply the delta to get the new screen position
+      final Offset newOffset = currentOffset + delta;
 
-    // Update the start and end points
-    startPoint = EdgePoint(
-      epoch: newStartEpoch,
-      quote: newStartQuote,
-    );
-    endPoint = EdgePoint(
-      epoch: newEndEpoch,
-      quote: newEndQuote,
-    );
+      // Convert back to epoch and quote coordinates
+      final int newEpoch = epochFromX(newOffset.dx);
+      final double newQuote = quoteFromY(newOffset.dy);
+
+      // Create updated point
+      final EdgePoint updatedPoint = EdgePoint(
+        epoch: newEpoch,
+        quote: newQuote,
+      );
+
+      // Update the appropriate point
+      if (_isDraggingStartPoint!) {
+        startPoint = updatedPoint;
+      } else {
+        endPoint = updatedPoint;
+      }
+    } else {
+      // We're dragging the whole line
+      // Convert start and end points to screen coordinates
+      final Offset startOffset = Offset(
+        epochToX(startPoint!.epoch),
+        quoteToY(startPoint!.quote),
+      );
+      final Offset endOffset = Offset(
+        epochToX(endPoint!.epoch),
+        quoteToY(endPoint!.quote),
+      );
+
+      // Apply the delta to get new screen coordinates
+      final Offset newStartOffset = startOffset + delta;
+      final Offset newEndOffset = endOffset + delta;
+
+      // Convert back to epoch and quote coordinates
+      final int newStartEpoch = epochFromX(newStartOffset.dx);
+      final double newStartQuote = quoteFromY(newStartOffset.dy);
+      final int newEndEpoch = epochFromX(newEndOffset.dx);
+      final double newEndQuote = quoteFromY(newEndOffset.dy);
+
+      // Update the start and end points
+      startPoint = EdgePoint(
+        epoch: newStartEpoch,
+        quote: newStartQuote,
+      );
+      endPoint = EdgePoint(
+        epoch: newEndEpoch,
+        quote: newEndQuote,
+      );
+    }
 
     // Note: The actual config update should be handled by the InteractiveLayer
     // which has access to the Repository. This method only updates the local
@@ -333,6 +418,18 @@ class LineInteractableDrawing
     //
     // The InteractiveLayer should periodically check if the selected drawing's
     // points have changed and update the config in the repository accordingly.
+  }
+
+  @override
+  void onDragEnd(
+    DragEndDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+  ) {
+    // Reset the dragging flag when drag is complete
+    _isDraggingStartPoint = null;
   }
 
   @override

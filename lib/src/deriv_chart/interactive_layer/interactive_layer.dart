@@ -92,6 +92,10 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   }
 
   void _setDrawingsFromConfigs() {
+    if (widget.drawingToolsRepo.items.length == _interactableDrawings.length) {
+      return;
+    }
+
     _interactableDrawings.clear();
 
     for (final config in widget.drawingToolsRepo.items) {
