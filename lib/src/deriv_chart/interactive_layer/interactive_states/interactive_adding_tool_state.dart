@@ -1,5 +1,5 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/gestures.dart';
 
 import '../interactable_drawings/interactable_drawing.dart';
 import 'interactive_normal_state.dart';
@@ -58,6 +58,15 @@ class InteractiveAddingToolState extends InteractiveState {
 
   @override
   void onPanUpdate(DragUpdateDetails details) {}
+
+  @override
+  void onHover(PointerHoverEvent event) => _addingDrawing?.onHover(
+        event,
+        epochFromX,
+        quoteFromY,
+        epochToX,
+        quoteToY,
+      );
 
   @override
   void onTap(TapUpDetails details) {

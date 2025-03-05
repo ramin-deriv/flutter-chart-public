@@ -1,4 +1,5 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../chart/data_visualization/chart_data.dart';
@@ -104,6 +105,15 @@ abstract class InteractableDrawing<T extends DrawingToolConfig> {
   /// Called when the drawing tool dragging is ended.
   void onDragEnd(
     DragEndDetails details,
+    EpochFromX epochFromX,
+    QuoteFromY quoteFromY,
+    EpochToX epochToX,
+    QuoteToY quoteToY,
+  ) {}
+
+  /// Called when the user's pointer is hovering over the drawing tool.
+  void onHover(
+    PointerHoverEvent event,
     EpochFromX epochFromX,
     QuoteFromY quoteFromY,
     EpochToX epochToX,

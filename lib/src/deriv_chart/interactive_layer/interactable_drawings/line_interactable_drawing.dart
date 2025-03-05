@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/line/line_drawing_tool_config.dart';
 import 'package:deriv_chart/src/theme/painting_styles/line_style.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../chart/data_visualization/chart_data.dart';
@@ -31,6 +32,14 @@ class LineInteractableDrawing
   // true: dragging the start point
   // false: dragging the end point
   bool? _isDraggingStartPoint;
+
+  Offset? _hoverPosition;
+
+  @override
+  void onHover(PointerHoverEvent event, EpochFromX epochFromX,
+      QuoteFromY quoteFromY, EpochToX epochToX, QuoteToY quoteToY) {
+    _hoverPosition = event.localPosition;
+  }
 
   @override
   void onDragStart(
@@ -184,6 +193,15 @@ class LineInteractableDrawing
       if (startPoint != null) {
         _drawPoint(
             startPoint!, epochToX, quoteToY, canvas, paintStyle, lineStyle);
+
+        if (endPoint == null && _hoverPosition != null) {
+          final Offset hoverOffset = Offset(
+            epochToX(startPoint!.epoch),
+            quoteToY(startPoint!.quote),
+          );
+          canvas.drawLine(hoverOffset, _hoverPosition!,
+              paintStyle.linePaintStyle(lineStyle.color, lineStyle.thickness));
+        }
       }
 
       if (endPoint != null) {
