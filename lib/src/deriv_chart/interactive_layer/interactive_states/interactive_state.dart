@@ -85,3 +85,21 @@ abstract class InteractiveState {
   /// Handles pan start event.
   void onPanStart(DragStartDetails details);
 }
+
+/// Mixin that provides utility methods for interactive states.
+mixin InteractiveStateMixin on InteractiveState {
+  /// Returns the drawing that was hit by the tap event.
+  /// Returns null if no drawing was hit.
+  InteractableDrawing<DrawingToolConfig>? anyDrawingHit(Offset hitOffset) {
+    for (final drawing in interactiveLayer.drawings) {
+      if (drawing.hitTest(
+        hitOffset,
+        epochToX,
+        quoteToY,
+      )) {
+        return drawing;
+      }
+    }
+    return null;
+  }
+}

@@ -30,7 +30,27 @@ class InteractiveNormalState extends InteractiveState {
   void onPanEnd(DragEndDetails details) {}
 
   @override
-  void onPanStart(DragStartDetails details) {}
+  void onPanStart(DragStartDetails details) {
+    for (final drawing in interactiveLayer.drawings) {
+      if (drawing.hitTest(
+        details.localPosition,
+        epochToX,
+        quoteToY,
+      )) {
+        final newState = InteractiveSelectedToolState(
+          selected: drawing,
+          interactiveLayer: interactiveLayer,
+        );
+
+        interactiveLayer.updateStateTo(newState);
+
+        newState.onPanStart(details);
+
+        // drawing.onDragStart(details, epochFromX, quoteFromY, epochToX, quoteToY);
+        return;
+      }
+    }
+  }
 
   @override
   void onPanUpdate(DragUpdateDetails details) {}

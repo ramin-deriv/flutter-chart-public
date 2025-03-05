@@ -32,6 +32,8 @@ class InteractiveSelectedToolState extends InteractiveState {
   /// manipulation gestures. It will be rendered with a selected appearance.
   final InteractableDrawing selected;
 
+  bool _draggingStartedOnTool = false;
+
   @override
   DrawingToolState getToolState(
       InteractableDrawing<DrawingToolConfig> drawing) {
@@ -43,17 +45,46 @@ class InteractiveSelectedToolState extends InteractiveState {
   @override
   void onPanEnd(DragEndDetails details) {
     selected.onDragEnd(details, epochFromX, quoteFromY, epochToX, quoteToY);
+    _draggingStartedOnTool = false;
     interactiveLayer.onSaveDrawing(selected);
   }
 
   @override
   void onPanStart(DragStartDetails details) {
-    selected.onDragStart(details, epochFromX, quoteFromY, epochToX, quoteToY);
+    if (selected.hitTest(details.localPosition, epochToX, quoteToY)) {
+      _draggingStartedOnTool = true;
+      selected.onDragStart(details, epochFromX, quoteFromY, epochToX, quoteToY);
+    } else {
+      for (final drawing in interactiveLayer.drawings) {
+        if (drawing.hitTest(
+          details.localPosition,
+          epochToX,
+          quoteToY,
+        )) {
+          interactiveLayer.updateStateTo(
+            InteractiveSelectedToolState(
+              selected: drawing,
+              interactiveLayer: interactiveLayer,
+            )..onPanStart(details),
+          );
+
+          return;
+        }
+      }
+    }
   }
 
   @override
   void onPanUpdate(DragUpdateDetails details) {
-    selected.onDragUpdate(details, epochFromX, quoteFromY, epochToX, quoteToY);
+    if (_draggingStartedOnTool) {
+      selected.onDragUpdate(
+        details,
+        epochFromX,
+        quoteFromY,
+        epochToX,
+        quoteToY,
+      );
+    }
   }
 
   @override

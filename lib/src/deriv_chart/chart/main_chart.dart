@@ -369,8 +369,8 @@ class _ChartImplementationState extends BasicChartState<MainChart> {
                     epochFromCanvasX: xAxis.epochFromX,
                   ),
                 if (kIsWeb) _buildCrosshairAreaWeb(),
-                if (!kIsWeb && !(widget.drawingTools?.isDrawingMoving ?? false))
-                  _buildCrosshairArea(),
+                // if (!kIsWeb && !(widget.drawingTools?.isDrawingMoving ?? false))
+                //   _buildCrosshairArea(),
                 if (widget.showScrollToLastTickButton &&
                     _isScrollToLastTickAvailable)
                   Positioned(
