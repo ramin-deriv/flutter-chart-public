@@ -1,7 +1,7 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:flutter/widgets.dart';
 
-import '../interactable_drawing.dart';
+import '../interactable_drawings/interactable_drawing.dart';
 import 'interactive_normal_state.dart';
 import 'interactive_state.dart';
 

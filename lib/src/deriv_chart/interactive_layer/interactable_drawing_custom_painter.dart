@@ -1,4 +1,4 @@
-import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactable_drawing.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactable_drawings/interactable_drawing.dart';
 import 'package:deriv_chart/src/models/chart_config.dart';
 import 'package:deriv_chart/src/theme/chart_theme.dart';
 import 'package:flutter/rendering.dart';

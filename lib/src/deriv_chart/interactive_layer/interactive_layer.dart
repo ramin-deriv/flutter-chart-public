@@ -13,7 +13,7 @@ import '../chart/data_visualization/chart_data.dart';
 import '../chart/data_visualization/chart_series/data_series.dart';
 import '../chart/data_visualization/drawing_tools/ray/ray_line_drawing.dart';
 import '../drawing_tool_chart/drawing_tools.dart';
-import 'interactable_drawing.dart';
+import 'interactable_drawings/interactable_drawing.dart';
 import 'interactable_drawing_custom_painter.dart';
 import 'interactive_layer_base.dart';
 import 'interactive_states/interactive_adding_tool_state.dart';
