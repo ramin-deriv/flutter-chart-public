@@ -52,7 +52,7 @@ abstract class InteractableDrawing<T extends DrawingToolConfig> {
   /// Initializes [InteractableDrawing].
   InteractableDrawing({required this.config});
 
-  static const double _hitTestMargin = 16;
+  static const double _hitTestMargin = 32;
 
   /// The margin for hit testing.
   double get hitTestMargin => _hitTestMargin;
@@ -208,6 +208,15 @@ class LineInteractableDrawing
       quoteToY(endPoint!.quote),
     );
 
+    // Check if the pointer is near either endpoint
+    // Use a slightly larger margin for the endpoints to make them easier to hit
+    final double startDistance = (offset - startOffset).distance;
+    final double endDistance = (offset - endOffset).distance;
+
+    if (startDistance <= hitTestMargin || endDistance <= hitTestMargin) {
+      return true;
+    }
+
     // Calculate line length
     final double lineLength = (endOffset - startOffset).distance;
 
@@ -234,7 +243,6 @@ class LineInteractableDrawing
         dotProduct >= 0 && dotProduct <= lineLength * lineLength;
 
     final result = isWithinRange && distance <= hitTestMargin;
-    // Return true if within range and close enough to line (8 pixel margin)
     return result;
   }
 
@@ -304,7 +312,7 @@ class LineInteractableDrawing
     LineStyle lineStyle,
   ) {
     canvas.drawCircle(
-      Offset(epochToX(startPoint!.epoch), quoteToY(startPoint!.quote)),
+      Offset(epochToX(point.epoch), quoteToY(point.quote)),
       5,
       paintStyle.glowyCirclePaintStyle(lineStyle.color),
     );
@@ -351,7 +359,7 @@ class LineInteractableDrawing
     // If we're dragging a specific point (start or end point)
     if (_isDraggingStartPoint != null) {
       // Get the current point being dragged
-      EdgePoint pointBeingDragged =
+      final EdgePoint pointBeingDragged =
           _isDraggingStartPoint! ? startPoint! : endPoint!;
 
       // Get the current screen position of the point
