@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:deriv_chart/deriv_chart.dart';
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/add_ons/repository.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/gestures/gesture_manager.dart';
@@ -210,16 +211,24 @@ class _InteractiveLayerGestureHandler extends StatefulWidget {
 
 class _InteractiveLayerGestureHandlerState
     extends State<_InteractiveLayerGestureHandler>
+    with SingleTickerProviderStateMixin
     implements InteractiveLayerBase {
   // InteractableDrawing? _selectedDrawing;
 
   late InteractiveState _interactiveState;
+  late AnimationController _stateChangeController;
+  static const Curve _stateChangeCurve = Curves.easeInOut;
 
   @override
   void initState() {
     super.initState();
 
     _interactiveState = InteractiveNormalState(interactiveLayer: this);
+
+    _stateChangeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
 
     // register the callback
     context.read<GestureManagerState>().registerCallback(onTap);
@@ -241,8 +250,13 @@ class _InteractiveLayerGestureHandlerState
   }
 
   @override
-  void updateStateTo(InteractiveState state) =>
-      setState(() => _interactiveState = state);
+  void updateStateTo(InteractiveState state) {
+    _stateChangeController
+      ..reset()
+      ..forward();
+    _interactiveState = state;
+    // setState(() => _interactiveState = state);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -257,43 +271,57 @@ class _InteractiveLayerGestureHandlerState
           onPanEnd: (details) => _interactiveState.onPanEnd(details),
           // TODO(NA): Move this part into separate widget. InteractiveLayer only cares about the interactions and selected tool movement
           // It can delegate it to an inner component as well. which we can have different interaction behaviours like per platform as well.
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              ...widget.drawings
-                  .map((e) => CustomPaint(
-                        foregroundPainter: InteractableDrawingCustomPainter(
-                          drawing: e,
-                          series: widget.series,
-                          theme: context.watch<ChartTheme>(),
-                          chartConfig: widget.chartConfig,
-                          epochFromX: xAxis.epochFromX,
-                          epochToX: xAxis.xFromEpoch,
-                          quoteToY: widget.quoteToY,
-                          quoteFromY: widget.quoteFromY,
-                          getDrawingState: _interactiveState.getToolState,
-                          // onDrawingToolClicked: () => _selectedDrawing = e,
-                        ),
-                      ))
-                  .toList(),
-              ..._interactiveState.previewDrawings
-                  .map((e) => CustomPaint(
-                        foregroundPainter: InteractableDrawingCustomPainter(
-                          drawing: e,
-                          series: widget.series,
-                          theme: context.watch<ChartTheme>(),
-                          chartConfig: widget.chartConfig,
-                          epochFromX: xAxis.epochFromX,
-                          epochToX: xAxis.xFromEpoch,
-                          quoteToY: widget.quoteToY,
-                          quoteFromY: widget.quoteFromY,
-                          getDrawingState: _interactiveState.getToolState,
-                          // onDrawingToolClicked: () => _selectedDrawing = e,
-                        ),
-                      ))
-                  .toList(),
-            ],
-          ),
+          child: AnimatedBuilder(
+              animation: _stateChangeController,
+              builder: (_, __) {
+                final double animationValue =
+                    _stateChangeCurve.transform(_stateChangeController.value);
+                print('##### $animationValue');
+
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ...widget.drawings
+                        .map((e) => CustomPaint(
+                              foregroundPainter: InteractableDrawingCustomPainter(
+                                  drawing: e,
+                                  series: widget.series,
+                                  theme: context.watch<ChartTheme>(),
+                                  chartConfig: widget.chartConfig,
+                                  epochFromX: xAxis.epochFromX,
+                                  epochToX: xAxis.xFromEpoch,
+                                  quoteToY: widget.quoteToY,
+                                  quoteFromY: widget.quoteFromY,
+                                  getDrawingState:
+                                      _interactiveState.getToolState,
+                                  animationInfo: AnimationInfo(
+                                      stateChangePercent: animationValue)
+                                  // onDrawingToolClicked: () => _selectedDrawing = e,
+                                  ),
+                            ))
+                        .toList(),
+                    ..._interactiveState.previewDrawings
+                        .map((e) => CustomPaint(
+                              foregroundPainter: InteractableDrawingCustomPainter(
+                                  drawing: e,
+                                  series: widget.series,
+                                  theme: context.watch<ChartTheme>(),
+                                  chartConfig: widget.chartConfig,
+                                  epochFromX: xAxis.epochFromX,
+                                  epochToX: xAxis.xFromEpoch,
+                                  quoteToY: widget.quoteToY,
+                                  quoteFromY: widget.quoteFromY,
+                                  getDrawingState:
+                                      _interactiveState.getToolState,
+                                  animationInfo: AnimationInfo(
+                                      stateChangePercent: animationValue)
+                                  // onDrawingToolClicked: () => _selectedDrawing = e,
+                                  ),
+                            ))
+                        .toList(),
+                  ],
+                );
+              }),
         ),
       ),
     );

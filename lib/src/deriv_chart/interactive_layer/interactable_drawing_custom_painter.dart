@@ -26,6 +26,7 @@ class InteractableDrawingCustomPainter extends CustomPainter {
     required this.quoteToY,
     required this.quoteFromY,
     required this.getDrawingState,
+    this.animationInfo = const AnimationInfo(),
   });
 
   /// Drawing to paint.
@@ -52,6 +53,9 @@ class InteractableDrawingCustomPainter extends CustomPainter {
   /// Converts quote value to y coordinate (in pixels).
   double Function(double) quoteFromY;
 
+  /// Showing animations progress.
+  final AnimationInfo animationInfo;
+
   /// Returns `true` if the drawing tool is selected.
   final Set<DrawingToolState> Function(InteractableDrawing) getDrawingState;
 
@@ -63,7 +67,7 @@ class InteractableDrawingCustomPainter extends CustomPainter {
         size,
         epochToX,
         quoteToY,
-        const AnimationInfo(),
+        animationInfo,
         getDrawingState,
       );
       // TODO(NA): Paint the [drawing]

@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/line/line_drawing_tool_config.dart';
+import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/markers/animated_active_marker.dart';
 import 'package:deriv_chart/src/theme/painting_styles/line_style.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
@@ -163,7 +164,8 @@ class LineInteractableDrawing
 
       // Use glowy paint style if selected, otherwise use normal paint style
       final Paint paint = state.contains(DrawingToolState.selected)
-          ? paintStyle.glowyLinePaintStyle(lineStyle.color, lineStyle.thickness)
+          ? paintStyle.linePaintStyle(
+              lineStyle.color, 1 + 5 * animationInfo.stateChangePercent)
           : paintStyle.linePaintStyle(lineStyle.color, lineStyle.thickness);
 
       canvas.drawLine(startOffset, endOffset, paint);
@@ -171,7 +173,7 @@ class LineInteractableDrawing
       // Draw endpoints with glowy effect if selected
       if (state.contains(DrawingToolState.selected) ||
           state.contains(DrawingToolState.hovered)) {
-        const double markerRadius = 5;
+        final double markerRadius = 5 * animationInfo.stateChangePercent;
         canvas
           ..drawCircle(
             startOffset,
