@@ -246,49 +246,52 @@ class _InteractiveLayerGestureHandlerState
   Widget build(BuildContext context) {
     final XAxisModel xAxis = context.watch<XAxisModel>();
     return Semantics(
-      child: GestureDetector(
-        onTapUp: (details) => _interactiveState.onTap(details),
-        onPanStart: (details) => _interactiveState.onPanStart(details),
-        onPanUpdate: (details) => _interactiveState.onPanUpdate(details),
-        onPanEnd: (details) => _interactiveState.onPanEnd(details),
-        // TODO(NA): Move this part into separate widget. InteractiveLayer only cares about the interactions and selected tool movement
-        // It can delegate it to an inner component as well. which we can have different interaction behaviours like per platform as well.
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ...widget.drawings
-                .map((e) => CustomPaint(
-                      foregroundPainter: InteractableDrawingCustomPainter(
-                        drawing: e,
-                        series: widget.series,
-                        theme: context.watch<ChartTheme>(),
-                        chartConfig: widget.chartConfig,
-                        epochFromX: xAxis.epochFromX,
-                        epochToX: xAxis.xFromEpoch,
-                        quoteToY: widget.quoteToY,
-                        quoteFromY: widget.quoteFromY,
-                        getDrawingState: _interactiveState.getToolState,
-                        // onDrawingToolClicked: () => _selectedDrawing = e,
-                      ),
-                    ))
-                .toList(),
-            ..._interactiveState.previewDrawings
-                .map((e) => CustomPaint(
-                      foregroundPainter: InteractableDrawingCustomPainter(
-                        drawing: e,
-                        series: widget.series,
-                        theme: context.watch<ChartTheme>(),
-                        chartConfig: widget.chartConfig,
-                        epochFromX: xAxis.epochFromX,
-                        epochToX: xAxis.xFromEpoch,
-                        quoteToY: widget.quoteToY,
-                        quoteFromY: widget.quoteFromY,
-                        getDrawingState: _interactiveState.getToolState,
-                        // onDrawingToolClicked: () => _selectedDrawing = e,
-                      ),
-                    ))
-                .toList(),
-          ],
+      child: MouseRegion(
+        onHover: (event) => _interactiveState.onHover(event),
+        child: GestureDetector(
+          onTapUp: (details) => _interactiveState.onTap(details),
+          onPanStart: (details) => _interactiveState.onPanStart(details),
+          onPanUpdate: (details) => _interactiveState.onPanUpdate(details),
+          onPanEnd: (details) => _interactiveState.onPanEnd(details),
+          // TODO(NA): Move this part into separate widget. InteractiveLayer only cares about the interactions and selected tool movement
+          // It can delegate it to an inner component as well. which we can have different interaction behaviours like per platform as well.
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ...widget.drawings
+                  .map((e) => CustomPaint(
+                        foregroundPainter: InteractableDrawingCustomPainter(
+                          drawing: e,
+                          series: widget.series,
+                          theme: context.watch<ChartTheme>(),
+                          chartConfig: widget.chartConfig,
+                          epochFromX: xAxis.epochFromX,
+                          epochToX: xAxis.xFromEpoch,
+                          quoteToY: widget.quoteToY,
+                          quoteFromY: widget.quoteFromY,
+                          getDrawingState: _interactiveState.getToolState,
+                          // onDrawingToolClicked: () => _selectedDrawing = e,
+                        ),
+                      ))
+                  .toList(),
+              ..._interactiveState.previewDrawings
+                  .map((e) => CustomPaint(
+                        foregroundPainter: InteractableDrawingCustomPainter(
+                          drawing: e,
+                          series: widget.series,
+                          theme: context.watch<ChartTheme>(),
+                          chartConfig: widget.chartConfig,
+                          epochFromX: xAxis.epochFromX,
+                          epochToX: xAxis.xFromEpoch,
+                          quoteToY: widget.quoteToY,
+                          quoteFromY: widget.quoteFromY,
+                          getDrawingState: _interactiveState.getToolState,
+                          // onDrawingToolClicked: () => _selectedDrawing = e,
+                        ),
+                      ))
+                  .toList(),
+            ],
+          ),
         ),
       ),
     );

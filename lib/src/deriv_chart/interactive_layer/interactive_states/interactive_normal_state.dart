@@ -1,7 +1,9 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
 import '../interactable_drawing.dart';
+import 'Interactive_hover_state.dart';
 import 'interactive_selected_tool_state.dart';
 import 'interactive_state.dart';
 
@@ -13,18 +15,13 @@ import 'interactive_state.dart';
 ///
 /// This is the initial state of the interactive layer and the state it returns to
 /// when a tool is deselected or after a tool has been added.
-class InteractiveNormalState extends InteractiveState {
+class InteractiveNormalState extends InteractiveState
+    with InteractiveHoverState {
   /// Initializes the state with the interactive layer.
   ///
   /// The [interactiveLayer] parameter is passed to the superclass and provides
   /// access to the layer's methods and properties.
   InteractiveNormalState({required super.interactiveLayer});
-
-  @override
-  DrawingToolState getToolState(
-    InteractableDrawing<DrawingToolConfig> drawing,
-  ) =>
-      DrawingToolState.normal;
 
   @override
   void onPanEnd(DragEndDetails details) {}

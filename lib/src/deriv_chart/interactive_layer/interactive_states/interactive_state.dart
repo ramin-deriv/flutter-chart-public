@@ -1,5 +1,6 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/chart_data.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
 import '../interactable_drawing.dart';
@@ -74,16 +75,19 @@ abstract class InteractiveState {
   QuoteToY get quoteToY => interactiveLayer.quoteToY;
 
   /// Handles tap event.
-  void onTap(TapUpDetails details);
+  void onTap(TapUpDetails details) {}
 
   /// Handles pan update event.
-  void onPanUpdate(DragUpdateDetails details);
+  void onPanUpdate(DragUpdateDetails details) {}
 
   /// Handles pan end event.
-  void onPanEnd(DragEndDetails details);
+  void onPanEnd(DragEndDetails details) {}
 
   /// Handles pan start event.
-  void onPanStart(DragStartDetails details);
+  void onPanStart(DragStartDetails details) {}
+
+  /// Handles hover event.
+  void onHover(PointerHoverEvent event) {}
 }
 
 /// Extension that provides utility methods for interactive states.

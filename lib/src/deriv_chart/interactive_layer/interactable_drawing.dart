@@ -225,7 +225,8 @@ class LineInteractableDrawing
       canvas.drawLine(startOffset, endOffset, paint);
 
       // Draw endpoints with glowy effect if selected
-      if (state == DrawingToolState.selected) {
+      if (state == DrawingToolState.selected ||
+          state == DrawingToolState.hovered) {
         const double markerRadius = 5;
         canvas
           ..drawCircle(
