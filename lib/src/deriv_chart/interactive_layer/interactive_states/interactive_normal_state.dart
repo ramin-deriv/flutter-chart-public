@@ -1,4 +1,5 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/state_change_direction.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
@@ -40,7 +41,7 @@ class InteractiveNormalState extends InteractiveState
       interactiveLayer: interactiveLayer,
     );
 
-    interactiveLayer.updateStateTo(newState);
+    interactiveLayer.updateStateTo(newState, StateChangeDirection.forward);
 
     newState.onPanStart(details);
   }
@@ -63,6 +64,7 @@ class InteractiveNormalState extends InteractiveState
         selected: hitDrawing,
         interactiveLayer: interactiveLayer,
       ),
+      StateChangeDirection.forward,
     );
   }
 }

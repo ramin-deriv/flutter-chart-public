@@ -1,0 +1,1 @@
+enum StateChangeDirection { forward, backward }

@@ -20,6 +20,7 @@ import 'interactive_layer_base.dart';
 import 'interactive_states/interactive_adding_tool_state.dart';
 import 'interactive_states/interactive_normal_state.dart';
 import 'interactive_states/interactive_state.dart';
+import 'state_change_direction.dart';
 // ignore_for_file: public_member_api_docs
 
 /// Interactive layer of the chart package where elements can be drawn and can
@@ -245,17 +246,34 @@ class _InteractiveLayerGestureHandlerState
           widget.addingDrawingTool!,
           interactiveLayer: this,
         ),
+        StateChangeDirection.forward,
       );
     }
   }
 
   @override
-  void updateStateTo(InteractiveState state) {
-    _stateChangeController
-      ..reset()
-      ..forward();
-    _interactiveState = state;
-    // setState(() => _interactiveState = state);
+  Future<void> updateStateTo(
+    InteractiveState state,
+    StateChangeDirection direction, {
+    bool blocking = false,
+  }) async {
+    if (blocking) {
+      if (direction == StateChangeDirection.forward) {
+        _stateChangeController.reset();
+        await _stateChangeController.forward();
+      } else {
+        await _stateChangeController.reverse(from: 1);
+      }
+      setState(() => _interactiveState = state);
+    } else {
+      if (direction == StateChangeDirection.forward) {
+        _stateChangeController.reset();
+        unawaited(_stateChangeController.forward());
+      } else {
+        unawaited(_stateChangeController.reverse(from: 1));
+      }
+      _interactiveState = state;
+    }
   }
 
   @override

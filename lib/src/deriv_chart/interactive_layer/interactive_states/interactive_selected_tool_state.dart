@@ -1,5 +1,6 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactive_states/Interactive_hover_state.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/state_change_direction.dart';
 import 'package:flutter/widgets.dart';
 
 import '../interactable_drawings/interactable_drawing.dart';
@@ -80,6 +81,7 @@ class InteractiveSelectedToolState extends InteractiveState
             selected: hitDrawing,
             interactiveLayer: interactiveLayer,
           )..onPanStart(details),
+          StateChangeDirection.forward,
         );
       }
     }
@@ -113,11 +115,14 @@ class InteractiveSelectedToolState extends InteractiveState
           selected: hitDrawing,
           interactiveLayer: interactiveLayer,
         ),
+        StateChangeDirection.forward,
       );
     } else {
       // If tap is on empty space, return to normal state.
       interactiveLayer.updateStateTo(
         InteractiveNormalState(interactiveLayer: interactiveLayer),
+        StateChangeDirection.backward,
+        blocking: true,
       );
     }
   }
