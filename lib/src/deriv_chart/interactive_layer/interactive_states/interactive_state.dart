@@ -86,8 +86,8 @@ abstract class InteractiveState {
   void onPanStart(DragStartDetails details);
 }
 
-/// Mixin that provides utility methods for interactive states.
-mixin InteractiveStateMixin on InteractiveState {
+/// Extension that provides utility methods for interactive states.
+extension InteractiveStateExtension on InteractiveState {
   /// Returns the drawing that was hit by the tap event.
   /// Returns null if no drawing was hit.
   InteractableDrawing<DrawingToolConfig>? anyDrawingHit(Offset hitOffset) {

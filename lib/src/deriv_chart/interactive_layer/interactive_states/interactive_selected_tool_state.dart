@@ -1,4 +1,5 @@
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
+import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/drawing.dart';
 import 'package:flutter/widgets.dart';
 
 import '../interactable_drawing.dart';
@@ -55,21 +56,18 @@ class InteractiveSelectedToolState extends InteractiveState {
       _draggingStartedOnTool = true;
       selected.onDragStart(details, epochFromX, quoteFromY, epochToX, quoteToY);
     } else {
-      for (final drawing in interactiveLayer.drawings) {
-        if (drawing.hitTest(
-          details.localPosition,
-          epochToX,
-          quoteToY,
-        )) {
-          interactiveLayer.updateStateTo(
-            InteractiveSelectedToolState(
-              selected: drawing,
-              interactiveLayer: interactiveLayer,
-            )..onPanStart(details),
-          );
+      final InteractableDrawing<DrawingToolConfig>? hitDrawing =
+          anyDrawingHit(details.localPosition);
 
-          return;
-        }
+      // If a tool is selected, but user starts dragging on another tool
+      // Switch the selected tool
+      if (hitDrawing != null) {
+        interactiveLayer.updateStateTo(
+          InteractiveSelectedToolState(
+            selected: hitDrawing,
+            interactiveLayer: interactiveLayer,
+          )..onPanStart(details),
+        );
       }
     }
   }
@@ -89,25 +87,23 @@ class InteractiveSelectedToolState extends InteractiveState {
 
   @override
   void onTap(TapUpDetails details) {
-    for (final drawing in interactiveLayer.drawings) {
-      if (drawing.hitTest(
-        details.localPosition,
-        epochToX,
-        quoteToY,
-      )) {
-        interactiveLayer.updateStateTo(
-          InteractiveSelectedToolState(
-            selected: drawing,
-            interactiveLayer: interactiveLayer,
-          ),
-        );
+    final InteractableDrawing<DrawingToolConfig>? hitDrawing =
+        anyDrawingHit(details.localPosition);
 
-        return;
-      }
+    if (hitDrawing != null) {
+      // when a tool is tap/hit, keep selected state. it might be the same
+      // tool or a different tool.
+      interactiveLayer.updateStateTo(
+        InteractiveSelectedToolState(
+          selected: hitDrawing,
+          interactiveLayer: interactiveLayer,
+        ),
+      );
+    } else {
+      // If tap is on empty space, return to normal state.
+      interactiveLayer.updateStateTo(
+        InteractiveNormalState(interactiveLayer: interactiveLayer),
+      );
     }
-
-    interactiveLayer.updateStateTo(
-      InteractiveNormalState(interactiveLayer: interactiveLayer),
-    );
   }
 }

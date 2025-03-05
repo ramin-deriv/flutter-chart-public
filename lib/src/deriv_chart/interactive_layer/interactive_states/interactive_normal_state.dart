@@ -31,25 +31,21 @@ class InteractiveNormalState extends InteractiveState {
 
   @override
   void onPanStart(DragStartDetails details) {
-    for (final drawing in interactiveLayer.drawings) {
-      if (drawing.hitTest(
-        details.localPosition,
-        epochToX,
-        quoteToY,
-      )) {
-        final newState = InteractiveSelectedToolState(
-          selected: drawing,
-          interactiveLayer: interactiveLayer,
-        );
+    final InteractableDrawing<DrawingToolConfig>? hitDrawing =
+        anyDrawingHit(details.localPosition);
 
-        interactiveLayer.updateStateTo(newState);
-
-        newState.onPanStart(details);
-
-        // drawing.onDragStart(details, epochFromX, quoteFromY, epochToX, quoteToY);
-        return;
-      }
+    if (hitDrawing == null) {
+      return;
     }
+
+    final InteractiveState newState = InteractiveSelectedToolState(
+      selected: hitDrawing,
+      interactiveLayer: interactiveLayer,
+    );
+
+    interactiveLayer.updateStateTo(newState);
+
+    newState.onPanStart(details);
   }
 
   @override
@@ -57,20 +53,19 @@ class InteractiveNormalState extends InteractiveState {
 
   @override
   void onTap(TapUpDetails details) {
-    for (final drawing in interactiveLayer.drawings) {
-      if (drawing.hitTest(
-        details.localPosition,
-        epochToX,
-        quoteToY,
-      )) {
-        interactiveLayer.updateStateTo(
-          InteractiveSelectedToolState(
-            selected: drawing,
-            interactiveLayer: interactiveLayer,
-          ),
-        );
-        return;
-      }
+    final InteractableDrawing<DrawingToolConfig>? hitDrawing = anyDrawingHit(
+      details.localPosition,
+    );
+
+    if (hitDrawing == null) {
+      return;
     }
+
+    interactiveLayer.updateStateTo(
+      InteractiveSelectedToolState(
+        selected: hitDrawing,
+        interactiveLayer: interactiveLayer,
+      ),
+    );
   }
 }
