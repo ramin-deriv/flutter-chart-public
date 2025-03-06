@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "p2p-test-c8e14"
+  },
+  "targets": {
+    "p2p-test-c8e14": {
+      "hosting": {
+        "derivchartsample": [
+          "derivchartsample"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
