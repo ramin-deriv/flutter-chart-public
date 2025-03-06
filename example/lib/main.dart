@@ -6,6 +6,8 @@ import 'dart:math' as math;
 
 import 'package:deriv_chart/deriv_chart.dart';
 import 'package:example/generated/l10n.dart';
+import 'package:example/utils/mock_data_generator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:example/settings_page.dart';
 import 'package:example/utils/endpoints_helper.dart';
 import 'package:example/widgets/connection_status_label.dart';
@@ -139,52 +141,99 @@ class _FullscreenChartState extends State<FullscreenChart> {
   }
 
   Future<void> _connectToAPI() async {
-    _connectionBloc = connection_bloc.ConnectionCubit(ConnectionInformation(
-      endpoint: defaultEndpoint,
-      appId: defaultAppID,
-      brand: 'deriv',
-      authEndpoint: '',
-    ))
-      ..stream.listen((connection_bloc.ConnectionState connectionState) async {
-        if (connectionState is! connection_bloc.ConnectionConnectedState) {
-          // Calling this since we show some status labels when NOT connected.
-          setState(() {});
-          return;
-        }
+    if (kIsWeb) {
+      // Use mock data generator for web
+      final mockGenerator = MockDataGenerator(
+        initialPrice: 1000.0,
+        volatility: 0.02,
+        trend: 0.001, // Slight upward trend
+      );
 
-        if (ticks.isEmpty) {
-          try {
-            await _getActiveSymbols();
+      // Start generating mock data
+      final mockStream = mockGenerator.start();
 
-            if (!_requestCompleter.isCompleted) {
-              _requestCompleter.complete();
-            }
-            await _onIntervalSelected(0);
-          } on BaseAPIException catch (e) {
-            await showDialog<void>(
-              context: context,
-              builder: (_) => AlertDialog(
-                title: Text(
-                  e.message!,
-                  style: const TextStyle(fontSize: 10),
-                ),
-              ),
-            );
-          }
-        } else {
-          await _initTickStream(
-            TicksHistoryRequest(
-              ticksHistory: _symbol.name,
-              adjustStartTime: 1,
-              end: 'latest',
-              start: ticks.last.epoch ~/ 1000,
-              style: granularity == 0 ? 'ticks' : 'candles',
-              granularity: granularity > 0 ? granularity : null,
-            ),
-            resume: true,
-          );
+      // Create a fake connected state
+      _connectionBloc = connection_bloc.ConnectionCubit(ConnectionInformation(
+        endpoint: defaultEndpoint,
+        appId: defaultAppID,
+        brand: 'deriv',
+        authEndpoint: '',
+      ))..emit(connection_bloc.ConnectionConnectedState());
+
+      // Listen to mock data stream
+      _tickStreamSubscription = mockStream.listen((tickBase) {
+        if (tickBase is tick_api.Tick) {
+          _onNewTick(Tick(
+            epoch: DateTime.now().millisecondsSinceEpoch,
+            quote: tickBase.quote!,
+          ));
         }
       });
+
+      // Complete the request immediately
+      if (!_requestCompleter.isCompleted) {
+        _requestCompleter.complete();
+      }
+
+      // Set initial state
+      setState(() {
+        _symbol = Asset(
+          name: 'R_50',
+          displayName: 'Volatility 50 Index',
+          market: 'synthetic_index',
+          subMarket: 'random_index',
+          isOpen: true,
+        );
+      });
+    } else {
+      // Use real WebSocket connection for non-web platforms
+      _connectionBloc = connection_bloc.ConnectionCubit(ConnectionInformation(
+        endpoint: defaultEndpoint,
+        appId: defaultAppID,
+        brand: 'deriv',
+        authEndpoint: '',
+      ))
+        ..stream.listen((connection_bloc.ConnectionState connectionState) async {
+          if (connectionState is! connection_bloc.ConnectionConnectedState) {
+            // Calling this since we show some status labels when NOT connected.
+            setState(() {});
+            return;
+          }
+
+          if (ticks.isEmpty) {
+            try {
+              await _getActiveSymbols();
+
+              if (!_requestCompleter.isCompleted) {
+                _requestCompleter.complete();
+              }
+              await _onIntervalSelected(0);
+            } on BaseAPIException catch (e) {
+              await showDialog<void>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: Text(
+                    e.message!,
+                    style: const TextStyle(fontSize: 10),
+                  ),
+                ),
+              );
+            }
+          } else {
+            await _initTickStream(
+              TicksHistoryRequest(
+                ticksHistory: _symbol.name,
+                adjustStartTime: 1,
+                end: 'latest',
+                start: ticks.last.epoch ~/ 1000,
+                style: granularity == 0 ? 'ticks' : 'candles',
+                granularity: granularity > 0 ? granularity : null,
+              ),
+              resume: true,
+            );
+          }
+        });
+    }
   }
 
   Future<void> _getActiveSymbols() async {
