@@ -4,6 +4,8 @@ import 'package:deriv_chart/src/add_ons/drawing_tools_ui/callbacks.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/drawing_pattern.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/edge_point.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/drawing_data.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactable_drawings/fibfan_interactable_drawing.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactable_drawings/interactable_drawing.dart';
 import 'package:deriv_chart/src/theme/painting_styles/line_style.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -75,4 +77,13 @@ class FibfanDrawingToolConfig extends DrawingToolConfig {
         edgePoints: edgePoints ?? this.edgePoints,
         number: number ?? this.number,
       );
+
+  @override
+  InteractableDrawing<DrawingToolConfig> getInteractableDrawing() {
+    return FibFanInteractableDrawing(
+      config: this,
+      startPoint: edgePoints.isNotEmpty ? edgePoints.first : null,
+      endPoint: edgePoints.isNotEmpty ? edgePoints.last : null,
+    );
+  }
 }
