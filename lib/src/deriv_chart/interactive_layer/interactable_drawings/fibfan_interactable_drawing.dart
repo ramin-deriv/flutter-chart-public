@@ -194,16 +194,19 @@ class FibFanInteractableDrawing extends InteractableDrawing<FibfanDrawingToolCon
           ..moveTo(startOffset.dx, startOffset.dy)
           ..lineTo(fanEnd.dx, fanEnd.dy)
           ..lineTo(nextFanEnd.dx, nextFanEnd.dy)
-          ..close();
+          ..lineTo(startOffset.dx, startOffset.dy);
 
         // Use different colors and opacities based on selection state
         final Color fillColor = state.contains(DrawingToolState.selected) ||
                 state.contains(DrawingToolState.dragging)
-            ? fillStyle.color.withOpacity(0.3) // More prominent when selected
-            : fillStyle.color.withOpacity(0.15); // More visible in normal state
+            ? fillStyle.color.withOpacity(0.4) // More prominent when selected
+            : fillStyle.color.withOpacity(0.25); // More visible in normal state
 
-        final Paint fillPaint =
-            paintStyle.linePaintStyle(fillColor, fillStyle.thickness);
+        final Paint fillPaint = Paint()
+          ..color = fillColor
+          ..style = PaintingStyle.fill
+          ..isAntiAlias = true
+          ..blendMode = BlendMode.srcOver;
         canvas.drawPath(fillPath, fillPaint);
       }
 
