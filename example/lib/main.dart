@@ -158,7 +158,8 @@ class _FullscreenChartState extends State<FullscreenChart> {
         appId: defaultAppID,
         brand: 'deriv',
         authEndpoint: '',
-      ))..emit(connection_bloc.ConnectionConnectedState());
+      ))
+        ..emit(connection_bloc.ConnectionConnectedState());
 
       // Listen to mock data stream
       _tickStreamSubscription = mockStream.listen((tickBase) {
@@ -193,7 +194,8 @@ class _FullscreenChartState extends State<FullscreenChart> {
         brand: 'deriv',
         authEndpoint: '',
       ))
-        ..stream.listen((connection_bloc.ConnectionState connectionState) async {
+        ..stream
+            .listen((connection_bloc.ConnectionState connectionState) async {
           if (connectionState is! connection_bloc.ConnectionConnectedState) {
             // Calling this since we show some status labels when NOT connected.
             setState(() {});
@@ -762,18 +764,6 @@ class _FullscreenChartState extends State<FullscreenChart> {
           value: granularity,
           items: <int>[
             0,
-            60,
-            120,
-            180,
-            300,
-            600,
-            900,
-            1800,
-            3600,
-            7200,
-            14400,
-            28800,
-            86400,
           ]
               .map<DropdownMenuItem<int>>(
                   (int granularity) => DropdownMenuItem<int>(
@@ -781,7 +771,7 @@ class _FullscreenChartState extends State<FullscreenChart> {
                         child: Text('${getGranularityLabel(granularity)}'),
                       ))
               .toList(),
-          onChanged: _onIntervalSelected,
+          onChanged: (_) {},
         ),
       );
 

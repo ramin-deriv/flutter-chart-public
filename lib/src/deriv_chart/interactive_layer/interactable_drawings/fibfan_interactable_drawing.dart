@@ -12,7 +12,8 @@ import '../interactable_drawing_custom_painter.dart';
 import 'interactable_drawing.dart';
 
 /// Interactable drawing for Fibonacci Fan drawing tool.
-class FibFanInteractableDrawing extends InteractableDrawing<FibfanDrawingToolConfig> {
+class FibFanInteractableDrawing
+    extends InteractableDrawing<FibfanDrawingToolConfig> {
   /// Initializes [FibFanInteractableDrawing].
   FibFanInteractableDrawing({
     required FibfanDrawingToolConfig config,
@@ -140,10 +141,10 @@ class FibFanInteractableDrawing extends InteractableDrawing<FibfanDrawingToolCon
 
     // Calculate perpendicular distance from point to line
     final double distance = ((fanEnd.dy - start.dy) * point.dx -
-            (fanEnd.dx - start.dx) * point.dy +
-            fanEnd.dx * start.dy -
-            fanEnd.dy * start.dx)
-        .abs() /
+                (fanEnd.dx - start.dx) * point.dy +
+                fanEnd.dx * start.dy -
+                fanEnd.dy * start.dx)
+            .abs() /
         lineLength;
 
     // Check if point is within the line segment
@@ -266,8 +267,7 @@ class FibFanInteractableDrawing extends InteractableDrawing<FibfanDrawingToolCon
           for (final ratio in _fibRatios) {
             final Offset previewEnd = Offset(
               _hoverPosition!.dx,
-              startOffset.dy +
-                  (_hoverPosition!.dy - startOffset.dy) * ratio,
+              startOffset.dy + (_hoverPosition!.dy - startOffset.dy) * ratio,
             );
             canvas.drawLine(
                 startOffset,
@@ -281,7 +281,8 @@ class FibFanInteractableDrawing extends InteractableDrawing<FibfanDrawingToolCon
       }
 
       if (endPoint != null) {
-        _drawPoint(endPoint!, epochToX, quoteToY, canvas, paintStyle, lineStyle);
+        _drawPoint(
+            endPoint!, epochToX, quoteToY, canvas, paintStyle, lineStyle);
       }
     }
   }
