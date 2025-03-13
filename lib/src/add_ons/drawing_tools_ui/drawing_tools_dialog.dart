@@ -50,14 +50,6 @@ class _DrawingToolsDialogState extends State<DrawingToolsDialog> {
                 hint: Text(ChartLocalization.of(context).selectDrawingTool),
                 items: const <DropdownMenuItem<DrawingToolConfig>>[
                   DropdownMenuItem<DrawingToolConfig>(
-                    child: Text('Channel'),
-                    value: ChannelDrawingToolConfig(),
-                  ),
-                  DropdownMenuItem<DrawingToolConfig>(
-                    child: Text('Continuous'),
-                    value: ContinuousDrawingToolConfig(),
-                  ),
-                  DropdownMenuItem<DrawingToolConfig>(
                     child: Text('Fib Fan'),
                     value: FibfanDrawingToolConfig(),
                   ),
@@ -69,21 +61,6 @@ class _DrawingToolsDialogState extends State<DrawingToolsDialog> {
                     child: Text('Line'),
                     value: LineDrawingToolConfig(),
                   ),
-                  DropdownMenuItem<DrawingToolConfig>(
-                    child: Text('Ray'),
-                    value: RayDrawingToolConfig(),
-                  ),
-                  DropdownMenuItem<DrawingToolConfig>(
-                      child: Text('Rectangle'),
-                      value: RectangleDrawingToolConfig()),
-                  DropdownMenuItem<DrawingToolConfig>(
-                    child: Text('Trend'),
-                    value: TrendDrawingToolConfig(),
-                  ),
-                  DropdownMenuItem<DrawingToolConfig>(
-                    child: Text('Vertical'),
-                    value: VerticalDrawingToolConfig(),
-                  )
                   // TODO(maryia-binary): add the rest of drawing tools above
                 ],
                 onChanged: (DrawingToolConfig? config) {

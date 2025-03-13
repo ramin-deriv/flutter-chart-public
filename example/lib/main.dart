@@ -766,18 +766,6 @@ class _FullscreenChartState extends State<FullscreenChart> {
           value: granularity,
           items: <int>[
             0,
-            60,
-            120,
-            180,
-            300,
-            600,
-            900,
-            1800,
-            3600,
-            7200,
-            14400,
-            28800,
-            86400,
           ]
               .map<DropdownMenuItem<int>>(
                   (int granularity) => DropdownMenuItem<int>(
@@ -785,7 +773,7 @@ class _FullscreenChartState extends State<FullscreenChart> {
                         child: Text('${getGranularityLabel(granularity)}'),
                       ))
               .toList(),
-          onChanged: _onIntervalSelected,
+          onChanged: (_) {},
         ),
       );
 
