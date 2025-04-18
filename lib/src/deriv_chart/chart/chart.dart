@@ -205,7 +205,7 @@ abstract class _ChartState extends State<Chart> with WidgetsBindingObserver {
   double lastTimestamp = 0;
   int lowFpsStreak = 0;
   static const double LOW_FPS_THRESHOLD = 50.0;
-  static const int STREAK_TO_SWITCH = 5;
+  static const int STREAK_TO_SWITCH = 3;
   bool checkPerformance = true;
 
   @override
@@ -232,13 +232,14 @@ abstract class _ChartState extends State<Chart> with WidgetsBindingObserver {
       final double fps = (frameCount * 1000.0) / elapsed;
 
       if (fps < LOW_FPS_THRESHOLD) {
+        html.window.console.log('####### Increasing LOW_FPS_STREAK ${DateTime.now()}');
         lowFpsStreak++;
       } else {
+        html.window.console.log('####### Resetting LOW_FPS_STREAK ${DateTime.now()}');
         lowFpsStreak = 0;
       }
 
       if (lowFpsStreak >= STREAK_TO_SWITCH) {
-        print('Flutter internal performance low, switching to light mode.');
         html.window.console.log('####### Flutter internal performance low, switching to light mode. ${DateTime.now()}');
         checkPerformance = false; // Stop checking after switching
       }
