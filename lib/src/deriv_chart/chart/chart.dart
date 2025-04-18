@@ -3,6 +3,7 @@ import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/models/char
 import 'package:deriv_chart/src/deriv_chart/chart/mobile_chart_frame_dividers.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/x_axis/x_axis_model.dart';
 import 'package:deriv_chart/src/theme/dimens.dart';
+import 'dart:html' as html;
 import 'package:flutter/foundation.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/gestures/gesture_manager.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/x_axis/x_axis_wrapper.dart';
@@ -13,6 +14,7 @@ import 'package:deriv_chart/src/models/chart_config.dart';
 import 'package:deriv_chart/src/models/indicator_input.dart';
 import 'package:deriv_chart/src/theme/chart_default_light_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import '../../add_ons/indicators_ui/indicator_config.dart';
@@ -199,11 +201,55 @@ abstract class _ChartState extends State<Chart> with WidgetsBindingObserver {
   late List<Series>? bottomSeries;
   int? expandedIndex;
 
+  int frameCount = 0;
+  double lastTimestamp = 0;
+  int lowFpsStreak = 0;
+  static const double LOW_FPS_THRESHOLD = 50.0;
+  static const int STREAK_TO_SWITCH = 5;
+  bool checkPerformance = true;
+
   @override
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized().addObserver(this);
     _initChartController();
+
+    lastTimestamp = SchedulerBinding
+        .instance.currentFrameTimeStamp.inMilliseconds
+        .toDouble();
+    SchedulerBinding.instance.addTimingsCallback(fpsCallback);
+  }
+
+  void fpsCallback(List<FrameTiming> timings) {
+    frameCount += timings.length; // Each FrameTiming is roughly one frame
+    final double currentTimestamp = SchedulerBinding
+        .instance.currentFrameTimeStamp.inMilliseconds
+        .toDouble();
+    final double elapsed = currentTimestamp - lastTimestamp;
+
+    if (elapsed >= 1000.0) {
+      // Check every second
+      final double fps = (frameCount * 1000.0) / elapsed;
+
+      if (fps < LOW_FPS_THRESHOLD) {
+        lowFpsStreak++;
+      } else {
+        lowFpsStreak = 0;
+      }
+
+      if (lowFpsStreak >= STREAK_TO_SWITCH) {
+        print('Flutter internal performance low, switching to light mode.');
+        html.window.console.log('####### Flutter internal performance low, switching to light mode. ${DateTime.now()}');
+        checkPerformance = false; // Stop checking after switching
+      }
+      else {
+        html.window.console.log('####### Flutter internal performance is fine CHECKED. ${DateTime.now()}');
+      }
+
+      // Reset for next interval
+      frameCount = 0;
+      lastTimestamp = currentTimestamp;
+    }
   }
 
   @override
