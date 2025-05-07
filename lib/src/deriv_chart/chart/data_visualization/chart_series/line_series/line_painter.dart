@@ -31,32 +31,27 @@ class LinePainter extends DataPainter<DataSeries<Tick>> {
       ..style = PaintingStyle.stroke
       ..strokeWidth = style.thickness;
 
-    final DataLinePathInfo path = createPath(epochToX, quoteToY, animationInfo);
+    final List<ui.Offset> points = [];
 
-    paintLines(canvas, path.path, linePaint);
+    for (int i = series.visibleEntries.startIndex;
+        i < series.visibleEntries.endIndex - 1;
+        i++) {
+      final Tick tick = series.entries![i];
+      if (tick.quote.isNaN) {
+        continue;
+      }
 
-    if (style.hasArea) {
-      final Paint areaPaint = Paint()
-        ..style = PaintingStyle.fill
-        ..shader = ui.Gradient.linear(
-          const Offset(0, 0),
-          Offset(0, size.height),
-          <Color>[
-            style.color.withOpacity(0.2),
-            style.color.withOpacity(0.01),
-          ],
-        );
-
-      addAreaPath(
-        canvas,
-        size,
-        path.path,
-        path.startPosition.dx,
-        path.endPosition.dx,
+      points.addAll(
+        [
+          Offset(
+            epochToX(getEpochOf(tick, i)),
+            quoteToY(tick.quote),
+          ),
+        ],
       );
-
-      canvas.drawPath(path.path, areaPaint);
     }
+
+    canvas.drawPoints(ui.PointMode.lines, points, linePaint);
   }
 
   /// Paints the line on the given canvas.

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/helpers/combine_paths.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/models/animation_info.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/helpers/functions/helper_functions.dart';
@@ -67,9 +69,6 @@ class OscillatorLinePainter extends LinePainter {
     QuoteToY quoteToY,
     AnimationInfo animationInfo,
   ) {
-    final DataLinePathInfo linePath =
-        createPath(epochToX, quoteToY, animationInfo);
-
     final LineStyle style = series.style as LineStyle? ?? theme.lineStyle;
 
     _linePaint ??= Paint()
@@ -77,79 +76,27 @@ class OscillatorLinePainter extends LinePainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = style.thickness;
 
-    canvas.drawPath(linePath.path, _linePaint!);
+    final List<Offset> points = [];
 
-    if (_topHorizontalLine != null) {
-      Path topIntersections;
-
-      if (kIsWeb) {
-        final List<Tick> horizontalLineEntries = series.entries!
-            .map((Tick entry) =>
-                Tick(epoch: entry.epoch, quote: _topHorizontalLine!))
-            .toList();
-        topIntersections = combinePaths(
-          series,
-          series.entries ?? <Tick>[],
-          horizontalLineEntries,
-          epochToX,
-          quoteToY,
-        ).$1;
-      } else {
-        final Path bottomAreaPath = Path.from(linePath.path)
-          ..lineTo(linePath.endPosition.dx, size.height)
-          ..lineTo(linePath.startPosition.dx, size.height);
-        final Path topRect = Path()
-          ..addRect(
-            Rect.fromLTRB(
-              linePath.startPosition.dx,
-              0,
-              linePath.endPosition.dx,
-              quoteToY(_topHorizontalLine!),
-            ),
-          );
-
-        topIntersections =
-            Path.combine(PathOperation.intersect, bottomAreaPath, topRect);
+    for (int i = series.visibleEntries.startIndex;
+        i < series.visibleEntries.endIndex - 1;
+        i++) {
+      final Tick tick = series.entries![i];
+      if (tick.quote.isNaN) {
+        continue;
       }
 
-      canvas.drawPath(topIntersections, _topZonesPaint);
+      points.addAll(
+        [
+          Offset(
+            epochToX(getEpochOf(tick, i)),
+            quoteToY(tick.quote),
+          ),
+        ],
+      );
     }
 
-    if (_bottomHorizontalLine != null) {
-      Path bottomIntersection;
-
-      if (kIsWeb) {
-        final List<Tick> horizontalLineEntries = series.entries!
-            .map((Tick entry) =>
-                Tick(epoch: entry.epoch, quote: _bottomHorizontalLine!))
-            .toList();
-
-        bottomIntersection = combinePaths(
-          series,
-          series.entries ?? <Tick>[],
-          horizontalLineEntries,
-          epochToX,
-          quoteToY,
-        ).$2;
-      } else {
-        final Path topAreaPath = Path.from(linePath.path)
-          ..lineTo(linePath.endPosition.dx, 0)
-          ..lineTo(linePath.startPosition.dx, 0);
-        final Path bottomRect = Path()
-          ..addRect(
-            Rect.fromLTRB(
-              linePath.startPosition.dx,
-              quoteToY(_bottomHorizontalLine!),
-              linePath.endPosition.dx,
-              size.height,
-            ),
-          );
-        bottomIntersection =
-            Path.combine(PathOperation.intersect, topAreaPath, bottomRect);
-      }
-
-      canvas.drawPath(bottomIntersection, _bottomZonesPaint);
-    }
+    canvas.drawPoints(PointMode.lines, points, _linePaint!);
 
     _paintHorizontalLines(canvas, quoteToY, size);
   }
