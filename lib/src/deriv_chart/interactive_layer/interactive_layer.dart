@@ -7,6 +7,10 @@ import 'package:deriv_chart/src/deriv_chart/interactive_layer/crosshair/crosshai
 import 'package:deriv_chart/src/deriv_chart/interactive_layer/crosshair/crosshair_variant.dart';
 import 'package:deriv_chart/src/deriv_chart/interactive_layer/crosshair/crosshair_widget.dart';
 import 'package:deriv_chart/src/deriv_chart/interactive_layer/drawing_tool_gesture_recognizer.dart';
+import 'package:deriv_chart/src/deriv_chart/chart/gestures/gesture_manager.dart';
+import 'package:deriv_chart/src/deriv_chart/chart/multiple_animated_builder.dart';
+import 'package:deriv_chart/src/deriv_chart/chart/x_axis/x_axis_model.dart';
+import 'package:deriv_chart/src/models/axis_range.dart';
 import 'package:deriv_chart/src/models/chart_config.dart';
 import 'package:deriv_chart/src/theme/chart_theme.dart';
 import 'package:flutter/gestures.dart';
@@ -20,12 +24,10 @@ import '../chart/data_visualization/models/animation_info.dart';
 import '../drawing_tool_chart/drawing_tools.dart';
 import 'interactable_drawings/interactable_drawing.dart';
 import 'interactable_drawing_custom_painter.dart';
+import 'interaction_notifier.dart';
 import 'interactive_layer_base.dart';
-import 'interactive_states/interactive_adding_tool_state.dart';
-import 'interactive_states/interactive_normal_state.dart';
-import 'interactive_states/interactive_state.dart';
-import 'state_change_direction.dart';
-// ignore_for_file: public_member_api_docs
+import 'enums/state_change_direction.dart';
+import 'interactive_layer_behaviours/interactive_layer_behaviour.dart';
 
 // Define the enum for interaction modes
 enum InteractionMode {
@@ -54,8 +56,14 @@ class InteractiveLayer extends StatefulWidget {
     this.pipSize = 4,
     this.onCrosshairAppeared,
     this.onCrosshairDisappeared,
+    required this.quoteRange,
+    required this.interactiveLayerBehaviour,
     super.key,
   });
+
+  /// Interactive layer behaviour which defines how interactive layer should
+  /// behave in scenarios like adding/dragging, etc.
+  final InteractiveLayerBehaviour interactiveLayerBehaviour;
 
   /// Drawing tools.
   final DrawingTools drawingTools;
@@ -105,6 +113,9 @@ class InteractiveLayer extends StatefulWidget {
   /// [CrosshairVariant.largeScreen] is mostly for web.
   final CrosshairVariant crosshairVariant;
 
+  /// Chart's y-axis range.
+  final QuoteRange quoteRange;
+
   @override
   State<InteractiveLayer> createState() => _InteractiveLayerState();
 }
@@ -112,8 +123,13 @@ class InteractiveLayer extends StatefulWidget {
 class _InteractiveLayerState extends State<InteractiveLayer> {
   final List<InteractableDrawing> _interactableDrawings = [];
 
-  /// Timer for debouncing repository updates
-  Timer? _debounceTimer;
+  /// Timers for debouncing repository updates
+  ///
+  /// We use a map to have one timer per each drawing tool config. This is
+  /// because the request to update the config of different tools can come at
+  /// the same time. If we use only one timer a new request from a different
+  /// tool will cancel the previous one.
+  final Map<String, Timer> _debounceTimers = <String, Timer>{};
 
   /// Duration for debouncing repository updates (1-sec is a good balance)
   static const Duration _debounceDuration = Duration(seconds: 1);
@@ -126,10 +142,6 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   }
 
   void _setDrawingsFromConfigs() {
-    if (widget.drawingToolsRepo.items.length == _interactableDrawings.length) {
-      return;
-    }
-
     _interactableDrawings.clear();
 
     for (final config in widget.drawingToolsRepo.items) {
@@ -140,12 +152,20 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
   }
 
   /// Updates the config in the repository with debouncing
-  void _updateConfigInRepository(InteractableDrawing<dynamic> drawing) {
+  void _updateConfigInRepository(
+    InteractableDrawing<DrawingToolConfig> drawing,
+  ) {
+    final String? configId = drawing.config.configId;
+
+    if (configId == null) {
+      return;
+    }
+
     // Cancel any existing timer
-    _debounceTimer?.cancel();
+    _debounceTimers[configId]?.cancel();
 
     // Create a new timer
-    _debounceTimer = Timer(_debounceDuration, () {
+    _debounceTimers[configId] = Timer(_debounceDuration, () {
       // Only proceed if the widget is still mounted
       if (!mounted) {
         return;
@@ -180,8 +200,11 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
 
   @override
   void dispose() {
-    // Cancel the debounce timer when the widget is disposed
-    _debounceTimer?.cancel();
+    // Cancel the debounce timers when the widget is disposed
+    for (final Timer timer in _debounceTimers.values) {
+      timer.cancel();
+    }
+    _debounceTimers.clear();
 
     widget.drawingToolsRepo.removeListener(_setDrawingsFromConfigs);
     super.dispose();
@@ -198,6 +221,8 @@ class _InteractiveLayerState extends State<InteractiveLayer> {
       series: widget.series,
       chartConfig: widget.chartConfig,
       addingDrawingTool: widget.drawingTools.selectedDrawingTool,
+      quoteRange: widget.quoteRange,
+      interactiveLayerBehaviour: widget.interactiveLayerBehaviour,
       onClearAddingDrawingTool: widget.drawingTools.clearDrawingToolSelection,
       onSaveDrawingChange: _updateConfigInRepository,
       onAddDrawing: _addDrawingToRepo,
@@ -226,6 +251,8 @@ class _InteractiveLayerGestureHandler extends StatefulWidget {
     required this.crosshairZoomOutAnimation,
     required this.crosshairController,
     required this.crosshairVariant,
+    required this.quoteRange,
+    required this.interactiveLayerBehaviour,
     this.addingDrawingTool,
     this.onSaveDrawingChange,
     this.showCrosshair = true,
@@ -236,7 +263,9 @@ class _InteractiveLayerGestureHandler extends StatefulWidget {
 
   final List<InteractableDrawing> drawings;
 
-  final Function(InteractableDrawing<dynamic>)? onSaveDrawingChange;
+  final InteractiveLayerBehaviour interactiveLayerBehaviour;
+
+  final Function(InteractableDrawing<DrawingToolConfig>)? onSaveDrawingChange;
   final DrawingToolConfig Function(InteractableDrawing<DrawingToolConfig>)
       onAddDrawing;
 
@@ -255,6 +284,7 @@ class _InteractiveLayerGestureHandler extends StatefulWidget {
   final QuoteFromY quoteFromY;
   final EpochToX epochToX;
   final QuoteToY quoteToY;
+  final QuoteRange quoteRange;
 
   /// Whether to show the crosshair or not.
   final bool showCrosshair;
@@ -289,9 +319,6 @@ class _InteractiveLayerGestureHandlerState
     extends State<_InteractiveLayerGestureHandler>
     with SingleTickerProviderStateMixin
     implements InteractiveLayerBase {
-  // InteractableDrawing? _selectedDrawing;
-
-  late InteractiveState _interactiveState;
   late AnimationController _stateChangeController;
 
   // Use an enum instead of a boolean flag
@@ -301,12 +328,31 @@ class _InteractiveLayerGestureHandlerState
   late DrawingToolGestureRecognizer _drawingToolGestureRecognizer;
 
   static const Curve _stateChangeCurve = Curves.easeInOut;
+  final InteractionNotifier _interactionNotifier = InteractionNotifier();
+
+  @override
+  AnimationController? get stateChangeAnimationController =>
+      _stateChangeController;
+
+  final GlobalKey _layerKey = GlobalKey();
+
+  Size? _size;
 
   @override
   void initState() {
     super.initState();
 
-    _interactiveState = InteractiveNormalState(interactiveLayer: this);
+    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) {
+      setState(() {
+        _size =
+            (_layerKey.currentContext?.findRenderObject() as RenderBox?)?.size;
+      });
+    });
+
+    widget.interactiveLayerBehaviour.init(
+      interactiveLayer: this,
+      onUpdate: () => setState(() {}),
+    );
 
     _stateChangeController = AnimationController(
       vsync: this,
@@ -338,29 +384,15 @@ class _InteractiveLayerGestureHandlerState
 
     if (widget.addingDrawingTool != null &&
         widget.addingDrawingTool != oldWidget.addingDrawingTool) {
-      updateStateTo(
-        InteractiveAddingToolState(
-          widget.addingDrawingTool!,
-          interactiveLayer: this,
-        ),
-        StateChangeAnimationDirection.forward,
-      );
+      widget.interactiveLayerBehaviour
+          .onAddDrawingTool(widget.addingDrawingTool!);
     }
   }
 
   @override
-  Future<void> updateStateTo(
-    InteractiveState state,
-    StateChangeAnimationDirection direction, {
-    bool waitForAnimation = false,
-  }) async {
-    if (waitForAnimation) {
-      await _runAnimation(direction);
-      setState(() => _interactiveState = state);
-    } else {
-      unawaited(_runAnimation(direction));
-      setState(() => _interactiveState = state);
-    }
+  Future<void> animateStateChange(
+      StateChangeAnimationDirection direction) async {
+    await _runAnimation(direction);
   }
 
   Future<void> _runAnimation(StateChangeAnimationDirection direction) async {
@@ -405,13 +437,14 @@ class _InteractiveLayerGestureHandlerState
     // The custom gesture recognizer has already determined that a drawing was hit,
     // so we don't need to check again with _interactiveState.onPanStart
     // Just delegate to the interactive state and update our mode
-    _interactiveState.onPanStart(details);
+    widget.interactiveLayerBehaviour.onPanStart(details);
     _updateInteractionMode(InteractionMode.drawingTool);
   }
 
   // Handle drawing tool pan update
   void _handleDrawingToolPanUpdate(DragUpdateDetails details) {
-    final bool affectingDrawing = _interactiveState.onPanUpdate(details);
+    final bool affectingDrawing =
+        widget.interactiveLayerBehaviour.onPanUpdate(details);
 
     if (affectingDrawing) {
       _updateInteractionMode(InteractionMode.drawingTool);
@@ -420,7 +453,7 @@ class _InteractiveLayerGestureHandlerState
 
   // Handle drawing tool pan end
   void _handleDrawingToolPanEnd(DragEndDetails details) {
-    _interactiveState.onPanEnd(details);
+    widget.interactiveLayerBehaviour.onPanEnd(details);
     _updateInteractionMode(InteractionMode.none);
   }
 
@@ -434,7 +467,7 @@ class _InteractiveLayerGestureHandlerState
       return;
     }
     // This returns true if a drawing tool was hit according to the state
-    final bool hitDrawing = _interactiveState.onHover(event);
+    final bool hitDrawing = widget.interactiveLayerBehaviour.onHover(event);
 
     // Determine the appropriate interaction mode based on current state
     // If we're hovering over a drawing, we should be in drawing tool mode
@@ -462,7 +495,7 @@ class _InteractiveLayerGestureHandlerState
 
   // Tap handler
   void _handleTapUp(TapUpDetails details) {
-    final bool hitDrawing = _interactiveState.onTap(details);
+    final bool hitDrawing = widget.interactiveLayerBehaviour.onTap(details);
     _updateInteractionMode(
         hitDrawing ? InteractionMode.drawingTool : InteractionMode.none);
   }
@@ -541,8 +574,8 @@ class _InteractiveLayerGestureHandlerState
               },
             ),
           },
-          behavior: HitTestBehavior
-              .opaque, // Ensure gestures are detected even if the widget is transparent
+          behavior: HitTestBehavior.opaque,
+          // Ensure gestures are detected even if the widget is transparent
           // TODO(NA): Move this part into separate widget. InteractiveLayer only cares about the interactions and selected tool movement
           // It can delegate it to an inner component as well. which we can have different interaction behaviours like per platform as well.
           child: AnimatedBuilder(
@@ -552,6 +585,7 @@ class _InteractiveLayerGestureHandlerState
                     _stateChangeCurve.transform(_stateChangeController.value);
 
                 return Stack(
+                  key: _layerKey,
                   fit: StackFit.expand,
                   children: [
                     CrosshairWidget(
@@ -566,40 +600,61 @@ class _InteractiveLayerGestureHandlerState
                     ),
                     ...widget.drawings
                         .map((e) => CustomPaint(
-                              foregroundPainter: InteractableDrawingCustomPainter(
-                                  drawing: e,
-                                  series: widget.series,
-                                  theme: context.watch<ChartTheme>(),
-                                  chartConfig: widget.chartConfig,
-                                  epochFromX: xAxis.epochFromX,
-                                  epochToX: xAxis.xFromEpoch,
-                                  quoteToY: widget.quoteToY,
-                                  quoteFromY: widget.quoteFromY,
-                                  getDrawingState: _interactiveState.getToolState,
-                                  animationInfo: AnimationInfo(
-                                    stateChangePercent: animationValue,
-                                  )
-                                  // onDrawingToolClicked: () => _selectedDrawing = e,
-                                  ),
+                              foregroundPainter:
+                                  InteractableDrawingCustomPainter(
+                                      drawing: e,
+                                      series: widget.series,
+                                      theme: context.watch<ChartTheme>(),
+                                      chartConfig: widget.chartConfig,
+                                      epochFromX: xAxis.epochFromX,
+                                      epochToX: xAxis.xFromEpoch,
+                                      quoteToY: widget.quoteToY,
+                                      quoteFromY: widget.quoteFromY,
+                                      drawingState: widget
+                                          .interactiveLayerBehaviour
+                                          .getToolState,
+                                      currentDrawingState: widget
+                                          .interactiveLayerBehaviour
+                                          .getToolState(e),
+                                      epochRange: EpochRange(
+                                        rightEpoch: xAxis.rightBoundEpoch,
+                                        leftEpoch: xAxis.leftBoundEpoch,
+                                      ),
+                                      quoteRange: widget.quoteRange,
+                                      animationInfo: AnimationInfo(
+                                        stateChangePercent: animationValue,
+                                      )
+                                      // onDrawingToolClicked: () => _selectedDrawing = e,
+                                      ),
                             ))
                         .toList(),
-                    ..._interactiveState.previewDrawings
+                    ...widget.interactiveLayerBehaviour.previewDrawings
                         .map((e) => CustomPaint(
-                              foregroundPainter: InteractableDrawingCustomPainter(
-                                  drawing: e,
-                                  series: widget.series,
-                                  theme: context.watch<ChartTheme>(),
-                                  chartConfig: widget.chartConfig,
-                                  epochFromX: xAxis.epochFromX,
-                                  epochToX: xAxis.xFromEpoch,
-                                  quoteToY: widget.quoteToY,
-                                  quoteFromY: widget.quoteFromY,
-                                  getDrawingState:
-                                      _interactiveState.getToolState,
-                                  animationInfo: AnimationInfo(
-                                      stateChangePercent: animationValue)
-                                  // onDrawingToolClicked: () => _selectedDrawing = e,
-                                  ),
+                              foregroundPainter:
+                                  InteractableDrawingCustomPainter(
+                                      drawing: e,
+                                      series: widget.series,
+                                      theme: context.watch<ChartTheme>(),
+                                      chartConfig: widget.chartConfig,
+                                      epochFromX: xAxis.epochFromX,
+                                      epochToX: xAxis.xFromEpoch,
+                                      quoteToY: widget.quoteToY,
+                                      quoteFromY: widget.quoteFromY,
+                                      epochRange: EpochRange(
+                                        rightEpoch: xAxis.rightBoundEpoch,
+                                        leftEpoch: xAxis.leftBoundEpoch,
+                                      ),
+                                      quoteRange: widget.quoteRange,
+                                      drawingState: widget
+                                          .interactiveLayerBehaviour
+                                          .getToolState,
+                                      currentDrawingState: widget
+                                          .interactiveLayerBehaviour
+                                          .getToolState(e),
+                                      animationInfo: AnimationInfo(
+                                          stateChangePercent: animationValue)
+                                      // onDrawingToolClicked: () => _selectedDrawing = e,
+                                      ),
                             ))
                         .toList(),
                   ],
@@ -608,6 +663,11 @@ class _InteractiveLayerGestureHandlerState
         ),
       ),
     );
+  }
+
+  void onTap(TapUpDetails details) {
+    widget.interactiveLayerBehaviour.onTap(details);
+    _interactionNotifier.notify();
   }
 
   @override
@@ -636,4 +696,7 @@ class _InteractiveLayerGestureHandlerState
   @override
   void onSaveDrawing(InteractableDrawing<DrawingToolConfig> drawing) =>
       widget.onSaveDrawingChange?.call(drawing);
+
+  @override
+  Size? get layerSize => _size;
 }

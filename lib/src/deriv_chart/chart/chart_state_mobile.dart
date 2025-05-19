@@ -142,6 +142,7 @@ class _ChartStateMobile extends _ChartState {
                   showCurrentTickBlinkAnimation:
                       widget.showCurrentTickBlinkAnimation ?? true,
                   crosshairVariant: widget.crosshairVariant,
+                  interactiveLayerBehaviour: widget.interactiveLayerBehaviour,
                 ),
                 Align(
                   alignment: Alignment.topLeft,

@@ -1,15 +1,25 @@
 import 'dart:ui' as ui;
+import 'package:deriv_chart/src/add_ons/drawing_tools_ui/drawing_tool_config.dart';
 import 'package:deriv_chart/src/add_ons/drawing_tools_ui/horizontal/horizontal_drawing_tool_config.dart';
+import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/chart_data.dart';
+import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/drawing_paint_style.dart';
+import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/drawing_tools/data_model/edge_point.dart';
+import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/models/animation_info.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactable_drawing_custom_painter.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactable_drawings/drawing_adding_preview.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactable_drawings/horizontal_line/horizontal_line_adding_preview_desktop.dart';
+import 'package:deriv_chart/src/models/axis_range.dart';
 import 'package:deriv_chart/src/theme/painting_styles/line_style.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../chart/data_visualization/chart_data.dart';
-import '../../chart/data_visualization/drawing_tools/data_model/drawing_paint_style.dart';
-import '../../chart/data_visualization/drawing_tools/data_model/edge_point.dart';
-import '../../chart/data_visualization/models/animation_info.dart';
-import '../interactable_drawing_custom_painter.dart';
-import 'interactable_drawing.dart';
+import '../../enums/drawing_tool_state.dart';
+import '../../helpers/paint_helpers.dart';
+import '../../interactive_layer_behaviours/interactive_layer_desktop_behaviour.dart';
+import '../../interactive_layer_behaviours/interactive_layer_mobile_behaviour.dart';
+import '../drawing_v2.dart';
+import '../interactable_drawing.dart';
+import 'horizontal_line_adding_preview_mobile.dart';
 
 /// Interactable drawing for horizontal line drawing tool.
 class HorizontalLineInteractableDrawing
@@ -26,13 +36,14 @@ class HorizontalLineInteractableDrawing
   Offset? _hoverPosition;
 
   @override
-  void onHover(PointerHoverEvent event, EpochFromX epochFromX,
+  bool onHover(PointerHoverEvent event, EpochFromX epochFromX,
       QuoteFromY quoteFromY, EpochToX epochToX, QuoteToY quoteToY) {
     _hoverPosition = event.localPosition;
+    return false;
   }
 
   @override
-  void onDragStart(
+  bool onDragStart(
     DragStartDetails details,
     EpochFromX epochFromX,
     QuoteFromY quoteFromY,
@@ -40,7 +51,7 @@ class HorizontalLineInteractableDrawing
     QuoteToY quoteToY,
   ) {
     if (startPoint == null) {
-      return;
+      return false;
     }
 
     // Convert start and end points from epoch/quote to screen coordinates
@@ -52,8 +63,9 @@ class HorizontalLineInteractableDrawing
     // For horizontal line, we only need to check if the drag is near the line
     final double distance = (details.localPosition.dy - startOffset.dy).abs();
     if (distance > hitTestMargin) {
-      return;
+      return false;
     }
+    return true;
   }
 
   @override
@@ -84,6 +96,7 @@ class HorizontalLineInteractableDrawing
   ) {
     final LineStyle lineStyle = config.lineStyle;
     final DrawingPaintStyle paintStyle = DrawingPaintStyle();
+    final drawingState = getDrawingState(this);
 
     if (startPoint != null) {
       final Offset startOffset =
@@ -91,12 +104,9 @@ class HorizontalLineInteractableDrawing
       final Offset endOffset =
           Offset(size.width, quoteToY(startPoint!.quote)); // End at right edge
 
-      // Check if this drawing is selected
-      final Set<DrawingToolState> state = getDrawingState(this);
-
       // Use glowy paint style if selected, otherwise use normal paint style
-      final Paint paint = state.contains(DrawingToolState.selected) ||
-              state.contains(DrawingToolState.dragging)
+      final Paint paint = drawingState.contains(DrawingToolState.selected) ||
+              drawingState.contains(DrawingToolState.dragging)
           ? paintStyle.linePaintStyle(
               lineStyle.color, 1 + 1 * animationInfo.stateChangePercent)
           : paintStyle.linePaintStyle(lineStyle.color, lineStyle.thickness);
@@ -104,8 +114,8 @@ class HorizontalLineInteractableDrawing
       canvas.drawLine(startOffset, endOffset, paint);
 
       // Draw endpoints with glowy effect if selected
-      if (state.contains(DrawingToolState.selected) ||
-          state.contains(DrawingToolState.dragging)) {
+      if (drawingState.contains(DrawingToolState.selected) ||
+          drawingState.contains(DrawingToolState.dragging)) {
         _drawPointsFocusedCircle(
           paintStyle,
           lineStyle,
@@ -115,14 +125,14 @@ class HorizontalLineInteractableDrawing
           3 * animationInfo.stateChangePercent,
           endOffset,
         );
-      } else if (state.contains(DrawingToolState.hovered)) {
+      } else if (drawingState.contains(DrawingToolState.hovered)) {
         _drawPointsFocusedCircle(
             paintStyle, lineStyle, canvas, startOffset, 10, 3, endOffset);
       }
 
       // Draw alignment guides when dragging
-      if (state.contains(DrawingToolState.dragging)) {
-        _drawAlignmentGuides(canvas, size, startOffset);
+      if (drawingState.contains(DrawingToolState.dragging)) {
+        drawPointAlignmentGuides(canvas, size, startOffset);
       }
     } else {
       if (startPoint == null && _hoverPosition != null) {
@@ -138,7 +148,7 @@ class HorizontalLineInteractableDrawing
         );
         canvas.drawLine(startPosition, endPosition,
             paintStyle.linePaintStyle(lineStyle.color, lineStyle.thickness));
-        _drawPointAlignmentGuides(canvas, size, startPosition);
+        drawPointAlignmentGuides(canvas, size, startPosition);
       }
     }
   }
@@ -177,92 +187,8 @@ class HorizontalLineInteractableDrawing
       );
   }
 
-  /// Draws alignment guides (horizontal lines) for the point
-  void _drawAlignmentGuides(Canvas canvas, Size size, Offset pointOffset) {
-    // Create a dashed paint style for the alignment guides
-    final Paint guidesPaint = Paint()
-      ..color = const Color(0x80FFFFFF) // Semi-transparent white
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke;
-
-    // Create path for horizontal guide
-    final Path horizontalPath = Path()
-      ..moveTo(0, pointOffset.dy)
-      ..lineTo(size.width, pointOffset.dy);
-
-    // Draw the dashed line
-    canvas.drawPath(
-      _dashPath(horizontalPath,
-          dashArray: _CircularIntervalList<double>(<double>[5, 5])),
-      guidesPaint,
-    );
-  }
-
-  /// Creates a dashed path from a regular path
-  Path _dashPath(
-    Path source, {
-    required _CircularIntervalList<double> dashArray,
-  }) {
-    final Path dest = Path();
-    for (final ui.PathMetric metric in source.computeMetrics()) {
-      double distance = 0;
-      bool draw = true;
-      while (distance < metric.length) {
-        final double len = dashArray.next;
-        if (draw) {
-          dest.addPath(
-            metric.extractPath(distance, distance + len),
-            Offset.zero,
-          );
-        }
-        distance += len;
-        draw = !draw;
-      }
-    }
-    return dest;
-  }
-
-  void _drawPointAlignmentGuides(Canvas canvas, Size size, Offset pointOffset) {
-    // Create a dashed paint style for the alignment guides
-    final Paint guidesPaint = Paint()
-      ..color = const Color(0x80FFFFFF) // Semi-transparent white
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke;
-
-    // Create path for horizontal guide
-    final Path horizontalPath = Path()
-      ..moveTo(0, pointOffset.dy)
-      ..lineTo(size.width, pointOffset.dy);
-
-    // Draw the dashed line
-    canvas.drawPath(
-      _dashPath(horizontalPath,
-          dashArray: _CircularIntervalList<double>(<double>[5, 5])),
-      guidesPaint,
-    );
-  }
-
   @override
-  void onCreateTap(
-    TapUpDetails details,
-    EpochFromX epochFromX,
-    QuoteFromY quoteFromY,
-    EpochToX epochToX,
-    QuoteToY quoteToY,
-    VoidCallback onDone,
-  ) {
-    if (startPoint == null) {
-      final quote = quoteFromY(details.localPosition.dy);
-      startPoint = EdgePoint(
-        epoch: epochFromX(0), // Start from left edge
-        quote: quote,
-      );
-      onDone(); // Complete immediately since we don't need a second tap
-    }
-  }
-
-  @override
-  void onDragUpdate(
+  bool onDragUpdate(
     DragUpdateDetails details,
     EpochFromX epochFromX,
     QuoteFromY quoteFromY,
@@ -270,7 +196,7 @@ class HorizontalLineInteractableDrawing
     QuoteToY quoteToY,
   ) {
     if (startPoint == null) {
-      return;
+      return false;
     }
 
     // Get the drag delta in screen coordinates
@@ -290,10 +216,12 @@ class HorizontalLineInteractableDrawing
       epoch: startPoint!.epoch,
       quote: newQuote,
     );
+
+    return false;
   }
 
   @override
-  void onDragEnd(
+  bool onDragEnd(
     DragEndDetails details,
     EpochFromX epochFromX,
     QuoteFromY quoteFromY,
@@ -301,24 +229,40 @@ class HorizontalLineInteractableDrawing
     QuoteToY quoteToY,
   ) {
     // No special handling needed for drag end
+    return false;
   }
 
   @override
   HorizontalDrawingToolConfig getUpdatedConfig() => config
       .copyWith(edgePoints: <EdgePoint>[if (startPoint != null) startPoint!]);
-}
 
-/// A circular array for dash patterns
-class _CircularIntervalList<T> {
-  _CircularIntervalList(this._values);
+  @override
+  bool isInViewPort(EpochRange epochRange, QuoteRange quoteRange) =>
+      // On X-axis range horizontal line is always visible
+      // TODO(NA): consider Y-axis (quoteRange) checking when finding a solution
+      // to clear dismiss the existing drawing, if main series is changed and the
+      // tool is not supposed to be visible because it's outside of view-port.
+      // For now it won't impact that much in terms of performance, since the
+      // number tools we allow to add in total is limited to a few.
+      true;
 
-  final List<T> _values;
-  int _index = 0;
+  @override
+  DrawingAddingPreview<InteractableDrawing<DrawingToolConfig>>
+      getAddingPreviewForDesktopBehaviour(
+    InteractiveLayerDesktopBehaviour layerBehaviour,
+  ) =>
+          HorizontalLineAddingPreviewDesktop(
+            interactiveLayerBehaviour: layerBehaviour,
+            interactableDrawing: this,
+          );
 
-  T get next {
-    if (_index >= _values.length) {
-      _index = 0;
-    }
-    return _values[_index++];
-  }
+  @override
+  DrawingAddingPreview<InteractableDrawing<DrawingToolConfig>>
+      getAddingPreviewForMobileBehaviour(
+    InteractiveLayerMobileBehaviour layerBehaviour,
+  ) =>
+          HorizontalLineAddingPreviewMobile(
+            interactiveLayerBehaviour: layerBehaviour,
+            interactableDrawing: this,
+          );
 }

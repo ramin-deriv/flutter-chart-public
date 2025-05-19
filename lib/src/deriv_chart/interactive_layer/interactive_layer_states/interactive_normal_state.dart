@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
 import '../interactable_drawings/interactable_drawing.dart';
-import '../state_change_direction.dart';
+import '../enums/state_change_direction.dart';
 import 'interactive_hover_state.dart';
 import 'interactive_selected_tool_state.dart';
 import 'interactive_state.dart';
@@ -22,7 +22,7 @@ class InteractiveNormalState extends InteractiveState
   ///
   /// The [interactiveLayer] parameter is passed to the superclass and provides
   /// access to the layer's methods and properties.
-  InteractiveNormalState({required super.interactiveLayer});
+  InteractiveNormalState({required super.interactiveLayerBehaviour});
 
   @override
   bool onPanStart(DragStartDetails details) {
@@ -35,11 +35,13 @@ class InteractiveNormalState extends InteractiveState
 
     final InteractiveState newState = InteractiveSelectedToolState(
       selected: hitDrawing,
-      interactiveLayer: interactiveLayer,
+      interactiveLayerBehaviour: interactiveLayerBehaviour,
     );
 
-    interactiveLayer.updateStateTo(
-        newState, StateChangeAnimationDirection.forward);
+    interactiveLayerBehaviour.updateStateTo(
+      newState,
+      StateChangeAnimationDirection.forward,
+    );
 
     newState.onPanStart(details);
     return true; // A drawing was hit
@@ -55,10 +57,10 @@ class InteractiveNormalState extends InteractiveState
       return false; // No drawing was hit
     }
 
-    interactiveLayer.updateStateTo(
+    interactiveLayerBehaviour.updateStateTo(
       InteractiveSelectedToolState(
         selected: hitDrawing,
-        interactiveLayer: interactiveLayer,
+        interactiveLayerBehaviour: interactiveLayerBehaviour,
       ),
       StateChangeAnimationDirection.forward,
     );

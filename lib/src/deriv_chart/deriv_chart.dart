@@ -20,9 +20,14 @@ import 'package:deriv_chart/src/misc/extensions.dart';
 import 'package:deriv_chart/src/models/tick.dart';
 import 'package:deriv_chart/src/theme/chart_theme.dart';
 import 'package:deriv_chart/src/widgets/animated_popup.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'interactive_layer/interactive_layer_behaviours/interactive_layer_behaviour.dart';
+import 'interactive_layer/interactive_layer_behaviours/interactive_layer_desktop_behaviour.dart';
+import 'interactive_layer/interactive_layer_behaviours/interactive_layer_mobile_behaviour.dart';
 
 /// A wrapper around the [Chart] which handles adding indicators to the chart.
 class DerivChart extends StatefulWidget {
@@ -62,6 +67,7 @@ class DerivChart extends StatefulWidget {
     this.showScrollToLastTickButton,
     this.loadingAnimationColor,
     this.crosshairVariant = CrosshairVariant.smallScreen,
+    this.interactiveLayerBehaviour,
     Key? key,
   }) : super(key: key);
 
@@ -181,6 +187,15 @@ class DerivChart extends StatefulWidget {
   /// The default is [CrosshairVariant.smallScreen].
   /// [CrosshairVariant.largeScreen] is mostly for web.
   final CrosshairVariant crosshairVariant;
+  /// Defines the behaviour that interactive layer should have.
+  ///
+  /// Interactive layer is the layer on top of the chart responsible for
+  /// handling components that user can interact with them. such as cross-hair,
+  /// drawing tools, etc.
+  ///
+  /// If not set it will be set internally to [InteractiveLayerDesktopBehaviour]
+  /// on web and [InteractiveLayerMobileBehaviour] on mobile or other platforms.
+  final InteractiveLayerBehaviour? interactiveLayerBehaviour;
 
   @override
   _DerivChartState createState() => _DerivChartState();
@@ -193,9 +208,16 @@ class _DerivChartState extends State<DerivChart> {
 
   final DrawingTools _drawingTools = DrawingTools();
 
+  late final InteractiveLayerBehaviour _interactiveLayerBehaviour;
+
   @override
   void initState() {
     super.initState();
+
+    _interactiveLayerBehaviour = widget.interactiveLayerBehaviour ??
+        (kIsWeb
+            ? InteractiveLayerDesktopBehaviour()
+            : InteractiveLayerMobileBehaviour());
 
     _initRepos();
   }
@@ -269,6 +291,10 @@ class _DerivChartState extends State<DerivChart> {
 
   void showDrawingToolsDialog() {
     setState(() {
+      // _drawingTools
+      //   ..init()
+      //   ..drawingToolsRepo = _drawingToolsRepo;
+      // Comment above statement and uncomment below line, when using [InteractiveLayer]
       _drawingTools.drawingToolsRepo = _drawingToolsRepo;
     });
     showDialog<void>(
@@ -360,6 +386,7 @@ class _DerivChartState extends State<DerivChart> {
                 loadingAnimationColor: widget.loadingAnimationColor,
                 chartAxisConfig: widget.chartAxisConfig,
                 crosshairVariant: widget.crosshairVariant,
+                interactiveLayerBehaviour: _interactiveLayerBehaviour,
               ),
               if (widget.indicatorsRepo == null) _buildIndicatorsIcon(),
               if (widget.drawingToolsRepo == null) _buildDrawingToolsIcon(),
