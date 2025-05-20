@@ -10,6 +10,7 @@ import 'package:deriv_chart/src/deriv_chart/interactive_layer/drawing_tool_gestu
 import 'package:deriv_chart/src/deriv_chart/chart/gestures/gesture_manager.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/multiple_animated_builder.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/x_axis/x_axis_model.dart';
+import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactable_drawings/drawing_v2.dart';
 import 'package:deriv_chart/src/models/axis_range.dart';
 import 'package:deriv_chart/src/models/chart_config.dart';
 import 'package:deriv_chart/src/theme/chart_theme.dart';
@@ -423,8 +424,10 @@ class _InteractiveLayerGestureHandlerState
 
   // Check if a point hits any drawing
   bool _hitTestDrawings(Offset localPosition) {
-    for (final drawing
-        in widget.drawings.cast<InteractableDrawing<DrawingToolConfig>>()) {
+    for (final drawing in <DrawingV2>[
+      ...widget.drawings,
+      ...widget.interactiveLayerBehaviour.previewDrawings
+    ]) {
       if (drawing.hitTest(localPosition, epochToX, quoteToY)) {
         return true;
       }
