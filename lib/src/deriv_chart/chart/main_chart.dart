@@ -4,7 +4,6 @@ import 'package:deriv_chart/src/add_ons/repository.dart';
 import 'package:deriv_chart/src/deriv_chart/chart/data_visualization/models/chart_scale_model.dart';
 import 'package:deriv_chart/src/deriv_chart/interactive_layer/crosshair/crosshair_controller.dart';
 import 'package:deriv_chart/src/deriv_chart/interactive_layer/crosshair/crosshair_variant.dart';
-import 'package:deriv_chart/src/deriv_chart/interactive_layer/interactive_layer.dart';
 import 'package:deriv_chart/src/misc/chart_controller.dart';
 import 'package:deriv_chart/src/models/axis_range.dart';
 import 'package:deriv_chart/src/models/chart_axis_config.dart';
@@ -21,6 +20,7 @@ import '../drawing_tool_chart/drawing_tool_chart.dart';
 import '../interactive_layer/interactive_layer.dart';
 import '../interactive_layer/interactive_layer_behaviours/interactive_layer_behaviour.dart';
 import '../interactive_layer/interactive_layer_behaviours/interactive_layer_desktop_behaviour.dart';
+import '../interactive_layer/interactive_layer.dart';
 import 'basic_chart.dart';
 import 'multiple_animated_builder.dart';
 import 'data_visualization/annotations/chart_annotation.dart';
@@ -204,14 +204,8 @@ class _ChartImplementationState extends BasicChartState<MainChart> {
     if (widget.verticalPaddingFraction != null) {
       verticalPaddingFraction = widget.verticalPaddingFraction!;
     }
-    crosshairController = CrosshairController(
-      xAxisModel: xAxis,
-      series: widget.mainSeries as DataSeries<Tick>,
-      onCrosshairAppeared: widget.onCrosshairAppeared,
-      onCrosshairDisappeared: widget.onCrosshairDisappeared,
-      showCrosshair: widget.showCrosshair,
-    );
     _setupController();
+    _setupCrosshairController();
   }
 
   @override
@@ -229,13 +223,7 @@ class _ChartImplementationState extends BasicChartState<MainChart> {
     // Update the crosshair controller when showCrosshair changes
     if (widget.showCrosshair != oldChart.showCrosshair) {
       // Create a new controller with the updated showCrosshair value
-      crosshairController = CrosshairController(
-        xAxisModel: xAxis,
-        series: widget.mainSeries as DataSeries<Tick>,
-        onCrosshairAppeared: widget.onCrosshairAppeared,
-        onCrosshairDisappeared: widget.onCrosshairDisappeared,
-        showCrosshair: widget.showCrosshair,
-      );
+      _setupCrosshairController();
     }
 
     xAxis.update(
@@ -336,6 +324,26 @@ class _ChartImplementationState extends BasicChartState<MainChart> {
     );
   }
 
+  void _setupCrosshairController() {
+    crosshairController = CrosshairController(
+      xAxisModel: xAxis,
+      series: widget.mainSeries as DataSeries<Tick>,
+      onCrosshairAppeared: () {
+        if (widget.crosshairVariant == CrosshairVariant.smallScreen) {
+          crosshairZoomOutAnimationController.forward();
+        }
+        widget.onCrosshairAppeared?.call();
+      },
+      onCrosshairDisappeared: () {
+        if (widget.crosshairVariant == CrosshairVariant.smallScreen) {
+          crosshairZoomOutAnimationController.reverse();
+        }
+        widget.onCrosshairDisappeared?.call();
+      },
+      showCrosshair: widget.showCrosshair,
+    );
+  }
+
   @override
   List<Listenable> getQuoteGridAnimations() =>
       super.getQuoteGridAnimations()..add(crosshairZoomOutAnimation);
@@ -405,11 +413,11 @@ class _ChartImplementationState extends BasicChartState<MainChart> {
                   _buildSeries(widget.overlaySeries!),
                 _buildAnnotations(),
                 if (widget.markerSeries != null) _buildMarkerArea(),
+                // TODO(Jim): Remove this when the drawing tools from the interactive layer are implemented
                 // if (widget.drawingTools != null)
-                //   _buildDrawingToolChart(widget.drawingTools!),
+                //     _buildDrawingToolChart(widget.drawingTools!),
                 if (widget.drawingTools != null)
                   _buildInteractiveLayer(context, xAxis),
-                // TODO(Ramin): move and handle cross-hair inside the InteractiveLayer
                 if (widget.showScrollToLastTickButton &&
                     _isScrollToLastTickAvailable)
                   Positioned(
@@ -454,9 +462,9 @@ class _ChartImplementationState extends BasicChartState<MainChart> {
                   chartQuoteFromCanvasY(_yAxisNotifier.value.canvasHeight),
             ),
             interactiveLayerBehaviour: _interactiveLayerBehaviour,
-            crosshairZoomOutAnimation: crosshairZoomOutAnimation,
             crosshairController: crosshairController,
             crosshairVariant: widget.crosshairVariant,
+            crosshairZoomOutAnimation: crosshairZoomOutAnimation,
           );
         },
       );

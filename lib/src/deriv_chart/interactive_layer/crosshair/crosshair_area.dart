@@ -58,25 +58,38 @@ class CrosshairArea extends StatelessWidget {
   /// [CrosshairVariant.largeScreen] is mostly for web.
   final CrosshairVariant crosshairVariant;
 
-  /// Calculates the position for the crosshair details box
-  /// to maintain a gap from the horizontal line (cursor position)
-  double _calculateDetailsPosition(
-      {required double cursorY, required double maxHeight}) {
-    // Estimated height of the details box
-    const double detailsBoxHeight = 100;
-    // Gap between cursor and details box
+  /// Calculates the optimal vertical position for the crosshair details box.
+  ///
+  /// In Flutter canvas, the coordinate system has (0,0) at the top-left corner,
+  /// with y-values increasing downward. This method calculates a position that
+  /// places the details box above the cursor with appropriate spacing.
+  ///
+  /// The calculation works as follows:
+  /// 1. Start with the cursor's Y position
+  /// 2. Subtract the height of the details box (100px) to position it above the cursor
+  /// 3. Subtract an additional gap (120px) to create space between the cursor and the box
+  /// 4. Ensure the box doesn't go too close to the top edge by using max(10, result)
+  ///
+  /// This ensures the details box is visible and well-positioned relative to the cursor,
+  /// while preventing it from being rendered partially off-screen at the top.
+  ///
+  /// Parameters:
+  /// - [cursorY]: The Y-coordinate of the cursor on the canvas
+  ///
+  /// Returns:
+  /// The Y-coordinate (top position) where the details box should be rendered.
+  /// The value is guaranteed to be at least 10 pixels from the top of the canvas.
+  double _calculateDetailsPosition({required double cursorY}) {
+    // Height of the details information box in pixels
+    final double detailsBoxHeight = crosshairTick is Candle ? 100 : 50;
+
+    // Additional vertical gap between the cursor and the details box
+    // This ensures the box doesn't overlap with or crowd the cursor
     const double gap = 120;
 
-    // If cursor is in the top half of the chart, position details below the cursor
-    // if (cursorY < maxHeight / 2) {
-    if (cursorY > maxHeight) {
-      return cursorY + gap;
-    }
-    // Otherwise position details above the cursor
-    else {
-      // Make sure details don't go off the top of the chart
-      return max(10, cursorY - detailsBoxHeight - gap);
-    }
+    // Calculate position and ensure it's at least 10px from the top edge
+    // This prevents the box from being rendered partially off-screen
+    return max(10, cursorY - detailsBoxHeight - gap);
   }
 
   @override
@@ -139,7 +152,8 @@ class CrosshairArea extends StatelessWidget {
                 : null,
           ),
         ),
-        _highlightTick(constraints: constraints, xAxis: xAxis, theme: theme),
+        _buildCrosshairTickHightlight(
+            constraints: constraints, xAxis: xAxis, theme: theme),
         // Add crosshair quote label at the right side of the chart
         if (crosshairVariant != CrosshairVariant.smallScreen &&
             cursorPosition.dy > 0)
@@ -194,9 +208,8 @@ class CrosshairArea extends StatelessWidget {
           // Use cursorY which is the cursor's Y position
           // Subtract the height of the details box plus a gap
           top: crosshairVariant == CrosshairVariant.smallScreen
-              ? 0
-              : _calculateDetailsPosition(
-                  cursorY: cursorPosition.dy, maxHeight: constraints.maxHeight),
+              ? 8
+              : _calculateDetailsPosition(cursorY: cursorPosition.dy),
           bottom: 0,
           width: constraints.maxWidth,
           left:
@@ -215,7 +228,25 @@ class CrosshairArea extends StatelessWidget {
     );
   }
 
-  Widget _highlightTick(
+  /// Builds a widget that highlights the current tick at the crosshair position.
+  ///
+  /// This method creates a visual highlight for the data point (tick, candle, etc.)
+  /// that the crosshair is currently pointing to. It delegates the actual painting
+  /// to a series-specific highlight painter obtained from the main series.
+  ///
+  /// The highlight is positioned at the exact location of the data point and provides
+  /// visual feedback to the user about which specific data element they are examining.
+  /// Different chart types (line, candle, OHLC) will have different highlight visualizations.
+  ///
+  /// Parameters:
+  /// * [constraints] - The layout constraints for the crosshair area.
+  /// * [xAxis] - The X-axis model providing epoch-to-coordinate conversion and granularity.
+  /// * [theme] - The chart theme containing colors and styles for the highlight.
+  ///
+  /// Returns:
+  /// A positioned widget containing the custom painter for the highlight, or an empty
+  /// widget if no highlight painter is available for the current series type.
+  Widget _buildCrosshairTickHightlight(
       {required BoxConstraints constraints,
       required XAxisModel xAxis,
       required ChartTheme theme}) {
@@ -229,8 +260,8 @@ class CrosshairArea extends StatelessWidget {
       crosshairTick!,
       quoteToCanvasY,
       xAxis.xFromEpoch(crosshairTick!.epoch),
-      // Use a reasonable default element width (6% of the granularity width)
-      (xAxis.xFromEpoch(xAxis.granularity) - xAxis.xFromEpoch(0)) * 0.6,
+      xAxis.granularity,
+      xAxis.xFromEpoch,
       theme,
     );
 

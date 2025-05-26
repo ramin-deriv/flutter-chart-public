@@ -37,7 +37,9 @@ class CrosshairDotPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CrosshairDotPainter oldDelegate) => true;
+  bool shouldRepaint(CrosshairDotPainter oldDelegate) =>
+      oldDelegate.dotColor != dotColor ||
+      oldDelegate.dotBorderColor != dotBorderColor;
 
   @override
   bool shouldRebuildSemantics(CrosshairDotPainter oldDelegate) => false;

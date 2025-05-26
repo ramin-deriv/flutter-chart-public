@@ -35,11 +35,11 @@ class DrawingToolGestureRecognizer extends OneSequenceGestureRecognizer {
   /// Function to cancel any active crosshair.
   void Function() onCrosshairCancel;
 
-  /// Resets the recognizer with new callback functions.
+  /// Updates the recognizer with new callback functions.
   ///
   /// This allows reusing the same recognizer instance when the callbacks
   /// need to be updated, instead of creating a new instance.
-  void reset({
+  void updateCallbacks({
     required void Function(DragStartDetails) onDrawingToolPanStart,
     required void Function(DragUpdateDetails) onDrawingToolPanUpdate,
     required void Function(DragEndDetails) onDrawingToolPanEnd,
@@ -61,9 +61,13 @@ class DrawingToolGestureRecognizer extends OneSequenceGestureRecognizer {
   /// The global position where the gesture started.
   Offset? _globalStartPosition;
 
+  /// The timestamp when the gesture started.
+  Duration? _startTimeStamp;
+
   @override
   void addPointer(PointerDownEvent event) {
     _globalStartPosition = event.position;
+    _startTimeStamp = event.timeStamp;
     _isDrawingToolHit = hitTest(event.localPosition);
 
     if (_isDrawingToolHit) {
@@ -133,19 +137,20 @@ class DrawingToolGestureRecognizer extends OneSequenceGestureRecognizer {
       stopTrackingPointer(event.pointer);
       _isDrawingToolHit = false;
       _globalStartPosition = null;
+      _startTimeStamp = null;
     } else if (event is PointerCancelEvent) {
       onDrawingToolPanCancel();
       stopTrackingPointer(event.pointer);
       _isDrawingToolHit = false;
       _globalStartPosition = null;
+      _startTimeStamp = null;
     }
   }
 
   /// Calculates the velocity of the gesture.
   Velocity _calculateVelocity(PointerUpEvent event) {
     // Simple velocity calculation
-    final duration =
-        event.timeStamp - (event.timeStamp - const Duration(milliseconds: 100));
+    final duration = event.timeStamp - (_startTimeStamp ?? event.timeStamp);
     if (duration == Duration.zero) {
       return Velocity.zero;
     }
@@ -168,12 +173,14 @@ class DrawingToolGestureRecognizer extends OneSequenceGestureRecognizer {
   void didStopTrackingLastPointer(int pointer) {
     _isDrawingToolHit = false;
     _globalStartPosition = null;
+    _startTimeStamp = null;
   }
 
   @override
   void dispose() {
     _isDrawingToolHit = false;
     _globalStartPosition = null;
+    _startTimeStamp = null;
     super.dispose();
   }
 }

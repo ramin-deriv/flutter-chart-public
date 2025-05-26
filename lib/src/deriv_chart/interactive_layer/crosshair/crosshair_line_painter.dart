@@ -20,7 +20,8 @@ abstract class CrosshairLinePainter extends CustomPainter {
   void paint(Canvas canvas, Size size);
 
   @override
-  bool shouldRepaint(CrosshairLinePainter oldDelegate) => true;
+  bool shouldRepaint(CrosshairLinePainter oldDelegate) =>
+      oldDelegate.theme != theme || oldDelegate.cursorY != cursorY;
 
   @override
   bool shouldRebuildSemantics(CrosshairLinePainter oldDelegate) => false;

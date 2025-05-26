@@ -38,7 +38,7 @@ class CrosshairDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ChartTheme theme = context.read<ChartTheme>();
+    final ChartTheme theme = context.watch<ChartTheme>();
     return ClipRRect(
       borderRadius: const BorderRadius.all(Radius.circular(8)),
       child: BackdropFilter(
@@ -63,7 +63,6 @@ class CrosshairDetails extends StatelessWidget {
                     children: [
                       mainSeries.getCrossHairInfo(crosshairTick, pipSize,
                           context.watch<ChartTheme>(), crosshairVariant),
-                      const SizedBox(height: 5),
                       _buildTimeLabel(context, crosshairVariant),
                     ],
                   ),
@@ -81,7 +80,7 @@ class CrosshairDetails extends StatelessWidget {
     final String date = ChartDateUtils.formatDate(crosshairTick.epoch);
     final String time =
         ChartDateUtils.formatTimeWithSeconds(crosshairTick.epoch);
-    final ChartTheme theme = context.read<ChartTheme>();
+    final ChartTheme theme = context.watch<ChartTheme>();
     final style = theme.crosshairInformationBoxTimeLabelStyle.copyWith(
       color: theme.crosshairInformationBoxTextSubtle,
     );
@@ -98,20 +97,20 @@ class CrosshairDetails extends StatelessWidget {
         Text(
           date,
           textAlign: TextAlign.center,
-          style: style.copyWith(fontSize: 12),
+          style: style,
         ),
         const SizedBox(width: 8),
         Text(
           time,
           textAlign: TextAlign.center,
-          style: style.copyWith(fontSize: 12),
+          style: style,
         ),
       ],
     );
   }
 
   Widget _buildCrosshairHeader(BuildContext context) {
-    final ChartTheme theme = context.read<ChartTheme>();
+    final ChartTheme theme = context.watch<ChartTheme>();
     final double percentageChange = getPercentageChange();
     final String percentChangeLabel =
         '${percentageChange.toStringAsFixed(pipSize)}%';

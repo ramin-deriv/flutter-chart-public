@@ -4,6 +4,10 @@ import 'package:flutter/gestures.dart';
 
 import '../enums/drawing_tool_state.dart';
 import '../interactable_drawings/drawing_v2.dart';
+import 'package:flutter/gestures.dart';
+
+import '../enums/drawing_tool_state.dart';
+import '../interactable_drawings/interactable_drawing.dart';
 import '../enums/state_change_direction.dart';
 import 'interactive_hover_state.dart';
 import 'interactive_normal_state.dart';
